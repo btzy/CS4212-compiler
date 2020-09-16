@@ -1,0 +1,179 @@
+import java_cup.runtime.*;
+import tree.*;
+import java.util.ArrayList;
+
+
+// Keywords
+terminal NULL;
+terminal TRUE;
+terminal FALSE;
+terminal CLASS;
+terminal THIS;
+terminal NEW;
+terminal RETURN;
+terminal IF;
+terminal ELSE;
+terminal WHILE;
+terminal READLN;
+terminal PRINTLN;
+
+terminal java.lang.String IDENTIFIER;
+terminal java.lang.String CLASSNAME;
+
+// Literals
+terminal java.lang.Integer INTEGER_LITERAL;
+terminal java.lang.String STRING_LITERAL;
+
+// Operators
+terminal ASSIGN;
+terminal EQ;
+terminal NE;
+terminal LT;
+terminal LE;
+terminal GT;
+terminal GE;
+terminal PLUS;
+terminal MINUS;
+terminal TIMES;
+terminal DIVIDE;
+terminal DOT;
+terminal COMMA;
+terminal NEGATION;
+terminal CONJUNCTION;
+terminal DISJUNCTION;
+terminal LPAREN;
+terminal RPAREN;
+terminal LCURLY;
+terminal RCURLY;
+terminal UMINUS;
+
+// Semicolon
+terminal SEMI;
+
+
+// Main program
+non terminal Program program;
+
+
+non terminal ClassDecl main_class;
+non terminal ArrayList<ClassDecl> class_decls;
+non terminal ClassDecl class_decl;
+non terminal ArrayList<VarDecl> fmllist;
+non terminal ArrayList<VarDecl> fmlrest;
+non terminal ArrayList<VarDecl> var_decls;
+non terminal VarDecl var_decl_without_semi;
+non terminal ArrayList<ClassItem> any_decls;
+non terminal Method md_decl;
+non terminal ArrayList<Stmt> stmts_nonzero;
+non terminal ArrayList<Stmt> stmts;
+non terminal Stmt stmt;
+non terminal Expr expr;
+non terminal ArrayList<Expr> expr_list;
+non terminal ArrayList<Expr> expr_rest;
+
+precedence left DISJUNCTION;
+precedence left CONJUNCTION;
+precedence left EQ, NE, LT, LE, GT, GE;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+precedence right UMINUS, NEGATION;
+precedence right NEW;
+precedence left DOT, LPAREN, RPAREN; // to make function calls work properly
+
+start with program;
+
+program ::= main_class:m class_decls:c {: c.add(0, m); RESULT = new Program(c); :}
+	;
+
+main_class ::= CLASS CLASSNAME:n LCURLY CLASSNAME:exp_void IDENTIFIER:exp_main LPAREN fmllist:sig RPAREN LCURLY var_decls:vs stmts_nonzero:ss RCURLY RCURLY
+	{:
+		if (!exp_void.equals("Void") || !exp_main.equals("main")) {
+			throw new Exception(); // TODO: more specific exception
+		}
+		RESULT = ClassDecl.makeMainClass(n, sig, vs, ss);
+	:}
+	;
+
+class_decls ::= class_decls:arr class_decl:c  {: arr.add(c); RESULT = arr; :}
+	|  {: RESULT = new ArrayList<ClassDecl>(); :}
+	;
+
+class_decl ::= CLASS CLASSNAME:n LCURLY any_decls:as RCURLY {: RESULT = new ClassDecl(n, as); :}
+	;
+
+fmllist ::= fmlrest:l CLASSNAME:c IDENTIFIER:i {: l.add(new VarDecl(c, i)); RESULT = l; :}
+	|  {: RESULT = new ArrayList<VarDecl>(); :}
+	;
+
+fmlrest ::= fmlrest:l CLASSNAME:c IDENTIFIER:i COMMA {: l.add(new VarDecl(c, i)); RESULT = l; :}
+	|  {: RESULT = new ArrayList<VarDecl>(); :}
+	;
+
+any_decls ::= any_decls:a var_decl_without_semi:v SEMI {: a.add(v); RESULT = a; :}
+	| any_decls:a md_decl:m {: a.add(m); RESULT = a; :}
+	|  {: RESULT = new ArrayList<ClassItem>(); :}
+	;
+
+var_decls ::= var_decls:l var_decl_without_semi:v SEMI {: l.add(v); RESULT = l; :}
+	|  {: RESULT = new ArrayList<VarDecl>(); :}
+	;
+
+var_decl_without_semi ::= CLASSNAME:c IDENTIFIER:i {: RESULT = new VarDecl(c, i); :}
+	;
+
+md_decl ::= var_decl_without_semi:v LPAREN fmllist:sig RPAREN LCURLY var_decls:vs stmts_nonzero:ss RCURLY
+	{:
+		RESULT = new Method(v.getType(), v.getName(), sig, vs, ss);
+	:}
+	;
+
+stmts_nonzero ::= stmts:ss stmt:s {: ss.add(s); RESULT = ss; :}
+	;
+	
+stmts ::= stmts_nonzero:ss {: RESULT = ss; :}
+	|  {: RESULT = new ArrayList<Stmt>(); :}
+	;
+	
+stmt ::= IF LPAREN expr:cond RPAREN LCURLY stmts_nonzero:true_stmts RCURLY ELSE LCURLY stmts_nonzero:false_stmts RCURLY {: RESULT = new IfStmt(cond, true_stmts, false_stmts); :}
+	| WHILE LPAREN expr:cond RPAREN LCURLY stmts:ss RCURLY {: RESULT = new WhileStmt(cond, ss); :}
+	| READLN LPAREN IDENTIFIER:id RPAREN SEMI {: RESULT = new ReadStmt(id); :}
+	| PRINTLN LPAREN expr:e RPAREN SEMI {: RESULT = new PrintStmt(e); :}
+	| IDENTIFIER:id ASSIGN expr:e SEMI {: RESULT = new AssignStmt(id, e); :}
+	| expr:obj DOT IDENTIFIER:id ASSIGN expr:e SEMI {: RESULT = new MemberAssignStmt(obj, id, e); :}
+	| expr:e LPAREN expr_list:es RPAREN SEMI {: RESULT = new CallStmt(e, es); :}
+	| RETURN expr:e SEMI {: RESULT = new ReturnValueStmt(e); :}
+	| RETURN SEMI {: RESULT = new ReturnStmt(); :}
+	;
+	
+expr ::= expr:e1 DISJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.DISJUNCTION, e1, e2); :}
+	| expr:e1 CONJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.CONJUNCTION, e1, e2); :}
+	| expr:e1 EQ expr:e2 {: RESULT = new BinaryOperation(BinOp.EQ, e1, e2); :}
+	| expr:e1 NE expr:e2 {: RESULT = new BinaryOperation(BinOp.NE, e1, e2); :}
+	| expr:e1 LT expr:e2 {: RESULT = new BinaryOperation(BinOp.LT, e1, e2); :}
+	| expr:e1 LE expr:e2 {: RESULT = new BinaryOperation(BinOp.LE, e1, e2); :}
+	| expr:e1 GT expr:e2 {: RESULT = new BinaryOperation(BinOp.GT, e1, e2); :}
+	| expr:e1 GE expr:e2 {: RESULT = new BinaryOperation(BinOp.GE, e1, e2); :}
+	| expr:e1 PLUS expr:e2 {: RESULT = new BinaryOperation(BinOp.PLUS, e1, e2); :}
+	| expr:e1 MINUS expr:e2 {: RESULT = new BinaryOperation(BinOp.MINUS, e1, e2); :}
+	| expr:e1 TIMES expr:e2 {: RESULT = new BinaryOperation(BinOp.TIMES, e1, e2); :}
+	| expr:e1 DIVIDE expr:e2 {: RESULT = new BinaryOperation(BinOp.DIVIDE, e1, e2); :}
+	| MINUS expr:e {: RESULT = new UnaryOperation(UnOp.MINUS, e); :} %prec UMINUS
+	| LPAREN expr:e RPAREN {: RESULT = e; :}
+	| TRUE {: RESULT = new Literal(Boolean.valueOf(true)); :}
+	| FALSE {: RESULT = new Literal(Boolean.valueOf(false)); :}
+	| NULL {: RESULT = new Literal(null); :}
+	| INTEGER_LITERAL:i {: RESULT = new Literal(i); :}
+	| STRING_LITERAL:s {: RESULT = new Literal(s); :}
+	| expr:e DOT IDENTIFIER:i {: RESULT = new MemberAccess(e, i); :}
+	| expr:e LPAREN expr_list:es RPAREN {: RESULT = new CallExpr(e, es); :}
+	| NEW CLASSNAME:c LPAREN RPAREN {: RESULT = new Alloc(c); :}
+	| IDENTIFIER:i {: RESULT = new VarAccess(i); :} // 'this' is considered as a normal identifier at this stage
+	;
+
+expr_list ::= expr_rest:es expr:e {: es.add(e); RESULT = es; :}
+	|  {: RESULT = new ArrayList<Expr>(); :}
+	;
+
+expr_rest ::= expr_rest:es expr:e COMMA {: es.add(e); RESULT = es; :}
+	|  {: RESULT = new ArrayList<Expr>(); :}
+	;

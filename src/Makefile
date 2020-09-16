@@ -1,4 +1,4 @@
-JFLAGS = -g -cp .;cup/java-cup-11b-runtime.jar -Xlint:deprecation
+JFLAGS = -g -cp .;cup/java-cup-11b-runtime.jar
 JC = javac
 
 default: classes
@@ -9,16 +9,17 @@ CLASSES = \
 	UnknownCharacterException.java \
 	parser.java \
 	sym.java \
-	CommandArgumentException.java
+	CommandArgumentException.java \
+    tree/*.java
 
 %.class: %.java Lexer.java parser.java sym.java
 	$(JC) $(JFLAGS) $<
 
-Lexer.java: jflex/minijava.flex
-	jflex -d . jflex/minijava.flex
+Lexer.java: jflex/jlang.flex
+	jflex -nobak -d . jflex/jlang.flex
 
-parser.java sym.java: cup/minijava.cup
-	 java -jar cup/java-cup-11b.jar -destdir . cup/minijava.cup
+parser.java sym.java: cup/jlang.cup
+	 java -jar cup/java-cup-11b.jar -destdir . cup/jlang.cup
 
 # sym.java: parser.java
 

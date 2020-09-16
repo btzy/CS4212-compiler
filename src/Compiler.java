@@ -1,4 +1,5 @@
 import java.io.FileReader;
+import tree.Program;
 
 /*
 Note: need to change to cup actions, like:
@@ -10,8 +11,8 @@ public class Compiler {
     public static void main(String[] args) {
         try {
             parser p = new parser(new Lexer(new FileReader(tryGetArg(args, 0, "input file"))));
-            Object result = p.parse().value;
-            System.out.println(result.toString());
+            Program program = (Program) p.parse().value;
+            program.print(System.out);
             /*Lexer l = new Lexer(new FileReader(tryGetArg(args, 0, "input file")));
             System.out.println(l.next_token());
             System.out.println(l.next_token());
