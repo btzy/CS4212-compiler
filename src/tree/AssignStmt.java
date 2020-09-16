@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 
 public class AssignStmt extends Stmt {
 	private String target;
@@ -9,7 +8,7 @@ public class AssignStmt extends Stmt {
 		this.target = target;
 		this.expr = expr;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print(target);
 		w.print('=');
 		expr.print(w);

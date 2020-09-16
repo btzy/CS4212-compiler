@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 
 public class WhileStmt extends Stmt {
@@ -10,12 +9,14 @@ public class WhileStmt extends Stmt {
 		this.cond = cond;
 		this.stmts = stmts;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print("While(");
 		cond.print(w);
 		w.println(')');
 		w.println('{');
+		w.enterContext();
 		for (Stmt s : stmts) s.print(w);
+		w.leaveContext();
 		w.println('}');
 	}
 }

@@ -1,6 +1,22 @@
 import java_cup.runtime.*;
 import tree.*;
 import java.util.ArrayList;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+
+parser code {:
+	public void report_error(String message, Object info)
+    {
+	  if (info instanceof ComplexSymbol) {
+         Location left = ((ComplexSymbol)info).getLeft();
+         Location right = ((ComplexSymbol)info).getRight();
+		 System.err.println(message + ' ' + ((ComplexSymbol) info).getName() + "( line " + left.getLine() + " col " + left.getColumn() + " - line " + right.getLine() + " col " + right.getColumn() + " )");
+      } else if (info instanceof Symbol)
+         System.err.println(message + ((Symbol)info).toString());
+      else
+         System.err.println(message + cur_token.toString());
+    }
+:};
+
 
 
 // Keywords
@@ -8,7 +24,6 @@ terminal NULL;
 terminal TRUE;
 terminal FALSE;
 terminal CLASS;
-terminal THIS;
 terminal NEW;
 terminal RETURN;
 terminal IF;
@@ -147,6 +162,7 @@ stmt ::= IF LPAREN expr:cond RPAREN LCURLY stmts_nonzero:true_stmts RCURLY ELSE 
 	
 expr ::= expr:e1 DISJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.DISJUNCTION, e1, e2); :}
 	| expr:e1 CONJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.CONJUNCTION, e1, e2); :}
+	| NEGATION expr:e {: RESULT = new UnaryOperation(UnOp.NEGATION, e); :}
 	| expr:e1 EQ expr:e2 {: RESULT = new BinaryOperation(BinOp.EQ, e1, e2); :}
 	| expr:e1 NE expr:e2 {: RESULT = new BinaryOperation(BinOp.NE, e1, e2); :}
 	| expr:e1 LT expr:e2 {: RESULT = new BinaryOperation(BinOp.LT, e1, e2); :}

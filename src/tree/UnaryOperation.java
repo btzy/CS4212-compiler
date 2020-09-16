@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 
 public class UnaryOperation extends Expr {
 	private UnOp op;
@@ -9,7 +8,7 @@ public class UnaryOperation extends Expr {
 		this.op = op;
 		this.expr = expr;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print('(');
 		op.print(w);
 		w.print(')');

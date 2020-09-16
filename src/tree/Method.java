@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 
 public class Method extends Node implements ClassItem {
@@ -16,7 +15,8 @@ public class Method extends Node implements ClassItem {
 		this.locals = locals;
 		this.stmts = stmts;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
+		w.println(); // extra println to conform to examples
 		w.print(type);
 		w.print(' ');
 		w.print(name);
@@ -24,6 +24,7 @@ public class Method extends Node implements ClassItem {
 		Utils.commaSeparatedPrint(signature, w);
 		w.print(')');
 		w.println('{');
+		w.enterContext();
 		for (VarDecl v : locals) {
 			v.print(w);
 			w.println(';');
@@ -31,5 +32,8 @@ public class Method extends Node implements ClassItem {
 		for (Stmt s : stmts) {
 			s.print(w);
 		}
+		w.leaveContext();
+		w.println('}');
+		w.println(); // extra println to conform to examples
 	}
 }

@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 
 public class Literal extends Expr {
@@ -8,7 +7,7 @@ public class Literal extends Expr {
 	public Literal(Object value) {
 		this.value = value;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		if (value instanceof Boolean) {
 			if (((Boolean) value).booleanValue()) {
 				w.print("true");

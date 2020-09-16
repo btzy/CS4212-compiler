@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 
 public enum UnOp implements Printable {
 	MINUS("-"),
@@ -10,7 +9,7 @@ public enum UnOp implements Printable {
 
 	UnOp(String text) { this.text = text; }
 
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print(text);
 	}
 }

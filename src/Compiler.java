@@ -1,5 +1,8 @@
 import java.io.FileReader;
 import tree.Program;
+import tree.NestedPrintStream;
+import java_cup.runtime.SymbolFactory;
+import java_cup.runtime.ComplexSymbolFactory;
 
 /*
 Note: need to change to cup actions, like:
@@ -10,9 +13,13 @@ expr ::= expr:e1 PLUS expr:e2
 public class Compiler {
     public static void main(String[] args) {
         try {
-            parser p = new parser(new Lexer(new FileReader(tryGetArg(args, 0, "input file"))));
+            ComplexSymbolFactory sf = new ComplexSymbolFactory();
+            parser p = new parser(new Lexer(new FileReader(tryGetArg(args, 0, "input file")), sf), sf);
             Program program = (Program) p.parse().value;
-            program.print(System.out);
+            program.print(new NestedPrintStream(System.out));
+            /*parser p = new parser(new Lexer(new FileReader(tryGetArg(args, 0, "input file"))));
+            Program program = (Program) p.parse().value;
+            program.print(System.out);*/
             /*Lexer l = new Lexer(new FileReader(tryGetArg(args, 0, "input file")));
             System.out.println(l.next_token());
             System.out.println(l.next_token());
@@ -21,8 +28,8 @@ public class Compiler {
             System.out.println(l.next_token());*/
         }
         catch (Exception e) {
-            System.out.println("Exception occured: " + e.toString());
-            e.printStackTrace(System.out);
+            //System.out.println("Exception occured: " + e.toString());
+            //e.printStackTrace(System.out);
         }
     }
 

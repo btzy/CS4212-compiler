@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 
 public class MemberAssignStmt extends Stmt {
 	private Expr obj;
@@ -11,7 +10,7 @@ public class MemberAssignStmt extends Stmt {
 		this.member = member;
 		this.expr = expr;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		obj.print(w);
 		w.print('.');
 		w.print(member);

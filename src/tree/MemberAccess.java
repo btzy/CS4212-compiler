@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 
 public class MemberAccess extends Expr {
 	private Expr obj;
@@ -9,7 +8,7 @@ public class MemberAccess extends Expr {
 		this.obj = obj;
 		this.member = member;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		obj.print(w);
 		w.print('.');
 		w.print(member);

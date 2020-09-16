@@ -10,16 +10,19 @@ CLASSES = \
 	parser.java \
 	sym.java \
 	CommandArgumentException.java \
-    tree/*.java
+    $(wildcard tree/*.java)
 
-%.class: %.java Lexer.java parser.java sym.java
+%.class: %.java Lexer.java parser.java sym.java $(wildcard tree/*.java)
+	$(JC) $(JFLAGS) $<
+
+tree/%.class: tree/%.java
 	$(JC) $(JFLAGS) $<
 
 Lexer.java: jflex/jlang.flex
 	jflex -nobak -d . jflex/jlang.flex
 
 parser.java sym.java: cup/jlang.cup
-	 java -jar cup/java-cup-11b.jar -destdir . cup/jlang.cup
+	 java -jar cup/java-cup-11b.jar -locations -destdir . cup/jlang.cup
 
 # sym.java: parser.java
 

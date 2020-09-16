@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 
 public class CallStmt extends Stmt {
@@ -10,7 +9,7 @@ public class CallStmt extends Stmt {
 		this.callee = callee;
 		this.args = args;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		callee.print(w);
 		w.print('(');
 		Utils.commaSeparatedPrint(args, w);

@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 
 public class BinaryOperation extends Expr {
 	private BinOp op;
@@ -10,7 +9,7 @@ public class BinaryOperation extends Expr {
 		this.left = left;
 		this.right = right;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print('[');
 		left.print(w);
 		w.print(',');

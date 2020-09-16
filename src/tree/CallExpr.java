@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 
 public class CallExpr extends Expr {
@@ -10,7 +9,7 @@ public class CallExpr extends Expr {
 		this.callee = callee;
 		this.args = args;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print('[');
 		callee.print(w);
 		w.print('(');

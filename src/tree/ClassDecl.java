@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 
 public class ClassDecl extends Node {
@@ -42,19 +41,23 @@ public class ClassDecl extends Node {
 			}
 		}
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print("class ");
 		w.print(name);
 		w.print("{");
+		w.enterContext();
 		w.println();
 		for (VarDecl v : vars) {
 			v.print(w);
+			w.println(';');
 		}
 		for (Method m : methods) {
 			m.print(w);
 		}
+		w.leaveContext();
 		w.print("}");
 		w.println();
+		w.println(); // extra println to conform to examples
 	}
 
 	public static ClassDecl makeMainClass(String name, ArrayList<VarDecl> sig, ArrayList<VarDecl> locals, ArrayList<Stmt> stmts) {

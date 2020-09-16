@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 
 public class IfStmt extends Stmt {
@@ -12,16 +11,20 @@ public class IfStmt extends Stmt {
 		this.true_stmts = true_stmts;
 		this.false_stmts = false_stmts;
 	}
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print("If(");
 		cond.print(w);
 		w.println(')');
 		w.println('{');
+		w.enterContext();
 		for (Stmt s : true_stmts) s.print(w);
+		w.leaveContext();
 		w.println('}');
 		w.println("else");
 		w.println('{');
+		w.enterContext();
 		for (Stmt s : false_stmts) s.print(w);
+		w.leaveContext();
 		w.println('}');
 	}
 }

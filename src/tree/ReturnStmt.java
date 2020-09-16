@@ -1,9 +1,8 @@
 package tree;
-
-import java.io.PrintStream;
+
 
 public class ReturnStmt extends Stmt {
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.println("return;");
 	}
 }

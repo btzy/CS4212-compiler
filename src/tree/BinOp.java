@@ -1,6 +1,5 @@
 package tree;
-
-import java.io.PrintStream;
+
 
 public enum BinOp implements Printable {
 	EQ("=="), NE("!="), LT("<"), LE("<="), GT(">"), GE(">="),
@@ -11,7 +10,7 @@ public enum BinOp implements Printable {
 
 	BinOp(String text) { this.text = text; }
 
-	public void print(PrintStream w) {
+	public void print(NestedPrintStream w) {
 		w.print(text);
 	}
 }
