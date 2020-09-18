@@ -31,10 +31,10 @@ import java.io.InputStreamReader;
   private StringBuffer string = new StringBuffer();
 
   private Symbol symbol(String name, int type) {
-    return sf.newSymbol(name, type, new Location(yyline+1, yycolumn+1 - yylength()), new Location(yyline+1, yycolumn+1));
+    return sf.newSymbol(name, type, new Location(yyline+1, Math.max(0, yycolumn)), new Location(yyline+1, yycolumn+yylength()));
   }
   private Symbol symbol(String name, int type, Object value) {
-    return sf.newSymbol(name, type, new Location(yyline+1, yycolumn+1 - yylength()), new Location(yyline+1, yycolumn+1), value);
+    return sf.newSymbol(name, type, new Location(yyline+1, Math.max(0, yycolumn)), new Location(yyline+1, yycolumn+yylength()), value);
   }
 
   private static char decToChar(String value) {

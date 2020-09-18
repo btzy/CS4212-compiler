@@ -1,5 +1,6 @@
 package tree;
-
+
+
 import java.util.ArrayList;
 
 public class ClassDecl extends Node {
@@ -51,8 +52,11 @@ public class ClassDecl extends Node {
 			v.print(w);
 			w.println(';');
 		}
+		boolean old = !vars.isEmpty();
 		for (Method m : methods) {
+			if (old) w.println();
 			m.print(w);
+			old = true;
 		}
 		w.leaveContext();
 		w.print("}");

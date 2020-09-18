@@ -1,5 +1,6 @@
 package tree;
-
+
+
 import java.util.ArrayList;
 
 public class Literal extends Expr {
@@ -20,7 +21,9 @@ public class Literal extends Expr {
 			w.print(((Integer) value).intValue());
 		}
 		else if (value instanceof String) {
+			w.print('"');
 			w.print((String) value);
+			w.print('"');
 		}
 		else if (value == null) {
 			w.print("null");

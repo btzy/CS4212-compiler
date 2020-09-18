@@ -1,5 +1,6 @@
 package tree;
-
+
+
 import java.util.ArrayList;
 
 public class Method extends Node implements ClassItem {
@@ -16,7 +17,6 @@ public class Method extends Node implements ClassItem {
 		this.stmts = stmts;
 	}
 	public void print(NestedPrintStream w) {
-		w.println(); // extra println to conform to examples
 		w.print(type);
 		w.print(' ');
 		w.print(name);
@@ -34,6 +34,5 @@ public class Method extends Node implements ClassItem {
 		}
 		w.leaveContext();
 		w.println('}');
-		w.println(); // extra println to conform to examples
 	}
 }

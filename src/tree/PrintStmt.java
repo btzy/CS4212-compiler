@@ -1,5 +1,6 @@
 package tree;
-
+
+
 
 public class PrintStmt extends Stmt {
 	private Expr expr;
@@ -8,7 +9,7 @@ public class PrintStmt extends Stmt {
 	}
 	public void print(NestedPrintStream w) {
 		w.print("Println(");
-		w.print(expr);
+		expr.print(w);
 		w.println(");");
 	}
 }

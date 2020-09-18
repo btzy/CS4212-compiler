@@ -1,19 +1,38 @@
 import java_cup.runtime.*;
 import tree.*;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 
 parser code {:
+	public boolean userHasError;
+	public boolean userHasFatalError;
+	public ErrorLocationMessageCallback userErrorCallback;
+
+	public parser(Scanner s, SymbolFactory symfac, ErrorLocationMessageCallback uec) {
+		super(s, symfac);
+		this.userHasError = false;
+		this.userHasFatalError = false;
+		this.userErrorCallback = uec;
+	}
 	public void report_error(String message, Object info)
     {
 	  if (info instanceof ComplexSymbol) {
          Location left = ((ComplexSymbol)info).getLeft();
          Location right = ((ComplexSymbol)info).getRight();
 		 System.err.println(message + ' ' + ((ComplexSymbol) info).getName() + "( line " + left.getLine() + " col " + left.getColumn() + " - line " + right.getLine() + " col " + right.getColumn() + " )");
+		 if (userErrorCallback != null) userErrorCallback.apply(left.getLine(), left.getColumn(), right.getLine(), right.getColumn());
       } else if (info instanceof Symbol)
          System.err.println(message + ((Symbol)info).toString());
       else
          System.err.println(message + cur_token.toString());
+      userHasError = true;
+    }
+	public void report_fatal_error(String message, Object info)
+    {
+	  System.err.println("Parse aborted due to above error.");
+	  userHasError = true;
+	  userHasFatalError = true;
     }
 :};
 
@@ -110,6 +129,7 @@ main_class ::= CLASS CLASSNAME:n LCURLY CLASSNAME:exp_void IDENTIFIER:exp_main L
 	;
 
 class_decls ::= class_decls:arr class_decl:c  {: arr.add(c); RESULT = arr; :}
+	| class_decls:arr error  {: RESULT = arr; :}
 	|  {: RESULT = new ArrayList<ClassDecl>(); :}
 	;
 
@@ -126,6 +146,7 @@ fmlrest ::= fmlrest:l CLASSNAME:c IDENTIFIER:i COMMA {: l.add(new VarDecl(c, i))
 
 any_decls ::= any_decls:a var_decl_without_semi:v SEMI {: a.add(v); RESULT = a; :}
 	| any_decls:a md_decl:m {: a.add(m); RESULT = a; :}
+	| any_decls:a error {: RESULT = a; :}
 	|  {: RESULT = new ArrayList<ClassItem>(); :}
 	;
 
@@ -158,6 +179,7 @@ stmt ::= IF LPAREN expr:cond RPAREN LCURLY stmts_nonzero:true_stmts RCURLY ELSE 
 	| expr:e LPAREN expr_list:es RPAREN SEMI {: RESULT = new CallStmt(e, es); :}
 	| RETURN expr:e SEMI {: RESULT = new ReturnValueStmt(e); :}
 	| RETURN SEMI {: RESULT = new ReturnStmt(); :}
+	| error SEMI {: RESULT = new ErrorStmt(); :}
 	;
 	
 expr ::= expr:e1 DISJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.DISJUNCTION, e1, e2); :}
@@ -184,6 +206,7 @@ expr ::= expr:e1 DISJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.DISJU
 	| expr:e LPAREN expr_list:es RPAREN {: RESULT = new CallExpr(e, es); :}
 	| NEW CLASSNAME:c LPAREN RPAREN {: RESULT = new Alloc(c); :}
 	| IDENTIFIER:i {: RESULT = new VarAccess(i); :} // 'this' is considered as a normal identifier at this stage
+	| error {: RESULT = new ErrorExpr(); :}
 	;
 
 expr_list ::= expr_rest:es expr:e {: es.add(e); RESULT = es; :}

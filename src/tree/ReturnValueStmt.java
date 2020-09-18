@@ -1,5 +1,6 @@
 package tree;
-
+
+
 
 public class ReturnValueStmt extends Stmt {
 	private Expr expr;
@@ -7,6 +8,8 @@ public class ReturnValueStmt extends Stmt {
 		this.expr = expr;
 	}
 	public void print(NestedPrintStream w) {
-		w.println("return;");
+		w.print("Return ");
+		expr.print(w);
+		w.println(';');
 	}
 }
