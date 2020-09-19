@@ -24,7 +24,13 @@ Subdirectories:
 **Important!: Before continuing any further, do `cd src` to go into the directory first.**
 
 ## Compile
-Just type `make`, like this command:
+Firstly, we need to chmod the java archives for jflex and cup:
+```
+chmod u+x cup/*.jar
+chmod u+x jflex/jflex-1.8.2/lib/*.jar
+```
+
+Then type `make`, like this command:
 ```
 make
 ```
@@ -53,14 +59,14 @@ To run all the successful tests, do:
 
 You should get an output like this:
 ```
-Testing default1 ... OK
-Testing default2 ... OK
-Testing fibonacci ... OK
-Testing many-func ... OK
-Testing nest ... OK
-Testing operator ... OK
-Testing string-literal ... OK
-Testing test-all-grammar ... OK
+Testing test/default1 ... OK
+Testing test/default2 ... OK
+Testing test/fibonacci ... OK
+Testing test/many-func ... OK
+Testing test/nest ... OK
+Testing test/operator ... OK
+Testing test/string-literal ... OK
+Testing test/test-all-grammar ... OK
 ```
 
 The `default1` and `default2` tests are those that came with the assignment.
