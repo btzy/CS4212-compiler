@@ -118,6 +118,15 @@ The above error message demonstrates a few things:
 2. Secondly, the parser can still continue after it encounters an error.  In the above example, 5 different errors are detected.  After each error, the parser tries to recover and continue to parse (by skipping over one or more tokens), and hence is able to find all the syntax errors.  This is helpful so the user does not need to re-compile after fixing the error one-by-one.  This is done with judicious use of the error token in Cup.
 3. Thirdly, there is an option to parse the program in "lenient" mode (see the last line of the error message above).  When using lenient mode, the parser will still produce an AST, but error tokens will either be removed or replaced with `<<Error Expression>>`, so that the rest of the tree remains valid.  See the next section about lenient mode.
 
+There are 5 tests that will lead to parse error.  They demonstrate the resilience of my parser to syntax errors, and the friendly output that is produced.  Each can be run separately using the `run.sh` script, e.g.:
+```
+./run.sh errors/error-recover
+./run.sh errors/expr-error
+./run.sh errors/lexer-error
+./run.sh errors/capital-error
+./run.sh errors/capital-error2
+```
+
 ## Lenient mode
 
 Lenient mode should be used when we still want to construct a best-effort tree from a input Jlite source file that has syntax errors.
