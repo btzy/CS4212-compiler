@@ -1,0 +1,17 @@
+class Main{
+  Void main(){
+    Println("abc");
+    Println("{");
+    Println(" ");
+    Println(" ");
+    Println("H");
+    Println("abc{  H");
+    Println("abc{ 456 Hdef");
+    Println([["abc{ 456 Hdef"," "](+),"abc{ 456 Hdef"](+));
+    Println("\");
+    Println("
+");
+    Println("	");
+  }
+}
+

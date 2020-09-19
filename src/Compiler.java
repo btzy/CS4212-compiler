@@ -6,20 +6,14 @@ import tree.NestedPrintStream;
 import java_cup.runtime.SymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory;
 
-/*
-Note: need to change to cup actions, like:
-expr ::= expr:e1 PLUS expr:e2
-    {: RESULT = new Integer(e1.intValue() + e2.intValue()); :}
-*/
-
 public class Compiler {
     public static void main(String[] args) {
         final HashMap<String, String> argmap = parseArgs(args);
-        boolean lenient = hasArg(argmap, "lenient");
+        final boolean lenient = hasArg(argmap, "lenient");
         try {
             final ComplexSymbolFactory sf = new ComplexSymbolFactory();
             final String filename = getArgWithValue(argmap, "i");
-            parser p = new parser(new Lexer(new FileReader(filename), sf), sf, (int left_line, int left_col, int right_line, int right_col) -> {
+            parser p = new parser(new Lexer(new FileReader(filename), sf, filename), sf, (int left_line, int left_col, int right_line, int right_col) -> {
                 printErrorLocation(filename, left_line, left_col, right_line, right_col);
             });
             Object program_obj = p.parse().value;
@@ -27,22 +21,19 @@ public class Compiler {
             Program program = (Program) program_obj;
             if (p.userHasError && !lenient) throw new Exception("Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').");
             program.print(new NestedPrintStream(System.out));
-            /*parser p = new parser(new Lexer(new FileReader(tryGetArg(args, 0, "input file"))));
-            Program program = (Program) p.parse().value;
-            program.print(System.out);*/
-            /*Lexer l = new Lexer(new FileReader(tryGetArg(args, 0, "input file")));
-            System.out.println(l.next_token());
-            System.out.println(l.next_token());
-            System.out.println(l.next_token());
-            System.out.println(l.next_token());
-            System.out.println(l.next_token());*/
         }
         catch (CommandArgumentException e) {
-            System.err.println(e.toString());
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        catch (UnknownCharacterException e) {
+            System.err.println(e.getMessage() + " :");
+            printErrorLocation(e.filename, e.left_line, e.left_col, e.right_line, e.right_col);
+            System.err.println("Parse aborted due to above error from lexer.");
             System.exit(1);
         }
         catch (Exception e) {
-            System.err.println(e.toString());
+            System.err.println(e.getMessage());
             System.exit(1);
         }
     }
@@ -99,6 +90,7 @@ public class Compiler {
                 System.err.println(s);
                 int start_col = (tmp_line == left_line ? Math.max(0, Math.min(left_col, s.length())) : 0);
                 int end_col = (tmp_line == right_line ? Math.min(s.length(), Math.max(0, right_col)) : s.length());
+                if (end_col <= start_col) end_col = start_col + 1;
                 StringBuilder sb = new StringBuilder();
                 for (int i=0; i<number_len; ++i) sb.append(' ');
                 sb.append(" | ");

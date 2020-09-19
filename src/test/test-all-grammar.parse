@@ -5,7 +5,7 @@ class Main{
     String z;
     Void v;
     A a;
-    a=[New A];
+    a=[New A()];
     Readln(x);
     Println([123,456](+));
     If(y)
@@ -39,7 +39,7 @@ class Main{
     x=(-)[1000];
     x=[[[x,x](*),[x,x](/)](+),x](-);
     x=a.field2;
-    x=[New A].field2;
+    x=[New A()].field2;
     a=null;
     f3(x,z,y);
   }

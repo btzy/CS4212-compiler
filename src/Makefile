@@ -19,10 +19,10 @@ tree/%.class: tree/%.java
 	$(JC) $(JFLAGS) $<
 
 Lexer.java: jflex/jlang.flex
-	jflex -nobak -d . jflex/jlang.flex
+	java -Xmx128m -jar "jflex/jflex-1.8.2/lib/jflex-full-1.8.2.jar" -nobak -d . jflex/jlang.flex
 
 parser.java sym.java: cup/jlang.cup
-	 java -jar cup/java-cup-11b.jar -locations -destdir . cup/jlang.cup
+	java -jar cup/java-cup-11b.jar -locations -destdir . cup/jlang.cup
 
 # sym.java: parser.java
 

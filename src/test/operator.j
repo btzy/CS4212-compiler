@@ -1,0 +1,16 @@
+class Main {
+
+Void main(){
+    println(1+2+3+4+5);
+    println(1-2-3);
+    println(1-2-3+4+5);
+    println(1*2+3*4+5);
+    println(1*2/3*4/5);
+    println(1/2+3/4+5);
+    println(1/2+3==1/2+3&&1/2+3==1/2+3||1/2+3==1/2+3&&1/2+3==1/2+3);
+    println(1+-2+-3);
+    println(-1+-2+-3);
+    println(-1+2+3);
+    println(-(1+2)+3);
+    println(-(1+2+3));
+}}

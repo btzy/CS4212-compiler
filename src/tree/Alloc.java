@@ -1,5 +1,6 @@
 package tree;
-
+
+
 
 public class Alloc extends Expr {
 	private String classname;
@@ -10,6 +11,6 @@ public class Alloc extends Expr {
 		w.print('[');
 		w.print("New ");
 		w.print(classname);
-		w.print(']');
+		w.print("()]");
 	}
 }

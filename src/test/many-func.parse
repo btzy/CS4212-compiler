@@ -1,0 +1,68 @@
+class Main{
+  Void main(){
+    Println([[New Def()].f1(10)]);
+    Println([[New Abc()].f1(10)]);
+    Println([[New Abc()].f1(10)]);
+  }
+}
+
+class Abc{
+  Int f1(Int x){
+    Return [f2(x)];
+  }
+
+  Int f2(Int x){
+    Return [f3(x)];
+  }
+
+  Int f3(Int x){
+    Return [f4(x)];
+  }
+
+  Int f4(Int x){
+    Return [f5(x)];
+  }
+
+  Int f5(Int x){
+    Return [f6(x)];
+  }
+
+  Int f6(Int x){
+    Return [f7(x)];
+  }
+
+  Int f7(Int x){
+    Return [f1([x,1](-))];
+  }
+}
+
+class Def{
+  Int f1(Int x){
+    Return [f2(x)];
+  }
+
+  Int f2(Int x){
+    Return [f3(x)];
+  }
+
+  Int f3(Int x){
+    Return [f4(x)];
+  }
+
+  Int f4(Int x){
+    Return [f5(x)];
+  }
+
+  Int f5(Int x){
+    Return [f6(x)];
+  }
+
+  Int f6(Int x){
+    Return [f7(x)];
+  }
+
+  Int f7(Int x){
+    Return [f1([x,1](-))];
+  }
+}
+

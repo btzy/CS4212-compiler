@@ -20,12 +20,12 @@ parser code {:
 	  if (info instanceof ComplexSymbol) {
          Location left = ((ComplexSymbol)info).getLeft();
          Location right = ((ComplexSymbol)info).getRight();
-		 System.err.println(message + ' ' + ((ComplexSymbol) info).getName() + "( line " + left.getLine() + " col " + left.getColumn() + " - line " + right.getLine() + " col " + right.getColumn() + " )");
+		 System.err.println(message + ' ' + ((ComplexSymbol) info).getName() + "( line " + left.getLine() + " col " + left.getColumn() + " - line " + right.getLine() + " col " + right.getColumn() + " ) :");
 		 if (userErrorCallback != null) userErrorCallback.apply(left.getLine(), left.getColumn(), right.getLine(), right.getColumn());
       } else if (info instanceof Symbol)
-         System.err.println(message + ((Symbol)info).toString());
+         System.err.println(message + ' ' + ((Symbol)info).toString());
       else
-         System.err.println(message + cur_token.toString());
+         System.err.println(message + ' ' + cur_token.toString());
       userHasError = true;
     }
 	public void report_fatal_error(String message, Object info)
@@ -43,6 +43,7 @@ terminal NULL;
 terminal TRUE;
 terminal FALSE;
 terminal CLASS;
+terminal THIS;
 terminal NEW;
 terminal RETURN;
 terminal IF;
@@ -50,6 +51,11 @@ terminal ELSE;
 terminal WHILE;
 terminal READLN;
 terminal PRINTLN;
+
+terminal INT;
+terminal BOOL;
+terminal STRING;
+terminal VOID;
 
 terminal java.lang.String IDENTIFIER;
 terminal java.lang.String CLASSNAME;
@@ -104,6 +110,7 @@ non terminal Stmt stmt;
 non terminal Expr expr;
 non terminal ArrayList<Expr> expr_list;
 non terminal ArrayList<Expr> expr_rest;
+non terminal String typename;
 
 precedence left DISJUNCTION;
 precedence left CONJUNCTION;
@@ -119,10 +126,10 @@ start with program;
 program ::= main_class:m class_decls:c {: c.add(0, m); RESULT = new Program(c); :}
 	;
 
-main_class ::= CLASS CLASSNAME:n LCURLY CLASSNAME:exp_void IDENTIFIER:exp_main LPAREN fmllist:sig RPAREN LCURLY var_decls:vs stmts_nonzero:ss RCURLY RCURLY
+main_class ::= CLASS CLASSNAME:n LCURLY VOID IDENTIFIER:exp_main LPAREN fmllist:sig RPAREN LCURLY var_decls:vs stmts_nonzero:ss RCURLY RCURLY
 	{:
-		if (!exp_void.equals("Void") || !exp_main.equals("main")) {
-			throw new Exception(); // TODO: more specific exception
+		if (!exp_main.equals("main")) {
+			throw new Exception("Main class should have main function only");
 		}
 		RESULT = ClassDecl.makeMainClass(n, sig, vs, ss);
 	:}
@@ -136,12 +143,19 @@ class_decls ::= class_decls:arr class_decl:c  {: arr.add(c); RESULT = arr; :}
 class_decl ::= CLASS CLASSNAME:n LCURLY any_decls:as RCURLY {: RESULT = new ClassDecl(n, as); :}
 	;
 
-fmllist ::= fmlrest:l CLASSNAME:c IDENTIFIER:i {: l.add(new VarDecl(c, i)); RESULT = l; :}
+fmllist ::= fmlrest:l typename:c IDENTIFIER:i {: l.add(new VarDecl(c, i)); RESULT = l; :}
 	|  {: RESULT = new ArrayList<VarDecl>(); :}
 	;
 
-fmlrest ::= fmlrest:l CLASSNAME:c IDENTIFIER:i COMMA {: l.add(new VarDecl(c, i)); RESULT = l; :}
+fmlrest ::= fmlrest:l typename:c IDENTIFIER:i COMMA {: l.add(new VarDecl(c, i)); RESULT = l; :}
 	|  {: RESULT = new ArrayList<VarDecl>(); :}
+	;
+
+typename ::= CLASSNAME:n {: RESULT = n; :}
+	| INT {: RESULT = "Int"; :}
+	| BOOL {: RESULT = "Bool"; :}
+	| STRING {: RESULT = "String"; :}
+	| VOID {: RESULT = "Void"; :}
 	;
 
 any_decls ::= any_decls:a var_decl_without_semi:v SEMI {: a.add(v); RESULT = a; :}
@@ -154,7 +168,7 @@ var_decls ::= var_decls:l var_decl_without_semi:v SEMI {: l.add(v); RESULT = l; 
 	|  {: RESULT = new ArrayList<VarDecl>(); :}
 	;
 
-var_decl_without_semi ::= CLASSNAME:c IDENTIFIER:i {: RESULT = new VarDecl(c, i); :}
+var_decl_without_semi ::= typename:c IDENTIFIER:i {: RESULT = new VarDecl(c, i); :}
 	;
 
 md_decl ::= var_decl_without_semi:v LPAREN fmllist:sig RPAREN LCURLY var_decls:vs stmts_nonzero:ss RCURLY
@@ -205,7 +219,8 @@ expr ::= expr:e1 DISJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.DISJU
 	| expr:e DOT IDENTIFIER:i {: RESULT = new MemberAccess(e, i); :}
 	| expr:e LPAREN expr_list:es RPAREN {: RESULT = new CallExpr(e, es); :}
 	| NEW CLASSNAME:c LPAREN RPAREN {: RESULT = new Alloc(c); :}
-	| IDENTIFIER:i {: RESULT = new VarAccess(i); :} // 'this' is considered as a normal identifier at this stage
+	| THIS:i {: RESULT = new VarAccess("this"); :}
+	| IDENTIFIER:i {: RESULT = new VarAccess(i); :}
 	| error {: RESULT = new ErrorExpr(); :}
 	;
 

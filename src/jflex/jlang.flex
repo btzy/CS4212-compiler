@@ -4,12 +4,6 @@ import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import java.io.InputStreamReader;
 
-// Issues:
-// - not sure if we need to accept escaped double quote
-// - decimal and hexadecimal char literals - need leading '0'? Is there a precise spec for this?
-// - hex literal - [a-f] or [A-F]?
-// how can null mean the empty string ("")? since null is also used for class instances
-
 
 %%
 
@@ -22,13 +16,15 @@ import java.io.InputStreamReader;
 %throws UnknownCharacterException
 
 %{
-  public Lexer(InputStreamReader reader, ComplexSymbolFactory sf) {
+  public Lexer(InputStreamReader reader, ComplexSymbolFactory sf, String filename) {
 	this(reader);
 	this.sf = sf;
+    this.filename = filename;
   }
 
   private ComplexSymbolFactory sf;
   private StringBuffer string = new StringBuffer();
+  private String filename;
 
   private Symbol symbol(String name, int type) {
     return sf.newSymbol(name, type, new Location(yyline+1, Math.max(0, yycolumn)), new Location(yyline+1, yycolumn+yylength()));
@@ -75,6 +71,7 @@ NormalComment = "//" {InputCharacter}* {LineTerminator}?
 <YYINITIAL> "true"               { return symbol("true", sym.TRUE); }
 <YYINITIAL> "false"              { return symbol("false", sym.FALSE); }
 <YYINITIAL> "class"              { return symbol("class", sym.CLASS); }
+<YYINITIAL> "this"               { return symbol("new", sym.THIS); }
 <YYINITIAL> "new"                { return symbol("new", sym.NEW); }
 <YYINITIAL> "return"             { return symbol("return", sym.RETURN); }
 <YYINITIAL> "if"                 { return symbol("if", sym.IF); }
@@ -82,6 +79,10 @@ NormalComment = "//" {InputCharacter}* {LineTerminator}?
 <YYINITIAL> "while"              { return symbol("while", sym.WHILE); }
 <YYINITIAL> "readln"             { return symbol("readln", sym.READLN); }
 <YYINITIAL> "println"            { return symbol("println", sym.PRINTLN); }
+<YYINITIAL> "Int"                { return symbol("Int", sym.INT); }
+<YYINITIAL> "Bool"               { return symbol("Bool", sym.BOOL); }
+<YYINITIAL> "String"             { return symbol("String", sym.STRING); }
+<YYINITIAL> "Void"               { return symbol("Void", sym.VOID); }
 
 
 <YYINITIAL> {
@@ -96,29 +97,29 @@ NormalComment = "//" {InputCharacter}* {LineTerminator}?
   \"                             { string.setLength(0); yybegin(STRING); }
 
   /* operators */
-  "="                            { return symbol("", sym.ASSIGN); }
-  "=="                           { return symbol("", sym.EQ); }
-  "!="                           { return symbol("", sym.NE); }
-  "<"                            { return symbol("", sym.LT); }
-  "<="                           { return symbol("", sym.LE); }
-  ">"                            { return symbol("", sym.GT); }
-  ">="                           { return symbol("", sym.GE); }
-  "+"                            { return symbol("", sym.PLUS); }
-  "-"                            { return symbol("", sym.MINUS); }
-  "*"                            { return symbol("", sym.TIMES); }
-  "/"                            { return symbol("", sym.DIVIDE); }
-  "."                            { return symbol("", sym.DOT); }
-  ","                            { return symbol("", sym.COMMA); }
-  "!"                            { return symbol("", sym.NEGATION); }
-  "&&"                           { return symbol("", sym.CONJUNCTION); }
-  "||"                           { return symbol("", sym.DISJUNCTION); }
-  "("                            { return symbol("", sym.LPAREN); }
-  ")"                            { return symbol("", sym.RPAREN); }
-  "{"                            { return symbol("", sym.LCURLY); }
-  "}"                            { return symbol("", sym.RCURLY); }
+  "="                            { return symbol("\"=\"", sym.ASSIGN); }
+  "=="                           { return symbol("\"==\"", sym.EQ); }
+  "!="                           { return symbol("\"!=\"", sym.NE); }
+  "<"                            { return symbol("\"<\"", sym.LT); }
+  "<="                           { return symbol("\"<=\"", sym.LE); }
+  ">"                            { return symbol("\">\"", sym.GT); }
+  ">="                           { return symbol("\">=\"", sym.GE); }
+  "+"                            { return symbol("\"+\"", sym.PLUS); }
+  "-"                            { return symbol("\"-\"", sym.MINUS); }
+  "*"                            { return symbol("\"*\"", sym.TIMES); }
+  "/"                            { return symbol("\"/\"", sym.DIVIDE); }
+  "."                            { return symbol("\".\"", sym.DOT); }
+  ","                            { return symbol("\",\"", sym.COMMA); }
+  "!"                            { return symbol("\"!\"", sym.NEGATION); }
+  "&&"                           { return symbol("\"&&\"", sym.CONJUNCTION); }
+  "||"                           { return symbol("\"||\"", sym.DISJUNCTION); }
+  "("                            { return symbol("\"(\"", sym.LPAREN); }
+  ")"                            { return symbol("\")\"", sym.RPAREN); }
+  "{"                            { return symbol("\"{\"", sym.LCURLY); }
+  "}"                            { return symbol("\"}\"", sym.RCURLY); }
 
   /* semicolon */
-  ";"                            { return symbol("", sym.SEMI); }
+  ";"                            { return symbol("\";\"", sym.SEMI); }
 
   /* comment */
   {Comment}                      {}
@@ -138,14 +139,14 @@ NormalComment = "//" {InputCharacter}* {LineTerminator}?
   \\b                            { string.append('\b'); }
   \\r                            { string.append('\r'); }
   \\\"                           { string.append('\"'); }
-  \\                             { string.append('\\'); }
+  \\\\                           { string.append('\\'); }
   \\ {DecCharLiteral}            { string.append( decToChar(yytext()) ); }
   \\ {HexCharLiteral}            { string.append( hexToChar(yytext()) ); }
 }
 
 
 /* error fallback */
-[^]                              { throw new UnknownCharacterException(yytext()); }
+[^]                              { throw new UnknownCharacterException(yytext(), filename, yyline + 1, yycolumn, yyline + 1, yycolumn + yylength()); }
 
 /* EOF */
 <<EOF>>                          { return symbol("eof", sym.EOF); }
