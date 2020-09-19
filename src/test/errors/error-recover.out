@@ -1,0 +1,21 @@
+Syntax error "+"( line 12 col 17 - line 12 col 18 ) :
+12 |     z = z + z +  + "123";
+   |                  ^
+instead expected token classes are [TRUE, FALSE, THIS, NEW, IDENTIFIER, INTEGER_LITERAL, STRING_LITERAL, MINUS, NEGATION, LPAREN]
+Syntax error integer_literal( line 14 col 21 - line 14 col 24 ) :
+14 |     z = z + z + "123"123;
+   |                      ^^^
+instead expected token classes are [EQ, NE, LT, LE, GT, GE, PLUS, MINUS, TIMES, DIVIDE, DOT, CONJUNCTION, DISJUNCTION, LPAREN, SEMI]
+Syntax error integer_literal( line 22 col 13 - line 22 col 16 ) :
+22 |     x = 1000.123;
+   |              ^^^
+instead expected token classes are [IDENTIFIER]
+Syntax error ";"( line 34 col 51 - line 34 col 52 ) :
+34 | Void f2(Int x, String y) { this.field2 = x; return;;}
+   |                                                    ^
+instead expected token classes are [error, NULL, TRUE, FALSE, THIS, NEW, RETURN, IF, WHILE, READLN, PRINTLN, IDENTIFIER, INTEGER_LITERAL, STRING_LITERAL, MINUS, NEGATION, LPAREN, RCURLY]
+Syntax error String( line 36 col 18 - line 36 col 24 ) :
+36 | Int corrupt(Int x String y) { x = x; return x;}
+   |                   ^^^^^^
+instead expected token classes are [COMMA, RPAREN]
+Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').

@@ -1,0 +1,9 @@
+Syntax error identifier( line 4 col 15 - line 4 col 16 ) :
+4 |     Int x; int y; Int z;
+  |                ^
+instead expected token classes are [NE, LT, LE, GT, GE, PLUS, MINUS, TIMES, DIVIDE, DOT, CONJUNCTION, DISJUNCTION, LPAREN]
+Syntax error identifier( line 10 col 6 - line 10 col 9 ) :
+10 | class abc {
+   |       ^^^
+instead expected token classes are [CLASSNAME]
+Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').

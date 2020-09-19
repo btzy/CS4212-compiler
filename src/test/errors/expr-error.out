@@ -1,0 +1,13 @@
+Syntax error ")"( line 7 col 17 - line 7 col 18 ) :
+7 |     x = 1 + 2 + 3);
+  |                  ^
+instead expected token classes are [LT, LE, GT, GE, PLUS, MINUS, TIMES, DIVIDE, DOT, CONJUNCTION, DISJUNCTION, LPAREN, SEMI]
+Syntax error integer_literal( line 10 col 14 - line 10 col 15 ) :
+10 |     x = 1 + 2 3;
+   |               ^
+instead expected token classes are [EQ, NE, LT, LE, GT, GE, PLUS, MINUS, TIMES, DIVIDE, DOT, CONJUNCTION, DISJUNCTION, LPAREN, SEMI]
+Syntax error Int( line 12 col 12 - line 12 col 15 ) :
+12 |     x = new Int();
+   |             ^^^
+instead expected token classes are [CLASSNAME]
+Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').

@@ -1,0 +1,4 @@
+Unknown character "|" :
+9 |     b = x == y | y == x;
+  |                ^
+Parse aborted due to above error from lexer.
