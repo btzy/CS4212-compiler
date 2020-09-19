@@ -1,0 +1,38 @@
+This is a short excerpt from the readme detailing how to run the program.
+
+Step 0: Go to the src directory:
+```
+cd src
+```
+
+Step 1: Compile the program:
+```
+make
+```
+
+Step 2: Run all successful test cases:
+```
+./test.sh
+```
+
+You should get an output like this:
+```
+Testing default1 ... OK
+Testing default2 ... OK
+Testing fibonacci ... OK
+Testing many-func ... OK
+Testing nest ... OK
+Testing operator ... OK
+Testing string-literal ... OK
+Testing test-all-grammar ... OK
+```
+
+To run a single test (e.g. test/test-all-grammar.j):
+```
+./run.sh test-all-grammar
+```
+
+Parse error tests are in test/errors/ (e.g. test/errors/error-recover.j), and you have to run each one separately.  For example:
+```
+./run.sh errors/error-recover
+```
