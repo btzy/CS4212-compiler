@@ -127,6 +127,8 @@ There are 5 tests that will lead to parse error.  They demonstrate the resilienc
 ./run.sh errors/capital-error2
 ```
 
+The expected output is also available in the `test/errors` directory.
+
 ## Lenient mode
 
 Lenient mode should be used when we still want to construct a best-effort tree from a input Jlite source file that has syntax errors.

@@ -41,11 +41,11 @@ To run a single test (e.g. test/test-all-grammar.j):
 
 Parse error tests are in test/errors/ (e.g. test/errors/error-recover.j), and you have to run each one separately.  For example (do each line separately!):
 ```
-```
 ./run.sh errors/error-recover
 ./run.sh errors/expr-error
 ./run.sh errors/lexer-error
 ./run.sh errors/capital-error
 ./run.sh errors/capital-error2
 ```
-```
+
+The expected output is also available in the `test/errors` directory.
