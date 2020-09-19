@@ -21,13 +21,17 @@ Subdirectories:
 - `src/jflex`: contains jflex spec and jflex binaries
 - `src/cup`: contains cup spec and cup binaries
 
-**Important!: Before continuing any further, do `cd src` to go into the directory first.**
+**Important!: Before continuing any further, you must go into the directory first:**
+```
+cd src
+```
 
 ## Compile
-Firstly, we need to chmod the java archives for jflex and cup:
+Firstly, we need to chmod the java archives for jflex and cup, and the scripts:
 ```
 chmod u+x cup/*.jar
 chmod u+x jflex/jflex-1.8.2/lib/*.jar
+chmod u+x *.sh
 ```
 
 Then type `make`, like this command:
