@@ -5,12 +5,19 @@ Step 0: Go to the src directory:
 cd src
 ```
 
-Step 1: Compile the program:
+Step 1: Chmod the java archives for jflex and cup, and the scripts:
+```
+chmod u+x cup/*.jar
+chmod u+x jflex/jflex-1.8.2/lib/*.jar
+chmod u+x *.sh
+```
+
+Step 2: Compile the program:
 ```
 make
 ```
 
-Step 2: Run all successful test cases:
+Step 3: Run all successful test cases:
 ```
 ./test.sh
 ```
@@ -32,7 +39,13 @@ To run a single test (e.g. test/test-all-grammar.j):
 ./run.sh test-all-grammar
 ```
 
-Parse error tests are in test/errors/ (e.g. test/errors/error-recover.j), and you have to run each one separately.  For example:
+Parse error tests are in test/errors/ (e.g. test/errors/error-recover.j), and you have to run each one separately.  For example (do each line separately!):
+```
 ```
 ./run.sh errors/error-recover
+./run.sh errors/expr-error
+./run.sh errors/lexer-error
+./run.sh errors/capital-error
+./run.sh errors/capital-error2
+```
 ```
