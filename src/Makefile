@@ -1,4 +1,11 @@
-JFLAGS = -g -cp .;cup/java-cup-11b-runtime.jar
+ifdef OS
+	JFLAGS = -g -cp .;cup/java-cup-11b-runtime.jar
+	RM = del
+else
+	JFLAGS = -g -cp .:cup/java-cup-11b-runtime.jar
+	RM = rm -f
+endif
+
 JC = javac
 
 default: classes
@@ -10,7 +17,7 @@ CLASSES = \
 	parser.java \
 	sym.java \
 	CommandArgumentException.java \
-    $(wildcard tree/*.java)
+	$(wildcard tree/*.java)
 
 %.class: %.java Lexer.java parser.java sym.java $(wildcard tree/*.java)
 	$(JC) $(JFLAGS) $<
@@ -30,3 +37,7 @@ classes: $(CLASSES:.java=.class)
 
 clean:
 	$(RM) *.class
+	$(RM) tree/*.class
+	$(RM) Lexer.java
+	$(RM) parser.java
+	$(RM) sym.java
