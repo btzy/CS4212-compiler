@@ -16,6 +16,9 @@ public class Method extends Node implements ClassItem {
 		this.locals = locals;
 		this.stmts = stmts;
 	}
+	public String getType() { return this.type; }
+	public String getName() { return this.name; }
+	public ArrayList<VarDecl> getSignature() { return this.signature; }
 	public void print(NestedPrintStream w) {
 		w.print(type);
 		w.print(' ');

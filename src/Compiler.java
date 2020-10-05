@@ -20,7 +20,8 @@ public class Compiler {
             if (p.userHasFatalError) System.exit(1);
             Program program = (Program) program_obj;
             if (p.userHasError && !lenient) throw new Exception("Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').");
-            program.print(new NestedPrintStream(System.out));
+            //program.print(new NestedPrintStream(System.out));
+            program.typeCheckAndEmitIR3();
         }
         catch (CommandArgumentException e) {
             System.err.println(e.getMessage());

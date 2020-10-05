@@ -1,5 +1,6 @@
 package tree;
-
+
+
 
 public class VarDecl extends Node implements ClassItem {
 	private String type;

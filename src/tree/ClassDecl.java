@@ -4,7 +4,7 @@ package tree;
 import java.util.ArrayList;
 
 public class ClassDecl extends Node {
-	private String name;
+	private final String name;
 	private ArrayList<VarDecl> vars;
 	private ArrayList<Method> methods;
 
@@ -69,5 +69,37 @@ public class ClassDecl extends Node {
 		final Method m = new Method("Void", "main", sig, locals, stmts);
 		ret.methods.add(m);
 		return ret;
+	}
+
+	public String getName() { return name; }
+
+	public ir3.ClassDescriptor makeClassDescriptor() {
+		final ir3.ClassDescriptor ret = new ir3.ClassDescriptor();
+		for (VarDecl vdecl : vars) {
+			final TypeName type = ir3.TypeName.getType(vdecl.getType());
+			if (type == null) throw new NoSuchTypeException(vdecl.getType());
+			ret.addField(type, vdecl.getName());
+		}
+		for (Method mtd : methods) {
+			final TypeName type = ir3.TypeName.getType(mtd.getType());
+			if (type == null) throw new NoSuchTypeException(mtd.getType());
+			ArrayList<TypeName> param_types = new ArrayList<>();
+			ArrayList<String> param_names = new ArrayList<>();
+			for (VarDecl vdecl : mtd.getSignature()) {
+				final TypeName ptype = ir3.TypeName.getType(vdecl.getType());
+				if (ptype == null) throw new NoSuchTypeException(vdecl.getType());
+				param_types.add(ptype);
+				param_names.add(vdecl.getName());
+			}
+			ret.addMethod(type, mtd.getName(), param_types, param_names);
+		}
+		return ret;
+	}
+	
+	/**
+	 * Typecheck and emit IR3 code for this node.
+	 */
+	public ArrayList<ir3.Method> typeCheckAndEmitIR3(ArrayList<ir3.ClassDescriptor> cds) {
+		// TODO
 	}
 }
