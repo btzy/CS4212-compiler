@@ -1,11 +1,13 @@
 package tree;
 
 
+import util.LocationRange;
 
 public class BinaryOperation extends Expr {
 	private BinOp op;
 	private Expr left, right;
-	public BinaryOperation(BinOp op, Expr left, Expr right) {
+	public BinaryOperation(LocationRange range, BinOp op, Expr left, Expr right) {
+		super(range);
 		this.op = op;
 		this.left = left;
 		this.right = right;

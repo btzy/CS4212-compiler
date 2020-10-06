@@ -1,11 +1,13 @@
 package ir3;
 
+import java.util.HashMap;
+
 /**
  * Kind of an enum... but not really, because it contains one per class name.
  */
 
 public class TypeName {
-	private static final HashMap<String, TypeName> hm;
+	private static final HashMap<String, TypeName> hm = new HashMap<String, TypeName>();
 
 	public final String name;
 	private TypeName(String name) { this.name = name; }
@@ -28,16 +30,8 @@ public class TypeName {
 		return hm.get(name);
 	}
 
-	public static final TypeName INT;
-	public static final TypeName BOOL;
-	public static final TypeName STRING;
-	public static final TypeName VOID;
-
-	static {
-		TypeName.hm = new HashMap<String, TypeName>();
-		TypeName.INT = addType("Int");
-		TypeName.BOOL = addType("Bool");
-		TypeName.STRING = addType("String");
-		TypeName.VOID = addType("Void");
-	}
+	public static final TypeName INT = addType("Int");
+	public static final TypeName BOOL = addType("Bool");
+	public static final TypeName STRING = addType("String");
+	public static final TypeName VOID = addType("Void");
 }

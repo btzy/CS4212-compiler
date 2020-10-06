@@ -2,11 +2,13 @@ package tree;
 
 
 import java.util.ArrayList;
+import util.LocationRange;
 
 public class CallStmt extends Stmt {
 	private Expr callee;
 	private ArrayList<Expr> args;
-	public CallStmt(Expr callee, ArrayList<Expr> args) {
+	public CallStmt(LocationRange range, Expr callee, ArrayList<Expr> args) {
+		super(range);
 		this.callee = callee;
 		this.args = args;
 	}

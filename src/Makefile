@@ -17,12 +17,16 @@ CLASSES = \
 	parser.java \
 	sym.java \
 	CommandArgumentException.java \
+	$(wildcard util/*.java) \
 	$(wildcard tree/*.java)
 
-%.class: %.java Lexer.java parser.java sym.java $(wildcard tree/*.java)
+%.class: %.java Lexer.java parser.java sym.java $(wildcard util/*.java) $(wildcard tree/*.java)
 	$(JC) $(JFLAGS) $<
 
-tree/%.class: tree/%.java
+tree/%.class: tree/%.java $(wildcard util/*.java)
+	$(JC) $(JFLAGS) $<
+
+util/%.class: util/%.java
 	$(JC) $(JFLAGS) $<
 
 Lexer.java: jflex/jlang.flex
@@ -38,6 +42,7 @@ classes: $(CLASSES:.java=.class)
 clean:
 	$(RM) *.class
 	$(RM) tree/*.class
+	$(RM) util/*.class
 	$(RM) Lexer.java
 	$(RM) parser.java
 	$(RM) sym.java

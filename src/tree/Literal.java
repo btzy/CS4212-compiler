@@ -2,10 +2,12 @@ package tree;
 
 
 import java.util.ArrayList;
+import util.LocationRange;
 
 public class Literal extends Expr {
 	private Object value; // could be Boolean, Integer, String, or null
-	public Literal(Object value) {
+	public Literal(LocationRange range, Object value) {
+		super(range);
 		this.value = value;
 	}
 	public void print(NestedPrintStream w) {

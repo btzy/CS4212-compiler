@@ -2,6 +2,9 @@ package tree;
 
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import util.LocationRange;
 
 public class ClassDecl extends Node {
 	private final String name;
@@ -14,13 +17,14 @@ public class ClassDecl extends Node {
 		}
 	}
 
-	public ClassDecl(String name) {
+	public ClassDecl(LocationRange range, String name) {
+		super(range);
 		this.name = name;
 		this.vars = new ArrayList<VarDecl>();
 		this.methods = new ArrayList<Method>();
 	}
-	public ClassDecl(String name, ArrayList<ClassItem> items) throws ClassItemOrderException {
-		this(name);
+	public ClassDecl(LocationRange range, String name, ArrayList<ClassItem> items) throws ClassItemOrderException {
+		this(range, name);
 		boolean startMethods = false;
 		for (ClassItem c : items) {
 			if (!startMethods) {
@@ -74,20 +78,22 @@ public class ClassDecl extends Node {
 	public String getName() { return name; }
 
 	public ir3.ClassDescriptor makeClassDescriptor() {
-		final ir3.ClassDescriptor ret = new ir3.ClassDescriptor();
+		final ir3.TypeName this_type = ir3.TypeName.addType(name);
+		if (this_type == null) throw new ir3.DuplicateClassDeclException(name);
+		final ir3.ClassDescriptor ret = new ir3.ClassDescriptor(this_type);
 		for (VarDecl vdecl : vars) {
-			final TypeName type = ir3.TypeName.getType(vdecl.getType());
-			if (type == null) throw new NoSuchTypeException(vdecl.getType());
+			final ir3.TypeName type = ir3.TypeName.getType(vdecl.getType());
+			if (type == null) throw new ir3.NoSuchTypeException(vdecl.getType());
 			ret.addField(type, vdecl.getName());
 		}
 		for (Method mtd : methods) {
-			final TypeName type = ir3.TypeName.getType(mtd.getType());
-			if (type == null) throw new NoSuchTypeException(mtd.getType());
-			ArrayList<TypeName> param_types = new ArrayList<>();
+			final ir3.TypeName type = ir3.TypeName.getType(mtd.getType());
+			if (type == null) throw new ir3.NoSuchTypeException(mtd.getType());
+			ArrayList<ir3.TypeName> param_types = new ArrayList<>();
 			ArrayList<String> param_names = new ArrayList<>();
 			for (VarDecl vdecl : mtd.getSignature()) {
-				final TypeName ptype = ir3.TypeName.getType(vdecl.getType());
-				if (ptype == null) throw new NoSuchTypeException(vdecl.getType());
+				final ir3.TypeName ptype = ir3.TypeName.getType(vdecl.getType());
+				if (ptype == null) throw new ir3.NoSuchTypeException(vdecl.getType());
 				param_types.add(ptype);
 				param_names.add(vdecl.getName());
 			}
@@ -99,7 +105,10 @@ public class ClassDecl extends Node {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ArrayList<ir3.Method> typeCheckAndEmitIR3(ArrayList<ir3.ClassDescriptor> cds) {
-		// TODO
+	public ArrayList<ir3.MethodBody> typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds) {
+		return methods
+			.stream()
+			.map(method -> method.typeCheckAndEmitIR3(this_ctx, cds))
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 }

@@ -1,11 +1,12 @@
 package tree;
-
+import util.LocationRange;
 
 public class MemberAssignStmt extends Stmt {
 	private Expr obj;
 	private String member;
 	private Expr expr;
-	public MemberAssignStmt(Expr obj, String member, Expr expr) {
+	public MemberAssignStmt(LocationRange range, Expr obj, String member, Expr expr) {
+		super(range);
 		this.obj = obj;
 		this.member = member;
 		this.expr = expr;

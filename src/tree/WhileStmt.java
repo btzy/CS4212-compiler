@@ -1,11 +1,13 @@
 package tree;
 
 import java.util.ArrayList;
+import util.LocationRange;
 
 public class WhileStmt extends Stmt {
 	private Expr cond;
 	private ArrayList<Stmt> stmts;
-	public WhileStmt(Expr cond, ArrayList<Stmt> stmts) {
+	public WhileStmt(LocationRange range, Expr cond, ArrayList<Stmt> stmts) {
+		super(range);
 		this.cond = cond;
 		this.stmts = stmts;
 	}

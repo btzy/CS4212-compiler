@@ -3,6 +3,7 @@ import tree.*;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import util.LocationRange;
 
 parser code {:
 	public boolean userHasError;
@@ -186,7 +187,7 @@ stmts ::= stmts_nonzero:ss {: RESULT = ss; :}
 	
 stmt ::= IF LPAREN expr:cond RPAREN LCURLY stmts_nonzero:true_stmts RCURLY ELSE LCURLY stmts_nonzero:false_stmts RCURLY {: RESULT = new IfStmt(cond, true_stmts, false_stmts); :}
 	| WHILE LPAREN expr:cond RPAREN LCURLY stmts:ss RCURLY {: RESULT = new WhileStmt(cond, ss); :}
-	| READLN LPAREN IDENTIFIER:id RPAREN SEMI {: RESULT = new ReadStmt(id); :}
+	| READLN:r LPAREN IDENTIFIER:id RPAREN SEMI:sm {: RESULT = new ReadStmt(new LocationRange(rxleft, smxright), id); :}
 	| PRINTLN LPAREN expr:e RPAREN SEMI {: RESULT = new PrintStmt(e); :}
 	| IDENTIFIER:id ASSIGN expr:e SEMI {: RESULT = new AssignStmt(id, e); :}
 	| expr:obj DOT IDENTIFIER:id ASSIGN expr:e SEMI {: RESULT = new MemberAssignStmt(obj, id, e); :}

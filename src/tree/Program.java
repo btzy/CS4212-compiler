@@ -1,12 +1,16 @@
 package tree;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.stream.Collectors;
+import util.LocationRange;
 
 
 public class Program extends Node {
 	private ArrayList<ClassDecl> classes;
 	private HashMap<String, Integer> class_names;
-	public Program(ArrayList<ClassDecl> classes) {
+	public Program(LocationRange range, ArrayList<ClassDecl> classes) {
+		super(range);	
 		this.classes = classes;
 	}
 	public void print(NestedPrintStream w) {
@@ -22,16 +26,21 @@ public class Program extends Node {
 		ArrayList<ir3.ClassDescriptor> cds = new ArrayList<ir3.ClassDescriptor>();
 		for (ClassDecl cdecl : classes) {
 			class_names.putIfAbsent(cdecl.getName(), classes.size());
-			if (cds.push(cdecl.makeClassDescriptor()) != null) {
-				throw new DuplicateClassException(cds);
-			}
+			cds.add(cdecl.makeClassDescriptor());
 		}
 		// TODO: tree should also store locations
+		// Note: null == "".  Convert all "" to null.
+		// ARMv7
 		// generate each class
-		ArrayList<ir3.Method> mtds = new ArrayList<>();
-		for (ClassDecl cdecl : classes) {
-			mtds.addAll(cdecl.typeCheckAndEmitIR3(cds));
+		ArrayList<ir3.MethodBody> mtds = new ArrayList<>();
+		for (int i=0; i!=classes.size(); ++i) {
+			mtds.addAll(classes.get(i).typeCheckAndEmitIR3(cds.get(i), cds));
 		}
-		return new ir3.Program(mtds);
+		return new ir3.Program(cds, mtds,
+			cds
+				.stream()
+				.flatMap(cd -> cd.getMethodSpecs().stream().map(ir3.MethodSpec::getMangledName))
+				.collect(Collectors.toCollection(ArrayList::new))
+		);
 	}
 }

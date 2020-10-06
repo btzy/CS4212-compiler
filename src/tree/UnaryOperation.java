@@ -1,10 +1,12 @@
 package tree;
 
+import util.LocationRange;
 
 public class UnaryOperation extends Expr {
 	private UnOp op;
 	private Expr expr;
-	public UnaryOperation(UnOp op, Expr expr) {
+	public UnaryOperation(LocationRange range, UnOp op, Expr expr) {
+		super(range);
 		this.op = op;
 		this.expr = expr;
 	}
