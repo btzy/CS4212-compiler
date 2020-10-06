@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import util.LocationRange;
 
 public class ClassDecl extends Node {
+	private LocationRange report_range; // the range that just says "class <name>"
 	private final String name;
 	private ArrayList<VarDecl> vars;
 	private ArrayList<Method> methods;
@@ -17,14 +18,15 @@ public class ClassDecl extends Node {
 		}
 	}
 
-	public ClassDecl(LocationRange range, String name) {
+	public ClassDecl(LocationRange range, LocationRange report_range, String name) {
 		super(range);
+		this.report_range = report_range;
 		this.name = name;
 		this.vars = new ArrayList<VarDecl>();
 		this.methods = new ArrayList<Method>();
 	}
-	public ClassDecl(LocationRange range, String name, ArrayList<ClassItem> items) throws ClassItemOrderException {
-		this(range, name);
+	public ClassDecl(LocationRange range, LocationRange report_range, String name, ArrayList<ClassItem> items) throws ClassItemOrderException {
+		this(range, report_range, name);
 		boolean startMethods = false;
 		for (ClassItem c : items) {
 			if (!startMethods) {
@@ -68,36 +70,48 @@ public class ClassDecl extends Node {
 		w.println(); // extra println to conform to examples
 	}
 
-	public static ClassDecl makeMainClass(String name, ArrayList<VarDecl> sig, ArrayList<VarDecl> locals, ArrayList<Stmt> stmts) {
-		final ClassDecl ret = new ClassDecl(name);
-		final Method m = new Method("Void", "main", sig, locals, stmts);
+	public static ClassDecl makeMainClass(
+			LocationRange range,
+			LocationRange report_range,
+			LocationRange main_func_range,
+			LocationRange main_func_declaration_range,
+			LocationRange main_func_type_range,
+			LocationRange main_func_name_range,
+			String name,
+			ArrayList<VarDecl> sig,
+			ArrayList<VarDecl> locals,
+			ArrayList<Stmt> stmts) {
+		final ClassDecl ret = new ClassDecl(range, report_range, name);
+		final Method m = new Method(
+			main_func_range, main_func_declaration_range, main_func_type_range, main_func_name_range, 
+			"Void", "main", sig, locals, stmts);
 		ret.methods.add(m);
 		return ret;
 	}
 
 	public String getName() { return name; }
 
-	public ir3.ClassDescriptor makeClassDescriptor() {
-		final ir3.TypeName this_type = ir3.TypeName.addType(name);
-		if (this_type == null) throw new ir3.DuplicateClassDeclException(name);
+	public ir3.ClassDescriptor makeClassDescriptor() throws ir3.SemanticException {
+		final ir3.TypeName this_type = ir3.TypeName.addType(name, report_range);
+		if (this_type == null) throw new ir3.DuplicateClassDeclException(name, report_range, ir3.TypeName.getType(name).report_range);
 		final ir3.ClassDescriptor ret = new ir3.ClassDescriptor(this_type);
 		for (VarDecl vdecl : vars) {
 			final ir3.TypeName type = ir3.TypeName.getType(vdecl.getType());
-			if (type == null) throw new ir3.NoSuchTypeException(vdecl.getType());
-			ret.addField(type, vdecl.getName());
+			if (type == null) throw new ir3.NoSuchTypeException(vdecl.getType(), vdecl.getTypeRange());
+			ret.addField(vdecl.range, type, vdecl.getName());
 		}
 		for (Method mtd : methods) {
 			final ir3.TypeName type = ir3.TypeName.getType(mtd.getType());
-			if (type == null) throw new ir3.NoSuchTypeException(mtd.getType());
+			if (type == null) throw new ir3.NoSuchTypeException(mtd.getType(), mtd.getTypeRange());
 			ArrayList<ir3.TypeName> param_types = new ArrayList<>();
 			ArrayList<String> param_names = new ArrayList<>();
 			for (VarDecl vdecl : mtd.getSignature()) {
 				final ir3.TypeName ptype = ir3.TypeName.getType(vdecl.getType());
-				if (ptype == null) throw new ir3.NoSuchTypeException(vdecl.getType());
+				if (ptype == null) throw new ir3.NoSuchTypeException(vdecl.getType(), vdecl.getTypeRange());
 				param_types.add(ptype);
 				param_names.add(vdecl.getName());
 			}
-			ret.addMethod(type, mtd.getName(), param_types, param_names);
+			ret.addMethod(mtd.getDeclarationRange(), type, mtd.getName(), param_types, param_names);
 		}
 		return ret;
 	}

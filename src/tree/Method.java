@@ -7,11 +7,17 @@ import util.LocationRange;
 public class Method extends Node implements ClassItem {
 	private String type;
 	private String name;
+	private LocationRange type_range;
+	private LocationRange name_range;
+	private LocationRange declaration_range; // the whole signature
 	private ArrayList<VarDecl> signature;
 	private ArrayList<VarDecl> locals;
 	private ArrayList<Stmt> stmts;
-	public Method(LocationRange range, String type, String name, ArrayList<VarDecl> signature, ArrayList<VarDecl> locals, ArrayList<Stmt> stmts) {
-		super(range);	
+	public Method(LocationRange range, LocationRange declaration_range, LocationRange type_range, LocationRange name_range, String type, String name, ArrayList<VarDecl> signature, ArrayList<VarDecl> locals, ArrayList<Stmt> stmts) {
+		super(range);
+		this.declaration_range = declaration_range;
+		this.type_range = type_range;
+		this.name_range = name_range;
 		this.type = type;
 		this.name = name;
 		this.signature = signature;
@@ -20,6 +26,9 @@ public class Method extends Node implements ClassItem {
 	}
 	public String getType() { return this.type; }
 	public String getName() { return this.name; }
+	public LocationRange getDeclarationRange() { return this.declaration_range; }
+	public LocationRange getTypeRange() { return this.type_range; }
+	public LocationRange getNameRange() { return this.name_range; }
 	public ArrayList<VarDecl> getSignature() { return this.signature; }
 	public void print(NestedPrintStream w) {
 		w.print(type);

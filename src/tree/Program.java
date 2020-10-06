@@ -8,7 +8,6 @@ import util.LocationRange;
 
 public class Program extends Node {
 	private ArrayList<ClassDecl> classes;
-	private HashMap<String, Integer> class_names;
 	public Program(LocationRange range, ArrayList<ClassDecl> classes) {
 		super(range);	
 		this.classes = classes;
@@ -22,10 +21,9 @@ public class Program extends Node {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ir3.Program typeCheckAndEmitIR3() {
+	public ir3.Program typeCheckAndEmitIR3() throws ir3.SemanticException {
 		ArrayList<ir3.ClassDescriptor> cds = new ArrayList<ir3.ClassDescriptor>();
 		for (ClassDecl cdecl : classes) {
-			class_names.putIfAbsent(cdecl.getName(), classes.size());
 			cds.add(cdecl.makeClassDescriptor());
 		}
 		// TODO: tree should also store locations

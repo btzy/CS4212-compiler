@@ -7,7 +7,7 @@ public class MethodSpec {
 	public final TypeName class_type;
 	public final String method_name;
 	public final ArrayList<TypeName> param_types;
-	public final int index; // TODO;
+	//public final int index; // TODO make index work;
 	//public final ArrayList<String> param_names;
 
 	public MethodSpec(TypeName result, TypeName class_type, String method_name, ArrayList<TypeName> param_types/*, ArrayList<String> param_names*/) {

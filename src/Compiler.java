@@ -1,10 +1,11 @@
 import java.io.FileReader;
-import java.io.BufferedReader;
 import java.util.HashMap;
 import tree.Program;
 import tree.NestedPrintStream;
 import java_cup.runtime.SymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory;
+import ir3.SemanticException;
+import util.Errors;
 
 public class Compiler {
     public static void main(String[] args) {
@@ -14,14 +15,20 @@ public class Compiler {
             final ComplexSymbolFactory sf = new ComplexSymbolFactory();
             final String filename = getArgWithValue(argmap, "i");
             parser p = new parser(new Lexer(new FileReader(filename), sf, filename), sf, (int left_line, int left_col, int right_line, int right_col) -> {
-                printErrorLocation(filename, left_line, left_col, right_line, right_col);
+                Errors.printErrorLocation(filename, left_line, left_col, right_line, right_col);
             });
             Object program_obj = p.parse().value;
             if (p.userHasFatalError) System.exit(1);
             Program program = (Program) program_obj;
             if (p.userHasError && !lenient) throw new Exception("Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').");
-            //program.print(new NestedPrintStream(System.out));
-            program.typeCheckAndEmitIR3();
+            // program.print(new NestedPrintStream(System.out));
+            try {
+                program.typeCheckAndEmitIR3();
+            }
+            catch (SemanticException e) {
+                e.printNiceMessage(System.err, filename);
+                System.exit(1);
+            }
         }
         catch (CommandArgumentException e) {
             System.err.println(e.getMessage());
@@ -29,7 +36,7 @@ public class Compiler {
         }
         catch (UnknownCharacterException e) {
             System.err.println(e.getMessage() + " :");
-            printErrorLocation(e.filename, e.left_line, e.left_col, e.right_line, e.right_col);
+            Errors.printErrorLocation(e.filename, e.left_line, e.left_col, e.right_line, e.right_col);
             System.err.println("Parse aborted due to above error from lexer.");
             System.exit(1);
         }
@@ -71,34 +78,5 @@ public class Compiler {
 
     private static boolean hasArg(HashMap<String, String> args, String arg_name) {
         return args.containsKey(arg_name);
-    }
-
-    private static void printErrorLocation(String filename, int left_line, int left_col, int right_line, int right_col) {
-        try {
-            final int number_len = String.valueOf(right_line).length(); 
-            int curr_line = 1;
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
-            while (curr_line <= right_line) {
-                final int tmp_line = curr_line;
-                ++curr_line;
-                String s = reader.readLine();
-                if (s == null) return;
-                if (tmp_line < left_line) continue;
-                String line_str = String.valueOf(tmp_line);
-                for (int i=line_str.length(); i<number_len; ++i) System.err.print(' ');
-                System.err.print(line_str);
-                System.err.print(" | ");
-                System.err.println(s);
-                int start_col = (tmp_line == left_line ? Math.max(0, Math.min(left_col, s.length())) : 0);
-                int end_col = (tmp_line == right_line ? Math.min(s.length(), Math.max(0, right_col)) : s.length());
-                if (end_col <= start_col) end_col = start_col + 1;
-                StringBuilder sb = new StringBuilder();
-                for (int i=0; i<number_len; ++i) sb.append(' ');
-                sb.append(" | ");
-                for (int i=0; i<start_col; ++i) sb.append(' ');
-                for (int i=start_col; i<end_col; ++i) sb.append('^');
-                System.err.println(sb.toString());
-            }
-        } catch (Exception e) {System.err.println(e);}
     }
 }

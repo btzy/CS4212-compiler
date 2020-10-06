@@ -18,12 +18,16 @@ CLASSES = \
 	sym.java \
 	CommandArgumentException.java \
 	$(wildcard util/*.java) \
+	$(wildcard ir3/*.java) \
 	$(wildcard tree/*.java)
 
-%.class: %.java Lexer.java parser.java sym.java $(wildcard util/*.java) $(wildcard tree/*.java)
+%.class: %.java Lexer.java parser.java sym.java $(wildcard util/*.java) $(wildcard ir3/*.java) $(wildcard tree/*.java)
 	$(JC) $(JFLAGS) $<
 
-tree/%.class: tree/%.java $(wildcard util/*.java)
+tree/%.class: tree/%.java $(wildcard ir3/*.java) $(wildcard util/*.java)
+	$(JC) $(JFLAGS) $<
+
+ir3/%.class: ir3/%.java $(wildcard util/*.java)
 	$(JC) $(JFLAGS) $<
 
 util/%.class: util/%.java
@@ -42,6 +46,7 @@ classes: $(CLASSES:.java=.class)
 clean:
 	$(RM) *.class
 	$(RM) tree/*.class
+	$(RM) ir3/*.class
 	$(RM) util/*.class
 	$(RM) Lexer.java
 	$(RM) parser.java

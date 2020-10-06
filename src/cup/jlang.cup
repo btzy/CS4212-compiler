@@ -124,15 +124,15 @@ precedence left DOT, LPAREN, RPAREN; // to make function calls work properly
 
 start with program;
 
-program ::= main_class:m class_decls:c {: c.add(0, m); RESULT = new Program(c); :}
+program ::= main_class:m class_decls:c {: c.add(0, m); RESULT = new Program(new LocationRange(mxleft, cxright), c); :}
 	;
 
-main_class ::= CLASS CLASSNAME:n LCURLY VOID IDENTIFIER:exp_main LPAREN fmllist:sig RPAREN LCURLY var_decls:vs stmts_nonzero:ss RCURLY RCURLY
+main_class ::= CLASS:c CLASSNAME:n LCURLY VOID:v IDENTIFIER:exp_main LPAREN fmllist:sig RPAREN:rp LCURLY var_decls:vs stmts_nonzero:ss RCURLY:rc2 RCURLY:rc
 	{:
 		if (!exp_main.equals("main")) {
 			throw new Exception("Main class should have main function only");
 		}
-		RESULT = ClassDecl.makeMainClass(n, sig, vs, ss);
+		RESULT = ClassDecl.makeMainClass(new LocationRange(cxleft, rcxright), new LocationRange(cxleft, nxright), new LocationRange(vxleft, rc2xright), new LocationRange(vxleft, rpxright), new LocationRange(vxleft, vxright), new LocationRange(exp_mainxleft, exp_mainxright), n, sig, vs, ss);
 	:}
 	;
 
@@ -141,14 +141,14 @@ class_decls ::= class_decls:arr class_decl:c  {: arr.add(c); RESULT = arr; :}
 	|  {: RESULT = new ArrayList<ClassDecl>(); :}
 	;
 
-class_decl ::= CLASS CLASSNAME:n LCURLY any_decls:as RCURLY {: RESULT = new ClassDecl(n, as); :}
+class_decl ::= CLASS:c CLASSNAME:n LCURLY any_decls:as RCURLY:rc {: RESULT = new ClassDecl(new LocationRange(cxleft, rcxright), new LocationRange(cxleft, nxright), n, as); :}
 	;
 
-fmllist ::= fmlrest:l typename:c IDENTIFIER:i {: l.add(new VarDecl(c, i)); RESULT = l; :}
+fmllist ::= fmlrest:l typename:c IDENTIFIER:i {: l.add(new VarDecl(new LocationRange(cxleft, ixright), new LocationRange(cxleft, cxright), new LocationRange(ixleft, ixright), c, i)); RESULT = l; :}
 	|  {: RESULT = new ArrayList<VarDecl>(); :}
 	;
 
-fmlrest ::= fmlrest:l typename:c IDENTIFIER:i COMMA {: l.add(new VarDecl(c, i)); RESULT = l; :}
+fmlrest ::= fmlrest:l typename:c IDENTIFIER:i COMMA {: l.add(new VarDecl(new LocationRange(cxleft, ixright), new LocationRange(cxleft, cxright), new LocationRange(ixleft, ixright), c, i)); RESULT = l; :}
 	|  {: RESULT = new ArrayList<VarDecl>(); :}
 	;
 
@@ -169,12 +169,12 @@ var_decls ::= var_decls:l var_decl_without_semi:v SEMI {: l.add(v); RESULT = l; 
 	|  {: RESULT = new ArrayList<VarDecl>(); :}
 	;
 
-var_decl_without_semi ::= typename:c IDENTIFIER:i {: RESULT = new VarDecl(c, i); :}
+var_decl_without_semi ::= typename:c IDENTIFIER:i {: RESULT = new VarDecl(new LocationRange(cxleft, ixright), new LocationRange(cxleft, cxright), new LocationRange(ixleft, ixright), c, i); :}
 	;
 
-md_decl ::= var_decl_without_semi:v LPAREN fmllist:sig RPAREN LCURLY var_decls:vs stmts_nonzero:ss RCURLY
+md_decl ::= var_decl_without_semi:v LPAREN fmllist:sig RPAREN:rp LCURLY var_decls:vs stmts_nonzero:ss RCURLY:rc
 	{:
-		RESULT = new Method(v.getType(), v.getName(), sig, vs, ss);
+		RESULT = new Method(new LocationRange(vxleft, rcxright), new LocationRange(vxleft, rpxright), v.getTypeRange(), v.getNameRange(), v.getType(), v.getName(), sig, vs, ss);
 	:}
 	;
 
@@ -185,44 +185,44 @@ stmts ::= stmts_nonzero:ss {: RESULT = ss; :}
 	|  {: RESULT = new ArrayList<Stmt>(); :}
 	;
 	
-stmt ::= IF LPAREN expr:cond RPAREN LCURLY stmts_nonzero:true_stmts RCURLY ELSE LCURLY stmts_nonzero:false_stmts RCURLY {: RESULT = new IfStmt(cond, true_stmts, false_stmts); :}
-	| WHILE LPAREN expr:cond RPAREN LCURLY stmts:ss RCURLY {: RESULT = new WhileStmt(cond, ss); :}
+stmt ::= IF:i LPAREN expr:cond RPAREN LCURLY stmts_nonzero:true_stmts RCURLY ELSE LCURLY stmts_nonzero:false_stmts RCURLY:r {: RESULT = new IfStmt(new LocationRange(ixleft, rxright), cond, true_stmts, false_stmts); :}
+	| WHILE:w LPAREN expr:cond RPAREN LCURLY stmts:ss RCURLY:r {: RESULT = new WhileStmt(new LocationRange(wxleft, rxright), cond, ss); :}
 	| READLN:r LPAREN IDENTIFIER:id RPAREN SEMI:sm {: RESULT = new ReadStmt(new LocationRange(rxleft, smxright), id); :}
-	| PRINTLN LPAREN expr:e RPAREN SEMI {: RESULT = new PrintStmt(e); :}
-	| IDENTIFIER:id ASSIGN expr:e SEMI {: RESULT = new AssignStmt(id, e); :}
-	| expr:obj DOT IDENTIFIER:id ASSIGN expr:e SEMI {: RESULT = new MemberAssignStmt(obj, id, e); :}
-	| expr:e LPAREN expr_list:es RPAREN SEMI {: RESULT = new CallStmt(e, es); :}
-	| RETURN expr:e SEMI {: RESULT = new ReturnValueStmt(e); :}
-	| RETURN SEMI {: RESULT = new ReturnStmt(); :}
-	| error SEMI {: RESULT = new ErrorStmt(); :}
+	| PRINTLN:p LPAREN expr:e RPAREN SEMI:sm {: RESULT = new PrintStmt(new LocationRange(pxleft, smxright), e); :}
+	| IDENTIFIER:id ASSIGN expr:e SEMI:sm {: RESULT = new AssignStmt(new LocationRange(idxleft, smxright), id, e); :}
+	| expr:obj DOT IDENTIFIER:id ASSIGN expr:e SEMI:sm {: RESULT = new MemberAssignStmt(new LocationRange(objxleft, smxright), obj, id, e); :}
+	| expr:e LPAREN expr_list:es RPAREN SEMI:sm {: RESULT = new CallStmt(new LocationRange(exleft, smxright), e, es); :}
+	| RETURN:r expr:e SEMI:sm {: RESULT = new ReturnValueStmt(new LocationRange(rxleft, smxright), e); :}
+	| RETURN:r SEMI:sm {: RESULT = new ReturnStmt(new LocationRange(rxleft, smxright)); :}
+	| error:e SEMI:sm {: RESULT = new ErrorStmt(new LocationRange(exleft, smxright)); :}
 	;
 	
-expr ::= expr:e1 DISJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.DISJUNCTION, e1, e2); :}
-	| expr:e1 CONJUNCTION expr:e2 {: RESULT = new BinaryOperation(BinOp.CONJUNCTION, e1, e2); :}
-	| NEGATION expr:e {: RESULT = new UnaryOperation(UnOp.NEGATION, e); :}
-	| expr:e1 EQ expr:e2 {: RESULT = new BinaryOperation(BinOp.EQ, e1, e2); :}
-	| expr:e1 NE expr:e2 {: RESULT = new BinaryOperation(BinOp.NE, e1, e2); :}
-	| expr:e1 LT expr:e2 {: RESULT = new BinaryOperation(BinOp.LT, e1, e2); :}
-	| expr:e1 LE expr:e2 {: RESULT = new BinaryOperation(BinOp.LE, e1, e2); :}
-	| expr:e1 GT expr:e2 {: RESULT = new BinaryOperation(BinOp.GT, e1, e2); :}
-	| expr:e1 GE expr:e2 {: RESULT = new BinaryOperation(BinOp.GE, e1, e2); :}
-	| expr:e1 PLUS expr:e2 {: RESULT = new BinaryOperation(BinOp.PLUS, e1, e2); :}
-	| expr:e1 MINUS expr:e2 {: RESULT = new BinaryOperation(BinOp.MINUS, e1, e2); :}
-	| expr:e1 TIMES expr:e2 {: RESULT = new BinaryOperation(BinOp.TIMES, e1, e2); :}
-	| expr:e1 DIVIDE expr:e2 {: RESULT = new BinaryOperation(BinOp.DIVIDE, e1, e2); :}
-	| MINUS expr:e {: RESULT = new UnaryOperation(UnOp.MINUS, e); :} %prec UMINUS
+expr ::= expr:e1 DISJUNCTION expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.DISJUNCTION, e1, e2); :}
+	| expr:e1 CONJUNCTION expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.CONJUNCTION, e1, e2); :}
+	| NEGATION:n expr:e {: RESULT = new UnaryOperation(new LocationRange(nxleft, exright), UnOp.NEGATION, e); :}
+	| expr:e1 EQ expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.EQ, e1, e2); :}
+	| expr:e1 NE expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.NE, e1, e2); :}
+	| expr:e1 LT expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.LT, e1, e2); :}
+	| expr:e1 LE expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.LE, e1, e2); :}
+	| expr:e1 GT expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.GT, e1, e2); :}
+	| expr:e1 GE expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.GE, e1, e2); :}
+	| expr:e1 PLUS expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.PLUS, e1, e2); :}
+	| expr:e1 MINUS expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.MINUS, e1, e2); :}
+	| expr:e1 TIMES expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.TIMES, e1, e2); :}
+	| expr:e1 DIVIDE expr:e2 {: RESULT = new BinaryOperation(new LocationRange(e1xleft, e2xright), BinOp.DIVIDE, e1, e2); :}
+	| MINUS:m expr:e {: RESULT = new UnaryOperation(new LocationRange(mxleft, exright), UnOp.MINUS, e); :} %prec UMINUS
 	| LPAREN expr:e RPAREN {: RESULT = e; :}
-	| TRUE {: RESULT = new Literal(Boolean.valueOf(true)); :}
-	| FALSE {: RESULT = new Literal(Boolean.valueOf(false)); :}
-	| NULL {: RESULT = new Literal(null); :}
-	| INTEGER_LITERAL:i {: RESULT = new Literal(i); :}
-	| STRING_LITERAL:s {: RESULT = new Literal(s); :}
-	| expr:e DOT IDENTIFIER:i {: RESULT = new MemberAccess(e, i); :}
-	| expr:e LPAREN expr_list:es RPAREN {: RESULT = new CallExpr(e, es); :}
-	| NEW CLASSNAME:c LPAREN RPAREN {: RESULT = new Alloc(c); :}
-	| THIS:i {: RESULT = new VarAccess("this"); :}
-	| IDENTIFIER:i {: RESULT = new VarAccess(i); :}
-	| error {: RESULT = new ErrorExpr(); :}
+	| TRUE:t {: RESULT = new Literal(new LocationRange(txleft, txright), Boolean.valueOf(true)); :}
+	| FALSE:f {: RESULT = new Literal(new LocationRange(fxleft, fxright), Boolean.valueOf(false)); :}
+	| NULL:n {: RESULT = new Literal(new LocationRange(nxleft, nxright), null); :}
+	| INTEGER_LITERAL:i {: RESULT = new Literal(new LocationRange(ixleft, ixright), i); :}
+	| STRING_LITERAL:s {: RESULT = new Literal(new LocationRange(sxleft, sxright), s); :}
+	| expr:e DOT IDENTIFIER:i {: RESULT = new MemberAccess(new LocationRange(exleft, ixright), e, i); :}
+	| expr:e LPAREN expr_list:es RPAREN:r {: RESULT = new CallExpr(new LocationRange(exleft, rxright), e, es); :}
+	| NEW:n CLASSNAME:c LPAREN RPAREN:r {: RESULT = new Alloc(new LocationRange(nxleft, rxright), c); :}
+	| THIS:i {: RESULT = new VarAccess(new LocationRange(ixleft, ixright), "this"); :}
+	| IDENTIFIER:i {: RESULT = new VarAccess(new LocationRange(ixleft, ixright), i); :}
+	| error:e {: RESULT = new ErrorExpr(new LocationRange(exleft, exright)); :}
 	;
 
 expr_list ::= expr_rest:es expr:e {: es.add(e); RESULT = es; :}
