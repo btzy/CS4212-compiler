@@ -25,13 +25,13 @@ CLASSES = \
 	$(JC) $(JFLAGS) $<
 
 tree/%.class: tree/%.java $(wildcard ir3/*.java) $(wildcard util/*.java)
-	$(JC) $(JFLAGS) -Xlint:all $<
+	$(JC) $(JFLAGS) $<
 
 ir3/%.class: ir3/%.java $(wildcard util/*.java)
-	$(JC) $(JFLAGS) -Xlint:all $<
+	$(JC) $(JFLAGS) $<
 
 util/%.class: util/%.java
-	$(JC) $(JFLAGS) -Xlint:all $<
+	$(JC) $(JFLAGS) $<
 
 Lexer.java: jflex/jlang.flex
 	java -Xmx128m -jar "jflex/jflex-1.8.2/lib/jflex-full-1.8.2.jar" -nobak -d . jflex/jlang.flex
