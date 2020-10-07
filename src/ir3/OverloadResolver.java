@@ -13,6 +13,7 @@ public class OverloadResolver {
 		int last_match = -1;
 		for (Integer i : funcidxs) {
 			if (matches(arg_types, ctx.getFunc(i).param_types)) {
+				++num_matches;
 				last_match = i;
 			}
 		}

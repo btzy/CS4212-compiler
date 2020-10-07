@@ -23,6 +23,18 @@ public class NullableExpr {
 		return Optional.empty();
 	}
 
+	public Optional<Expr> imbueTypes(TypeName[] types) {
+		Optional<Expr> ret = Optional.empty();
+		for (TypeName type : types) {
+			Optional<Expr> r = imbueType(type);
+			if (r.isPresent()) {
+				if (ret.isPresent()) return Optional.empty();
+				ret = r;
+			}
+		}
+		return ret;
+	}
+
 	public Optional<Expr> fixType() {
 		return Optional.ofNullable(inner);
 	}
