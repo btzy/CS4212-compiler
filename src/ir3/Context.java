@@ -1,19 +1,82 @@
 package ir3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.OptionalInt;
+import util.LocationRange;
 
 public class Context {
 	private final LocalEnvironment env;
 	private final ClassDescriptor this_cd;
-	private final ArrayList<ClassDescriptor> cds;
+	//private final ArrayList<ClassDescriptor> cds;
+	private final HashMap<TypeName, ClassDescriptor> cd_lookup;
+	private final TypeName return_type;
+	private int num_labels;
 
-	public Context(LocalEnvironment env, ClassDescriptor this_cd, ArrayList<ClassDescriptor> cds) {
+	public Context(LocalEnvironment env, ClassDescriptor this_cd, ArrayList<ClassDescriptor> cds, TypeName return_type) {
 		this.env = env;
 		this.this_cd = this_cd;
-		this.cds = cds;
+		this.cd_lookup = new HashMap<>();
+		for (ClassDescriptor cd : cds) {
+			cd_lookup.put(cd.this_type, cd);
+		}
+		this.return_type = return_type;
+		this.num_labels = 0;
 	}
 
 	public LocalEnvironment getLocalEnvironment() {
 		return env;
+	}
+
+	/**
+	 * Represents a single variable (either local or obj variable)
+	 */
+	public static class Entry {
+		public final boolean isLocal; // if true, it is a local idx, otherwise, it is a field idx
+		public final int idx;
+		public final TypeName type;
+		public Entry(boolean isLocal, int idx, TypeName type) { this.isLocal = isLocal; this.idx = idx; this.type = type; }
+	}
+	public Optional<Entry> lookup(String name) {
+		return asOptional(env.lookup(name))
+			.map(i -> Optional.of(new Entry(true, i, env.getType(i))))
+			.orElseGet(() -> {
+				return asOptional(this_cd.lookupField(name))
+					.map(i -> Optional.of(new Entry(false, i, this_cd.getFieldType(i))))
+					.orElseGet(() -> Optional.empty());
+			});
+	}
+
+	public static class FieldEntry {
+		public final TypeName type;
+		public final int idx;
+		public FieldEntry(TypeName type, int idx) { this.type = type; this.idx = idx; }
+	}
+	public Optional<FieldEntry> lookupField(TypeName type, String member) {
+		ClassDescriptor cd = cd_lookup.get(type);
+		assert (cd != null);
+		return asOptional(cd.lookupField(member))
+			.map(i -> Optional.of(new FieldEntry(cd.getFieldType(i), i)))
+			.orElseGet(() -> Optional.empty());
+	}
+
+	private static Optional<Integer> asOptional(OptionalInt oi) {
+		if (oi.isEmpty()) return Optional.empty();
+		return Optional.of(oi.getAsInt());
+	}
+
+	public Label newLabel() {
+		return new Label(num_labels++);
+	}
+
+	public TypeName thisType() { return this_cd.this_type; }
+
+	public int newLocal(LocationRange virtual_range, TypeName type) {
+		return env.newLocal(virtual_range, type);
+	}
+
+	public TypeName getReturnType() {
+		return return_type;
 	}
 }

@@ -2,6 +2,7 @@ package tree;
 
 import java.util.ArrayList;
 import ir3.Context;
+import ir3.SemanticException;
 import util.LocationRange;
 
 public class Method extends Node implements ClassItem {
@@ -53,19 +54,19 @@ public class Method extends Node implements ClassItem {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ir3.MethodBody typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds) {
+	public ir3.MethodBody typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds) throws SemanticException {
 		final ir3.LocalEnvironment env = new ir3.LocalEnvironment();
 		// add 'this'
-		env.add(this_ctx.getTypeName(), "this");
+		env.add(declaration_range, this_ctx.getTypeName(), "this");
 		// add all the params
 		for (VarDecl vdecl : signature) {
-			env.add(ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
+			env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
 		}
 		// add all the locals
 		for (VarDecl vdecl : locals) {
-			env.add(ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
+			env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
 		}
-		final Context ctx = new Context(env, this_ctx, cds);
+		final Context ctx = new Context(env, this_ctx, cds, ir3.TypeName.getType(type));
 		final ArrayList<ir3.Instruction> insts = new ArrayList<>();
 		for (Stmt s : stmts) {
 			s.typeCheckAndEmitIR3(ctx, insts::add);

@@ -17,7 +17,7 @@ public class SemanticException extends Exception {
      * Subclasses can override this method if they want to print additional hints or multiple source locations.
      */
     public void printNiceMessage(PrintStream out, String filename) {
-        out.println(super.getMessage() + " :");
-        Errors.printErrorLocation(filename, range.left.getLine(), range.left.getColumn(), range.right.getLine(), range.right.getColumn());
+        out.println("Error: " + super.getMessage() + " ( " + Errors.getErrorLocationString(range) + " ) :");
+        Errors.printErrorSourceCode(out, filename, range);
     }
 }

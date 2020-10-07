@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import util.LocationRange;
+import util.Errors;
 
 parser code {:
 	public boolean userHasError;
@@ -19,14 +20,15 @@ parser code {:
 	public void report_error(String message, Object info)
     {
 	  if (info instanceof ComplexSymbol) {
-         Location left = ((ComplexSymbol)info).getLeft();
-         Location right = ((ComplexSymbol)info).getRight();
-		 System.err.println(message + ' ' + ((ComplexSymbol) info).getName() + "( line " + left.getLine() + " col " + left.getColumn() + " - line " + right.getLine() + " col " + right.getColumn() + " ) :");
+         final Location left = ((ComplexSymbol)info).getLeft();
+         final Location right = ((ComplexSymbol)info).getRight();
+		 final String tmp_name = ((ComplexSymbol) info).getName();
+		 System.err.println("Error: " + message + ' ' + (tmp_name.isEmpty() ? "" : tmp_name + ' ') + "( " + Errors.getErrorLocationString(left, right) + " ) :");
 		 if (userErrorCallback != null) userErrorCallback.apply(left.getLine(), left.getColumn(), right.getLine(), right.getColumn());
       } else if (info instanceof Symbol)
-         System.err.println(message + ' ' + ((Symbol)info).toString());
+         System.err.println("Error: " + message + ' ' + ((Symbol)info).toString());
       else
-         System.err.println(message + ' ' + cur_token.toString());
+         System.err.println("Error: " + message + ' ' + cur_token.toString());
       userHasError = true;
     }
 	public void report_fatal_error(String message, Object info)
@@ -187,10 +189,10 @@ stmts ::= stmts_nonzero:ss {: RESULT = ss; :}
 	
 stmt ::= IF:i LPAREN expr:cond RPAREN LCURLY stmts_nonzero:true_stmts RCURLY ELSE LCURLY stmts_nonzero:false_stmts RCURLY:r {: RESULT = new IfStmt(new LocationRange(ixleft, rxright), cond, true_stmts, false_stmts); :}
 	| WHILE:w LPAREN expr:cond RPAREN LCURLY stmts:ss RCURLY:r {: RESULT = new WhileStmt(new LocationRange(wxleft, rxright), cond, ss); :}
-	| READLN:r LPAREN IDENTIFIER:id RPAREN SEMI:sm {: RESULT = new ReadStmt(new LocationRange(rxleft, smxright), id); :}
+	| READLN:r LPAREN IDENTIFIER:id RPAREN SEMI:sm {: RESULT = new ReadStmt(new LocationRange(rxleft, smxright), new LocationRange(idxleft, idxright), id); :}
 	| PRINTLN:p LPAREN expr:e RPAREN SEMI:sm {: RESULT = new PrintStmt(new LocationRange(pxleft, smxright), e); :}
-	| IDENTIFIER:id ASSIGN expr:e SEMI:sm {: RESULT = new AssignStmt(new LocationRange(idxleft, smxright), id, e); :}
-	| expr:obj DOT IDENTIFIER:id ASSIGN expr:e SEMI:sm {: RESULT = new MemberAssignStmt(new LocationRange(objxleft, smxright), obj, id, e); :}
+	| IDENTIFIER:id ASSIGN expr:e SEMI:sm {: RESULT = new AssignStmt(new LocationRange(idxleft, smxright), new LocationRange(idxleft, idxright), id, e); :}
+	| expr:obj DOT IDENTIFIER:id ASSIGN expr:e SEMI:sm {: RESULT = new MemberAssignStmt(new LocationRange(objxleft, smxright), new LocationRange(idxleft, idxright), obj, id, e); :}
 	| expr:e LPAREN expr_list:es RPAREN SEMI:sm {: RESULT = new CallStmt(new LocationRange(exleft, smxright), e, es); :}
 	| RETURN:r expr:e SEMI:sm {: RESULT = new ReturnValueStmt(new LocationRange(rxleft, smxright), e); :}
 	| RETURN:r SEMI:sm {: RESULT = new ReturnStmt(new LocationRange(rxleft, smxright)); :}
@@ -217,9 +219,9 @@ expr ::= expr:e1 DISJUNCTION expr:e2 {: RESULT = new BinaryOperation(new Locatio
 	| NULL:n {: RESULT = new Literal(new LocationRange(nxleft, nxright), null); :}
 	| INTEGER_LITERAL:i {: RESULT = new Literal(new LocationRange(ixleft, ixright), i); :}
 	| STRING_LITERAL:s {: RESULT = new Literal(new LocationRange(sxleft, sxright), s); :}
-	| expr:e DOT IDENTIFIER:i {: RESULT = new MemberAccess(new LocationRange(exleft, ixright), e, i); :}
+	| expr:e DOT IDENTIFIER:i {: RESULT = new MemberAccess(new LocationRange(exleft, ixright), new LocationRange(ixleft, ixright), e, i); :}
 	| expr:e LPAREN expr_list:es RPAREN:r {: RESULT = new CallExpr(new LocationRange(exleft, rxright), e, es); :}
-	| NEW:n CLASSNAME:c LPAREN RPAREN:r {: RESULT = new Alloc(new LocationRange(nxleft, rxright), c); :}
+	| NEW:n CLASSNAME:c LPAREN RPAREN:r {: RESULT = new Alloc(new LocationRange(nxleft, rxright), new LocationRange(cxleft, cxright), c); :}
 	| THIS:i {: RESULT = new VarAccess(new LocationRange(ixleft, ixright), "this"); :}
 	| IDENTIFIER:i {: RESULT = new VarAccess(new LocationRange(ixleft, ixright), i); :}
 	| error:e {: RESULT = new ErrorExpr(new LocationRange(exleft, exright)); :}

@@ -15,7 +15,7 @@ public class Compiler {
             final ComplexSymbolFactory sf = new ComplexSymbolFactory();
             final String filename = getArgWithValue(argmap, "i");
             parser p = new parser(new Lexer(new FileReader(filename), sf, filename), sf, (int left_line, int left_col, int right_line, int right_col) -> {
-                Errors.printErrorLocation(filename, left_line, left_col, right_line, right_col);
+                Errors.printErrorSourceCode(System.err, filename, left_line, left_col, right_line, right_col);
             });
             Object program_obj = p.parse().value;
             if (p.userHasFatalError) System.exit(1);
@@ -31,17 +31,17 @@ public class Compiler {
             }
         }
         catch (CommandArgumentException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error: " + e.getMessage());
             System.exit(1);
         }
         catch (UnknownCharacterException e) {
-            System.err.println(e.getMessage() + " :");
-            Errors.printErrorLocation(e.filename, e.left_line, e.left_col, e.right_line, e.right_col);
+            System.err.println("Error: " + e.getMessage() + " :");
+            Errors.printErrorSourceCode(System.err, e.filename, e.left_line, e.left_col, e.right_line, e.right_col);
             System.err.println("Parse aborted due to above error from lexer.");
             System.exit(1);
         }
         catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error: " + e.getMessage());
             System.exit(1);
         }
     }

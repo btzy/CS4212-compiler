@@ -2,6 +2,9 @@ package tree;
 
 import java.util.ArrayList;
 import util.LocationRange;
+import ir3.Context;
+import ir3.SemanticException;
+import java.util.function.Consumer;
 
 public class IfStmt extends Stmt {
 	private Expr cond;
@@ -28,5 +31,28 @@ public class IfStmt extends Stmt {
 		for (Stmt s : false_stmts) s.print(w);
 		w.leaveContext();
 		w.println('}');
+	}
+	
+	/**
+	 * Typecheck and emit IR3 code for this node.
+	 */
+	public void typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
+		ir3.NullableExpr cond_nullable = cond.typeCheckAndEmitIR3(ctx, out);
+		
+		// will throw if the type can't be converted (the only time it might be converted is for nulls)
+		// TODO: throw more specific exception
+		// condition must be Bool
+		ir3.Expr cond_res = cond_nullable.imbueType(ir3.TypeName.BOOL).orElseThrow(() -> new SemanticException("Type error", range));
+		
+		ir3.Label true_label = ctx.newLabel();
+		ir3.Label end_label = ctx.newLabel();
+
+		// generate the IR3 branching code
+		out.accept(new ir3.IfGoto(cond_res, true_label));
+		for (Stmt s : false_stmts) s.typeCheckAndEmitIR3(ctx, out);
+		out.accept(new ir3.Goto(end_label));
+		out.accept(true_label);
+		for (Stmt s : true_stmts) s.typeCheckAndEmitIR3(ctx, out);
+		out.accept(end_label);
 	}
 }

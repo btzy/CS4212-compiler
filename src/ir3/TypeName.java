@@ -31,6 +31,9 @@ public class TypeName {
 	public static TypeName getType(String name) {
 		return hm.get(name);
 	}
+	public boolean isPrimitive() {
+		return this == INT || this == BOOL || this == STRING || this == VOID;
+	}
 
 	public static final TypeName INT = addType("Int", null);
 	public static final TypeName BOOL = addType("Bool", null);

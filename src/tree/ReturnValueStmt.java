@@ -1,6 +1,9 @@
 package tree;
 
 import util.LocationRange;
+import ir3.Context;
+import ir3.SemanticException;
+import java.util.function.Consumer;
 
 public class ReturnValueStmt extends Stmt {
 	private Expr expr;
@@ -12,5 +15,21 @@ public class ReturnValueStmt extends Stmt {
 		w.print("Return ");
 		expr.print(w);
 		w.println(';');
+	}
+	
+	/**
+	 * Typecheck and emit IR3 code for this node.
+	 */
+	public void typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
+		ir3.NullableExpr result_nullable = expr.typeCheckAndEmitIR3(ctx, out);
+
+		// will throw if the type can't be converted (the only time it might be converted is for nulls)
+		// TODO: throw more specific exception
+		ir3.Expr result = result_nullable.imbueType(ctx.getReturnType()).orElseThrow(() -> new SemanticException("Type error", range));
+	
+		// since return statements require an id3 instead of Exp3, we need to convert Exp3 to id3
+		ir3.LocalVariable terminal = result.makeLocalVariableByMaybeEmitIR3(range, ctx, out);
+		
+		out.accept(new ir3.Return(terminal));
 	}
 }

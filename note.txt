@@ -1,0 +1,15 @@
+Null issues:
+
+return null;
+String x = null;
+Obj x = q ? null : new Obj();
+f(null);
+
+Unary '!' in if-goto
+
+x.y = 3;
+x.y(1);
+
+null + null == null
+
+If field lookup matches a method name, emit a note

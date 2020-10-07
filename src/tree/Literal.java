@@ -1,6 +1,10 @@
 package tree;
 
 
+import ir3.Context;
+import ir3.NullableExpr;
+import ir3.SemanticException;
+import java.util.function.Consumer;
 import java.util.ArrayList;
 import util.LocationRange;
 
@@ -19,7 +23,7 @@ public class Literal extends Expr {
 				w.print("false");
 			}
 		}
-		else if (value instanceof Number) {
+		else if (value instanceof Integer) {
 			w.print(((Integer) value).intValue());
 		}
 		else if (value instanceof String) {
@@ -29,6 +33,27 @@ public class Literal extends Expr {
 		}
 		else if (value == null) {
 			w.print("null");
+		}
+		else {
+			assert(false);
+		}
+	}
+	
+	/**
+	 * Typecheck and emit IR3 code for this node.
+	 */
+	public NullableExpr typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
+		if (value instanceof Boolean) {
+			return NullableExpr.of(new ir3.BooleanLiteral(((Boolean) value).booleanValue()));
+		}
+		else if (value instanceof Integer) {
+			return NullableExpr.of(new ir3.IntegerLiteral(((Integer) value).intValue()));
+		}
+		else if (value instanceof String) {
+			return NullableExpr.of(new ir3.StringLiteral((String) value));
+		}
+		else if (value == null) {
+			return NullableExpr.nullValue();
 		}
 		else {
 			assert(false);

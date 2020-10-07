@@ -2,6 +2,7 @@ package ir3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.OptionalInt;
 import util.LocationRange;
 
 /**
@@ -9,11 +10,11 @@ import util.LocationRange;
  */
 
 public class ClassDescriptor {
-	private TypeName this_type;
+	public final TypeName this_type;
 	private ArrayList<TypeName> field_types;
 	private ArrayList<LocationRange> field_locations;
 	private HashMap<String, Integer> field_name_lookup;
-	private ArrayList<MethodSpec> method_specs;
+	private ArrayList<MethodSpec> method_specs; // TODO: maybe all methods should be combined to outside the class descriptor?
 	private ArrayList<LocationRange> method_locations;
 	private HashMap<String, ArrayList<Integer>> method_name_lookup; // value is an arraylist because we support overloading
 
@@ -58,5 +59,15 @@ public class ClassDescriptor {
 	public ArrayList<MethodSpec> getMethodSpecs() { return this.method_specs; }
 
 	public TypeName getTypeName() { return this.this_type; }
+
+	public OptionalInt lookupField(String name) {
+		Integer i = field_name_lookup.get(name);
+		if (i == null) return OptionalInt.empty();
+		return OptionalInt.of(i);
+	}
+
+	public TypeName getFieldType(int idx) {
+		return field_types.get(idx);
+	}
 }
 
