@@ -23,22 +23,19 @@ public class Program extends Node {
 	 */
 	public ir3.Program typeCheckAndEmitIR3() throws ir3.SemanticException {
 		ArrayList<ir3.ClassDescriptor> cds = new ArrayList<ir3.ClassDescriptor>();
+		ArrayList<ir3.FuncSpec> func_specs = new ArrayList<>();
+		ArrayList<LocationRange> func_locations = new ArrayList<>();
 		for (ClassDecl cdecl : classes) {
-			cds.add(cdecl.makeClassDescriptor());
+			cds.add(cdecl.makeClassDescriptor(func_specs, func_locations));
 		}
 		// TODO: tree should also store locations
 		// Note: null == "".  Convert all "" to null.
 		// ARMv7
 		// generate each class
-		ArrayList<ir3.MethodBody> mtds = new ArrayList<>();
+		ArrayList<ir3.FuncBody> funcs = new ArrayList<>();
 		for (int i=0; i!=classes.size(); ++i) {
-			mtds.addAll(classes.get(i).typeCheckAndEmitIR3(cds.get(i), cds));
+			funcs.addAll(classes.get(i).typeCheckAndEmitIR3(cds.get(i), cds, func_specs, func_locations));
 		}
-		return new ir3.Program(cds, mtds,
-			cds
-				.stream()
-				.flatMap(cd -> cd.getMethodSpecs().stream().map(ir3.MethodSpec::getMangledName))
-				.collect(Collectors.toCollection(ArrayList::new))
-		);
+		return new ir3.Program(cds, func_specs, funcs);
 	}
 }

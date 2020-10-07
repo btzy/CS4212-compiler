@@ -20,6 +20,7 @@ public class NullableExpr {
 		}
 		if (type == TypeName.STRING) return Optional.of(new StringLiteral(""));
 		if (!type.isPrimitive()) return Optional.of(new NullLiteral(type));
+		return Optional.empty();
 	}
 
 	public Optional<Expr> fixType() {

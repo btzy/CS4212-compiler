@@ -57,6 +57,7 @@ public class Literal extends Expr {
 		}
 		else {
 			assert(false);
+			return null;
 		}
 	}
 }

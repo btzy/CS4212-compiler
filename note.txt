@@ -13,3 +13,11 @@ x.y(1);
 null + null == null
 
 If field lookup matches a method name, emit a note
+
+f(Int);
+f(String);
+f(null); //ok
+
+f(Int);
+f(Obj);
+f(null); //error

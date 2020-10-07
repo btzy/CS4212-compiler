@@ -33,9 +33,12 @@ public class CallExpr extends Expr {
 		ir3.ExprAndFuncIdxArray result_expr_funcidxs = callee.typeCheckAndEmitIR3ForMethod(ctx, out);
 
 		// overload resolution
-		ArrayList<ir3.NullableExpr> args_nullable = args.stream().map(e -> e.typeCheckAndEmitIR3(ctx, out)).collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<ir3.NullableExpr> args_nullable = new ArrayList<>();
+		for (Expr e : args) {
+			args_nullable.add(e.typeCheckAndEmitIR3(ctx, out));
+		}
 		ArrayList<ir3.NullableTypeName> arg_types_nullable = args_nullable.stream().map(ne -> ne.getType()).collect(Collectors.toCollection(ArrayList::new));
-		int funcidx = resolveOverload(arg_types_nullable, result_expr_funcidxs.idxs); // throws exception when multiple matching overload or no match
+		int funcidx = ir3.OverloadResolver.resolveOverload(range, ctx, arg_types_nullable, result_expr_funcidxs.idxs); // throws exception when multiple matching overload or no match
 
 		ir3.FuncSpec spec = ctx.getFunc(funcidx);
 		ArrayList<ir3.TypeName> param_types = spec.param_types;

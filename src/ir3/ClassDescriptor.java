@@ -14,8 +14,6 @@ public class ClassDescriptor {
 	private ArrayList<TypeName> field_types;
 	private ArrayList<LocationRange> field_locations;
 	private HashMap<String, Integer> field_name_lookup;
-	private ArrayList<MethodSpec> method_specs; // TODO: maybe all methods should be combined to outside the class descriptor?
-	private ArrayList<LocationRange> method_locations;
 	private HashMap<String, ArrayList<Integer>> method_name_lookup; // value is an arraylist because we support overloading
 
 	public ClassDescriptor(TypeName this_type) {
@@ -23,8 +21,6 @@ public class ClassDescriptor {
 		this.field_types = new ArrayList<>();
 		this.field_locations = new ArrayList<>();
 		this.field_name_lookup = new HashMap<>();
-		this.method_specs = new ArrayList<>();
-		this.method_locations = new ArrayList<>();
 		this.method_name_lookup = new HashMap<>();
 	}
 
@@ -39,24 +35,18 @@ public class ClassDescriptor {
 		return ret;
 	}
 
-	public int addMethod(LocationRange range /* the whole signature */, TypeName return_type, String name, ArrayList<TypeName> param_types, ArrayList<String> param_names) throws SemanticException {
-		final int ret = method_specs.size();
+	public void addMethod(LocationRange range /* the whole signature */, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations, int funcidx, String name, ArrayList<TypeName> param_types) throws SemanticException {
 		final ArrayList<Integer> tmp = new ArrayList<Integer>();
 		final ArrayList<Integer> old = method_name_lookup.putIfAbsent(name, tmp);
 		final ArrayList<Integer> overload_list = old == null ? tmp : old;
 		for (Integer idx : overload_list) {
-			if (param_types.equals(method_specs.get(idx).param_types)) {
+			if (param_types.equals(func_specs.get(idx).param_types)) {
 				// existing overload
-				throw new DuplicateMethodException(this_type.name, name, range, method_locations.get(idx));
+				throw new DuplicateMethodException(this_type.name, name, range, func_locations.get(idx));
 			}
 		}
-		overload_list.add(ret);
-		method_specs.add(new MethodSpec(return_type, this_type, name, param_types/*, param_names*/));
-		method_locations.add(range);
-		return ret;
+		overload_list.add(funcidx);
 	}
-
-	public ArrayList<MethodSpec> getMethodSpecs() { return this.method_specs; }
 
 	public TypeName getTypeName() { return this.this_type; }
 
@@ -64,6 +54,11 @@ public class ClassDescriptor {
 		Integer i = field_name_lookup.get(name);
 		if (i == null) return OptionalInt.empty();
 		return OptionalInt.of(i);
+	}
+
+	public ArrayList<Integer> lookupMethod(String name) {
+		final ArrayList<Integer> ret = method_name_lookup.get(name);
+		return ret != null ? ret : new ArrayList<>();
 	}
 
 	public TypeName getFieldType(int idx) {

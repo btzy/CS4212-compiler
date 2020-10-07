@@ -11,16 +11,20 @@ public class Context {
 	private final ClassDescriptor this_cd;
 	//private final ArrayList<ClassDescriptor> cds;
 	private final HashMap<TypeName, ClassDescriptor> cd_lookup;
+	ArrayList<FuncSpec> func_specs;
+	ArrayList<LocationRange> func_locations;
 	private final TypeName return_type;
 	private int num_labels;
 
-	public Context(LocalEnvironment env, ClassDescriptor this_cd, ArrayList<ClassDescriptor> cds, TypeName return_type) {
+	public Context(LocalEnvironment env, ClassDescriptor this_cd, ArrayList<ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations, TypeName return_type) {
 		this.env = env;
 		this.this_cd = this_cd;
 		this.cd_lookup = new HashMap<>();
 		for (ClassDescriptor cd : cds) {
 			cd_lookup.put(cd.this_type, cd);
 		}
+		this.func_specs = func_specs;
+		this.func_locations = func_locations;
 		this.return_type = return_type;
 		this.num_labels = 0;
 	}
@@ -60,6 +64,18 @@ public class Context {
 			.map(i -> Optional.of(new FieldEntry(cd.getFieldType(i), i)))
 			.orElseGet(() -> Optional.empty());
 	}
+
+	public ArrayList<Integer> lookupMethod(TypeName type, String member) {
+		ClassDescriptor cd = cd_lookup.get(type);
+		assert (cd != null);
+		return cd.lookupMethod(member);
+	}
+
+	public ArrayList<Integer> lookupLocalMethod(String member) {
+		return this_cd.lookupMethod(member);
+	}
+
+	public FuncSpec getFunc(int funcidx) { return func_specs.get(funcidx); }
 
 	private static Optional<Integer> asOptional(OptionalInt oi) {
 		if (oi.isEmpty()) return Optional.empty();

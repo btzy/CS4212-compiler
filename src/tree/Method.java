@@ -54,7 +54,7 @@ public class Method extends Node implements ClassItem {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ir3.MethodBody typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds) throws SemanticException {
+	public ir3.FuncBody typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations) throws SemanticException {
 		final ir3.LocalEnvironment env = new ir3.LocalEnvironment();
 		// add 'this'
 		env.add(declaration_range, this_ctx.getTypeName(), "this");
@@ -66,11 +66,11 @@ public class Method extends Node implements ClassItem {
 		for (VarDecl vdecl : locals) {
 			env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
 		}
-		final Context ctx = new Context(env, this_ctx, cds, ir3.TypeName.getType(type));
+		final Context ctx = new Context(env, this_ctx, cds, func_specs, func_locations, ir3.TypeName.getType(type));
 		final ArrayList<ir3.Instruction> insts = new ArrayList<>();
 		for (Stmt s : stmts) {
 			s.typeCheckAndEmitIR3(ctx, insts::add);
 		}
-		return new ir3.MethodBody(ctx.getLocalEnvironment(), signature.size() + 1, insts);
+		return new ir3.FuncBody(ctx.getLocalEnvironment(), signature.size() + 1, insts);
 	}
 }

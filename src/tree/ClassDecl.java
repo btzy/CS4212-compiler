@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import util.LocationRange;
+import ir3.SemanticException;
 
 public class ClassDecl extends Node {
 	private LocationRange report_range; // the range that just says "class <name>"
@@ -91,7 +92,7 @@ public class ClassDecl extends Node {
 
 	public String getName() { return name; }
 
-	public ir3.ClassDescriptor makeClassDescriptor() throws ir3.SemanticException {
+	public ir3.ClassDescriptor makeClassDescriptor(ArrayList<ir3.FuncSpec> out_func_specs, ArrayList<LocationRange> out_func_locations) throws ir3.SemanticException {
 		final ir3.TypeName this_type = ir3.TypeName.addType(name, report_range);
 		if (this_type == null) throw new ir3.DuplicateClassDeclException(name, report_range, ir3.TypeName.getType(name).report_range);
 		final ir3.ClassDescriptor ret = new ir3.ClassDescriptor(this_type);
@@ -101,17 +102,20 @@ public class ClassDecl extends Node {
 			ret.addField(vdecl.range, type, vdecl.getName());
 		}
 		for (Method mtd : methods) {
-			final ir3.TypeName type = ir3.TypeName.getType(mtd.getType());
-			if (type == null) throw new ir3.NoSuchTypeException(mtd.getType(), mtd.getTypeRange());
+			final ir3.TypeName return_type = ir3.TypeName.getType(mtd.getType());
+			if (return_type == null) throw new ir3.NoSuchTypeException(mtd.getType(), mtd.getTypeRange());
 			ArrayList<ir3.TypeName> param_types = new ArrayList<>();
-			ArrayList<String> param_names = new ArrayList<>();
+			param_types.add(this_type); // the 'this' parameter
 			for (VarDecl vdecl : mtd.getSignature()) {
 				final ir3.TypeName ptype = ir3.TypeName.getType(vdecl.getType());
 				if (ptype == null) throw new ir3.NoSuchTypeException(vdecl.getType(), vdecl.getTypeRange());
 				param_types.add(ptype);
-				param_names.add(vdecl.getName());
 			}
-			ret.addMethod(mtd.getDeclarationRange(), type, mtd.getName(), param_types, param_names);
+			final int funcidx = out_func_specs.size();
+			final ir3.FuncSpec fspec = new ir3.FuncSpec(return_type, this_type, name, param_types);
+			out_func_specs.add(fspec);
+			out_func_locations.add(mtd.getDeclarationRange());
+			ret.addMethod(mtd.getDeclarationRange(), out_func_specs, out_func_locations, funcidx, mtd.getName(), param_types);
 		}
 		return ret;
 	}
@@ -119,10 +123,11 @@ public class ClassDecl extends Node {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ArrayList<ir3.MethodBody> typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds) {
-		return methods
-			.stream()
-			.map(method -> method.typeCheckAndEmitIR3(this_ctx, cds))
-			.collect(Collectors.toCollection(ArrayList::new));
+	public ArrayList<ir3.FuncBody> typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations) throws SemanticException {
+		ArrayList<ir3.FuncBody> ret = new ArrayList<ir3.FuncBody>();
+		for (Method method : methods) {
+			ret.add(method.typeCheckAndEmitIR3(this_ctx, cds, func_specs, func_locations));
+		}
+		return ret;
 	}
 }

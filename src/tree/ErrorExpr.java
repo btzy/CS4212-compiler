@@ -18,5 +18,6 @@ public class ErrorExpr extends Expr {
 
 	public NullableExpr typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
 		assert(false); // this shouldn't happen
+		return null;
 	}
 }
