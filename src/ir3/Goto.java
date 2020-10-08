@@ -9,7 +9,7 @@ public class Goto extends Instruction {
 	@Override
 	public void print(PrintStream w, PrintContext pc) {
 		w.print("  goto ");
-		w.print(target.index);
+		w.print(target.index + 1); // offset so 1-indexed
 		w.println(';');
 	}
 }

@@ -9,7 +9,7 @@ public class Label extends Instruction {
 	@Override
 	public void print(PrintStream w, PrintContext pc) {
 		w.print(" Label ");
-		w.print(index);
+		w.print(index + 1); // offset so 1-indexed
 		w.println(':');
 	}
 }

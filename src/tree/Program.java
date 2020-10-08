@@ -26,7 +26,7 @@ public class Program extends Node {
 		ArrayList<ir3.FuncSpec> func_specs = new ArrayList<>();
 		ArrayList<LocationRange> func_locations = new ArrayList<>();
 		for (ClassDecl cdecl : classes) {
-			cds.add(cdecl.makeClassDescriptor(func_specs, func_locations));
+			cds.add(cdecl.makeClassDescriptor(func_specs, func_locations, cdecl == classes.get(0)));
 		}
 		// TODO: tree should also store locations
 		// Note: null == "".  Convert all "" to null.

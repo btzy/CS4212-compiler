@@ -92,7 +92,7 @@ public class ClassDecl extends Node {
 
 	public String getName() { return name; }
 
-	public ir3.ClassDescriptor makeClassDescriptor(ArrayList<ir3.FuncSpec> out_func_specs, ArrayList<LocationRange> out_func_locations) throws ir3.SemanticException {
+	public ir3.ClassDescriptor makeClassDescriptor(ArrayList<ir3.FuncSpec> out_func_specs, ArrayList<LocationRange> out_func_locations, boolean isMainClass) throws ir3.SemanticException {
 		final ir3.TypeName this_type = ir3.TypeName.addType(name, report_range);
 		if (this_type == null) throw new ir3.DuplicateClassDeclException(name, report_range, ir3.TypeName.getType(name).report_range);
 		final ir3.ClassDescriptor ret = new ir3.ClassDescriptor(this_type);
@@ -112,7 +112,9 @@ public class ClassDecl extends Node {
 				param_types.add(ptype);
 			}
 			final int funcidx = out_func_specs.size();
-			final ir3.FuncSpec fspec = new ir3.FuncSpec(return_type, this_type, mtd.getName(), param_types);
+			final ir3.FuncSpec fspec = isMainClass
+				? new ir3.FuncSpec(return_type, param_types, mtd.getName())
+				: new ir3.FuncSpec(return_type, this_type, mtd.getName(), param_types);
 			out_func_specs.add(fspec);
 			out_func_locations.add(mtd.getDeclarationRange());
 			ret.addMethod(mtd.getDeclarationRange(), out_func_specs, out_func_locations, funcidx, mtd.getName(), param_types);

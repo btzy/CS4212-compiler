@@ -8,6 +8,12 @@ public class FuncSpec {
 	public final ArrayList<TypeName> param_types; // includes 'this''
 	private final String mangled_name;
 
+	public FuncSpec(TypeName result_type, ArrayList<TypeName> param_types, String mangled_name) {
+		this.result_type = result_type;
+		this.param_types = param_types;
+		this.mangled_name = mangled_name;
+	}
+
 	public FuncSpec(TypeName result_type, TypeName class_type, String method_name, ArrayList<TypeName> param_types) {
 		this.result_type = result_type;
 		this.param_types = param_types;

@@ -26,7 +26,7 @@ public class ReadStmt extends Stmt {
 		ir3.Context.Entry entry = ctx.lookup(target).orElseThrow(() -> new ir3.NoSuchNameException(target, target_range));
 
 		// TODO: readln argument can be String, Int, or Bool
-		if (entry.type != ir3.TypeName.INT || entry.type != ir3.TypeName.BOOL || entry.type != ir3.TypeName.STRING) throw new SemanticException("Type error", range);
+		if (entry.type != ir3.TypeName.INT && entry.type != ir3.TypeName.BOOL && entry.type != ir3.TypeName.STRING) throw new SemanticException("Type error", range);
 
 		if (entry.isLocal) {
 			// normal read statement

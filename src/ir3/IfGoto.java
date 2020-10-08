@@ -12,7 +12,7 @@ public class IfGoto extends Instruction {
 		w.print("  if(");
 		cond.print(w, pc);
 		w.print(") goto ");
-		w.print(target.index);
+		w.print(target.index + 1); // offset so 1-indexed
 		w.println(';');
 	}
 }
