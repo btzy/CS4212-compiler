@@ -12,6 +12,7 @@ public class NullableTypeName {
 
 	public boolean isNull() { return inner == null; }
 	public TypeName getTypeName() { assert(inner != null); return inner; }
+	public String getNullableName() { return inner != null ? inner.name : "null"; }
 
 	public Optional<TypeName> asOptional() { return Optional.ofNullable(inner); }
 }

@@ -11,8 +11,8 @@ public class Context {
 	private final ClassDescriptor this_cd;
 	//private final ArrayList<ClassDescriptor> cds;
 	private final HashMap<TypeName, ClassDescriptor> cd_lookup;
-	ArrayList<FuncSpec> func_specs;
-	ArrayList<LocationRange> func_locations;
+	private ArrayList<FuncSpec> func_specs;
+	private ArrayList<LocationRange> func_locations;
 	private final TypeName return_type;
 	private int num_labels;
 
@@ -64,6 +64,11 @@ public class Context {
 			.map(i -> Optional.of(new FieldEntry(cd.getFieldType(i), i)))
 			.orElseGet(() -> Optional.empty());
 	}
+	public LocationRange getFieldRange(TypeName type, int idx) {
+		ClassDescriptor cd = cd_lookup.get(type);
+		assert (cd != null);
+		return cd.getFieldRange(idx);
+	}
 
 	public ArrayList<Integer> lookupMethod(TypeName type, String member) {
 		ClassDescriptor cd = cd_lookup.get(type);
@@ -76,6 +81,8 @@ public class Context {
 	}
 
 	public FuncSpec getFunc(int funcidx) { return func_specs.get(funcidx); }
+
+	public LocationRange getFuncRange(int funcidx) { return func_locations.get(funcidx); }
 
 	private static Optional<Integer> asOptional(OptionalInt oi) {
 		if (oi.isEmpty()) return Optional.empty();

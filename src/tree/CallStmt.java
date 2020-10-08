@@ -35,7 +35,9 @@ public class CallStmt extends Stmt {
 			args_nullable.add(e.typeCheckAndEmitIR3(ctx, out));
 		}
 		ArrayList<ir3.NullableTypeName> arg_types_nullable = args_nullable.stream().map(ne -> ne.getType()).collect(Collectors.toCollection(ArrayList::new));
-		int funcidx = ir3.OverloadResolver.resolveOverload(range, ctx, arg_types_nullable, result_expr_funcidxs.idxs); // throws exception when multiple matching overload or no match
+
+		// throws exception when multiple matching overload or no match
+		int funcidx = ir3.OverloadResolver.resolveOverload(arg_types_nullable, result_expr_funcidxs.idxs, ctx, range, result_expr_funcidxs.method_name, result_expr_funcidxs.class_name);
 
 		ArrayList<ir3.TypeName> param_types = ctx.getFunc(funcidx).param_types;
 

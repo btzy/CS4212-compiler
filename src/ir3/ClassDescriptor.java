@@ -46,7 +46,7 @@ public class ClassDescriptor {
 		for (Integer idx : overload_list) {
 			if (param_types.equals(func_specs.get(idx).param_types)) {
 				// existing overload
-				throw new DuplicateMethodException(this_type.name, name, range, func_locations.get(idx));
+				throw new DuplicateMethodException(name, this_type.name, range, func_locations.get(idx));
 			}
 		}
 		overload_list.add(funcidx);
@@ -71,6 +71,10 @@ public class ClassDescriptor {
 
 	public String getFieldName(int idx) {
 		return field_names.get(idx);
+	}
+
+	public LocationRange getFieldRange(int idx) {
+		return field_locations.get(idx);
 	}
 
 	public void print(PrintStream w) {

@@ -60,6 +60,6 @@ public class MemberAccess extends Expr {
 		// TODO: detect lookup matching a method name
 		ArrayList<Integer> methodidxs = ctx.lookupMethod(obj_result.type, member);
 
-		return new ir3.ExprAndFuncIdxArray(obj_result, methodidxs);
+		return new ir3.ExprAndFuncIdxArray(obj_result, methodidxs, obj_result.type, member);
 	}
 }

@@ -14,10 +14,10 @@ public class NoSuchMemberFieldException extends SemanticException {
     public void printNiceMessage(PrintStream out, String filename) {
         super.printNiceMessage(out, filename);
         if (hintMethodCount == 1) {
-            out.println("Hint: There is a method of the same name");
+            out.println("Hint: There is a method of the same name, did you intend to refer to it instead?");
         }
         else if (hintMethodCount > 1) {
-            out.println("Hint: There are " + String.valueOf(hintMethodCount) + " method overloads of the same name");
+            out.println("Hint: There are " + String.valueOf(hintMethodCount) + " method overloads of the same name, did you intend to refer to one of them instead?");
         }
     }
 }

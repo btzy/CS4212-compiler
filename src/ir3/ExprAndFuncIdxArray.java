@@ -9,5 +9,7 @@ import java.util.function.Consumer;
 public class ExprAndFuncIdxArray {
 	public final Expr expr;
 	public final ArrayList<Integer> idxs;
-	public ExprAndFuncIdxArray(Expr expr, ArrayList<Integer> idxs) { this.expr = expr; this.idxs = idxs; }
+	public final TypeName class_name;
+	public final String method_name;
+	public ExprAndFuncIdxArray(Expr expr, ArrayList<Integer> idxs, TypeName class_name, String method_name) { this.expr = expr; this.idxs = idxs; this.class_name = class_name; this.method_name = method_name; }
 }
