@@ -1,6 +1,7 @@
 package ir3;
 
 import java.util.ArrayList;
+import java.io.PrintStream;
 
 public class Program {
 	private final ArrayList<ClassDescriptor> cds;
@@ -11,5 +12,24 @@ public class Program {
 		this.cds = cds;
 		this.func_specs = func_specs;
 		this.func_bodies = func_bodies;
+		assert(func_specs.size() == func_bodies.size());
+	}
+
+	public void print(PrintStream w) {
+		w.println("======= CData3 =======");
+		w.println();
+		for (ClassDescriptor cd : cds) {
+			cd.print(w);
+			w.println();
+		}
+		w.println("=======  CMtd3 =======");
+		w.println();
+		final int num_funcs = func_specs.size();
+		for (int i=0; i!=num_funcs; ++i) {
+			func_specs.get(i).print(w);
+			func_bodies.get(i).print(w, func_specs, cds);
+			w.println();
+		}
+		w.println("======= End of IR3 Program =======");
 	}
 }

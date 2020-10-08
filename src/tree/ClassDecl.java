@@ -112,7 +112,7 @@ public class ClassDecl extends Node {
 				param_types.add(ptype);
 			}
 			final int funcidx = out_func_specs.size();
-			final ir3.FuncSpec fspec = new ir3.FuncSpec(return_type, this_type, name, param_types);
+			final ir3.FuncSpec fspec = new ir3.FuncSpec(return_type, this_type, mtd.getName(), param_types);
 			out_func_specs.add(fspec);
 			out_func_locations.add(mtd.getDeclarationRange());
 			ret.addMethod(mtd.getDeclarationRange(), out_func_specs, out_func_locations, funcidx, mtd.getName(), param_types);

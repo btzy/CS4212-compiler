@@ -1,3 +1,7 @@
 package ir3;
 
-public abstract class Instruction {}
+import java.io.PrintStream;
+
+public abstract class Instruction {
+	public abstract void print(PrintStream w, PrintContext pc);
+}

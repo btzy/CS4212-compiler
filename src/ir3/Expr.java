@@ -2,6 +2,7 @@ package ir3;
 
 import util.LocationRange;
 import java.util.function.Consumer;
+import java.io.PrintStream;
 
 /**
  * Represents a Expr with real type (cannot be nullptr_t).
@@ -33,4 +34,6 @@ public abstract class Expr {
 		out.accept(new ir3.Assign(localidx, this));
 		return new LocalVariable(type, localidx);
 	}
+
+	public abstract void print(PrintStream w, PrintContext pc);
 }

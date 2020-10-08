@@ -10,7 +10,7 @@ import util.Errors;
 public class Compiler {
     public static void main(String[] args) {
         final HashMap<String, String> argmap = parseArgs(args);
-        final boolean lenient = hasArg(argmap, "lenient");
+        //final boolean lenient = hasArg(argmap, "lenient");
         try {
             final ComplexSymbolFactory sf = new ComplexSymbolFactory();
             final String filename = getArgWithValue(argmap, "i");
@@ -20,18 +20,21 @@ public class Compiler {
             Object program_obj = p.parse().value;
             if (p.userHasFatalError) System.exit(1);
             Program program = (Program) program_obj;
-            if (p.userHasError && !lenient) throw new Exception("Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').");
+            //if (p.userHasError && !lenient) throw new Exception("Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').");
+            if (p.userHasError) throw new Exception("Parse aborted due to above error.");
             // program.print(new NestedPrintStream(System.out));
+            ir3.Program ir3_program = null;
             try {
-                program.typeCheckAndEmitIR3();
+                ir3_program = program.typeCheckAndEmitIR3();
             }
             catch (SemanticException e) {
                 e.printNiceMessage(System.err, filename);
                 System.exit(1);
             }
+            ir3_program.print(System.out);
         }
         catch (CommandArgumentException e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println(e.getMessage());
             System.exit(1);
         }
         catch (UnknownCharacterException e) {
@@ -41,7 +44,7 @@ public class Compiler {
             System.exit(1);
         }
         catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println(e.getMessage());
             System.exit(1);
         }
     }

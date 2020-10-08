@@ -3,6 +3,7 @@ package ir3;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.OptionalInt;
+import java.io.PrintStream;
 import util.LocationRange;
 
 /**
@@ -13,6 +14,7 @@ public class ClassDescriptor {
 	public final TypeName this_type;
 	private ArrayList<TypeName> field_types;
 	private ArrayList<LocationRange> field_locations;
+	private ArrayList<String> field_names;
 	private HashMap<String, Integer> field_name_lookup;
 	private HashMap<String, ArrayList<Integer>> method_name_lookup; // value is an arraylist because we support overloading
 
@@ -20,6 +22,7 @@ public class ClassDescriptor {
 		this.this_type = this_type;
 		this.field_types = new ArrayList<>();
 		this.field_locations = new ArrayList<>();
+		this.field_names = new ArrayList<>();
 		this.field_name_lookup = new HashMap<>();
 		this.method_name_lookup = new HashMap<>();
 	}
@@ -32,6 +35,7 @@ public class ClassDescriptor {
 		}
 		field_types.add(type);
 		field_locations.add(range);
+		field_names.add(name);
 		return ret;
 	}
 
@@ -63,6 +67,25 @@ public class ClassDescriptor {
 
 	public TypeName getFieldType(int idx) {
 		return field_types.get(idx);
+	}
+
+	public String getFieldName(int idx) {
+		return field_names.get(idx);
+	}
+
+	public void print(PrintStream w) {
+		w.print("class ");
+		w.print(this_type.name);
+		w.println('{');
+		final int num_fields = field_types.size();
+		for (int i=0; i!=num_fields; ++i) {
+			w.print("  ");
+			w.print(field_types.get(i).name);
+			w.print(' ');
+			w.print(field_names.get(i));
+			w.println(';');
+		}
+		w.println('}');
 	}
 }
 

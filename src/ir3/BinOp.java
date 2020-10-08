@@ -1,6 +1,6 @@
 package ir3;
 
-
+import java.io.PrintStream;
 
 public enum BinOp {
 	EQ("==", TypeName.INT, TypeName.BOOL), NE("!=", TypeName.INT, TypeName.BOOL), LT("<", TypeName.INT, TypeName.BOOL), LE("<=", TypeName.INT, TypeName.BOOL), GT(">", TypeName.INT, TypeName.BOOL), GE(">=", TypeName.INT, TypeName.BOOL),
@@ -13,4 +13,8 @@ public enum BinOp {
 	public final TypeName result_type;
 
 	BinOp(String text, TypeName arg_type, TypeName result_type) { this.text = text; this.arg_type = arg_type; this.result_type = result_type; }
+
+	public void print(PrintStream w) {
+		w.print(text);
+	}
 }

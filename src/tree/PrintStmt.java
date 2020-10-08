@@ -27,7 +27,9 @@ public class PrintStmt extends Stmt {
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
 		// TODO: throw more specific exception
 		// TODO: println argument can be String, Int, or Bool
-		ir3.Expr result = result_nullable.imbueTypes(new ir3.TypeName[]{ir3.TypeName.INT, ir3.TypeName.BOOL, ir3.TypeName.STRING}).orElseThrow(() -> new SemanticException("Type error", range));
+		ir3.Expr result = result_nullable
+			.imbueTypes(new ir3.TypeName[]{ ir3.TypeName.INT, ir3.TypeName.BOOL, ir3.TypeName.STRING })
+			.orElseThrow(() -> new SemanticException("Type error", range));
 		
 		// since print statements require an idc3 instead of Exp3, we need to convert Exp3 to idc3
 		ir3.Terminal terminal = result.makeTerminalByMaybeEmitIR3(expr.range, ctx, out);
