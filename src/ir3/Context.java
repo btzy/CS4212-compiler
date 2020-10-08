@@ -14,9 +14,10 @@ public class Context {
 	private ArrayList<FuncSpec> func_specs;
 	private ArrayList<LocationRange> func_locations;
 	private final TypeName return_type;
+	private final LocationRange return_range;
 	private int num_labels;
 
-	public Context(LocalEnvironment env, ClassDescriptor this_cd, ArrayList<ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations, TypeName return_type) {
+	public Context(LocalEnvironment env, ClassDescriptor this_cd, ArrayList<ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations, TypeName return_type, LocationRange return_range) {
 		this.env = env;
 		this.this_cd = this_cd;
 		this.cd_lookup = new HashMap<>();
@@ -26,6 +27,7 @@ public class Context {
 		this.func_specs = func_specs;
 		this.func_locations = func_locations;
 		this.return_type = return_type;
+		this.return_range = return_range;
 		this.num_labels = 0;
 	}
 
@@ -101,5 +103,8 @@ public class Context {
 
 	public TypeName getReturnType() {
 		return return_type;
+	}
+	public LocationRange getReturnRange() {
+		return return_range;
 	}
 }

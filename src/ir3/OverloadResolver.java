@@ -24,7 +24,7 @@ public class OverloadResolver {
 		ArrayList<LocationRange> candidate_ranges = new ArrayList<>();
 		for (Integer i : funcidxs) {
 			if (matches(arg_types, ctx.getFunc(i).param_types)) {
-				candidates_without_this.add(makePrintableSignature(name, ctx.getFunc(i)));
+				candidates_without_this.add(makePrintableSignatureRemovingThis(name, ctx.getFunc(i).param_types));
 				candidate_ranges.add(ctx.getFuncRange(i));
 			}
 		}
@@ -45,13 +45,13 @@ public class OverloadResolver {
 		return param_type == TypeName.STRING || !param_type.isPrimitive();
 	}
 
-	private static String makePrintableSignature(String name, FuncSpec spec) {
+	public static String makePrintableSignatureRemovingThis(String name, ArrayList<TypeName> types) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		sb.append('(');
 		boolean needComma = false;
-		for (int i=1; i<spec.param_types.size(); ++i) { // ignore 'this' parameter
-			final TypeName type = spec.param_types.get(i);
+		for (int i=1; i<types.size(); ++i) { // ignore 'this' parameter
+			final TypeName type = types.get(i);
 			if (needComma) sb.append(',');
 			sb.append(type.name);
 			needComma = true;
@@ -60,12 +60,12 @@ public class OverloadResolver {
 		return sb.toString();
 	}
 
-	private static String makePrintableSignature(String name, ArrayList<NullableTypeName> types) {
+	public static String makePrintableSignature(String name, ArrayList<NullableTypeName> types) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		sb.append('(');
 		boolean needComma = false;
-		for (NullableTypeName ntype : types) {
+		for (NullableTypeName ntype : types) { // no need to ignore 'this', because it is not present
 			if (needComma) sb.append(',');
 			sb.append(ntype.getNullableName());
 			needComma = true;

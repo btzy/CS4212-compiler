@@ -25,7 +25,7 @@ public class ReturnValueStmt extends Stmt {
 
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
 		// TODO: throw more specific exception
-		ir3.Expr result = result_nullable.imbueType(ctx.getReturnType()).orElseThrow(() -> new SemanticException("Type error", range));
+		ir3.Expr result = result_nullable.imbueType(ctx.getReturnType()).orElseThrow(() -> new ir3.ReturnTypeException(result_nullable.getType(), range, ctx.getReturnType(), ctx.getReturnRange()));
 	
 		// since return statements require an id3 instead of Exp3, we need to convert Exp3 to id3
 		ir3.LocalVariable terminal = result.makeLocalVariableByMaybeEmitIR3(range, ctx, out);

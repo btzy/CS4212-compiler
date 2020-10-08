@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.OptionalInt;
 import java.io.PrintStream;
 import util.LocationRange;
+import ir3.OverloadResolver;
 
 /**
  * Class descriptor for one class.
@@ -30,8 +31,7 @@ public class ClassDescriptor {
 	public int addField(LocationRange range, TypeName type, String name) throws SemanticException {
 		final int ret = field_types.size();
 		if (field_name_lookup.putIfAbsent(name, ret) != null) {
-			// TODO: give the location
-			throw new DuplicateClassFieldException(this_type.name, name, range, field_locations.get(field_name_lookup.get(name)));
+			throw new DuplicateClassFieldException(name, this_type.name, range, field_locations.get(field_name_lookup.get(name)));
 		}
 		field_types.add(type);
 		field_locations.add(range);
@@ -46,7 +46,7 @@ public class ClassDescriptor {
 		for (Integer idx : overload_list) {
 			if (param_types.equals(func_specs.get(idx).param_types)) {
 				// existing overload
-				throw new DuplicateMethodException(name, this_type.name, range, func_locations.get(idx));
+				throw new DuplicateMethodException(OverloadResolver.makePrintableSignatureRemovingThis(name, param_types), this_type.name, range, func_locations.get(idx));
 			}
 		}
 		overload_list.add(funcidx);

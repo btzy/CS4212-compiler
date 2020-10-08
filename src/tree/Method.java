@@ -66,7 +66,7 @@ public class Method extends Node implements ClassItem {
 		for (VarDecl vdecl : locals) {
 			env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
 		}
-		final Context ctx = new Context(env, this_ctx, cds, func_specs, func_locations, ir3.TypeName.getType(type));
+		final Context ctx = new Context(env, this_ctx, cds, func_specs, func_locations, ir3.TypeName.getType(type), type_range);
 		final ArrayList<ir3.Instruction> insts = new ArrayList<>();
 		for (Stmt s : stmts) {
 			s.typeCheckAndEmitIR3(ctx, insts::add);
