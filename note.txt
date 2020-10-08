@@ -21,3 +21,5 @@ f(null); //ok
 f(Int);
 f(Obj);
 f(null); //error
+
+nice errors for overloaded functions, even suggest matches

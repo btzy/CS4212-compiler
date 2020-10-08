@@ -46,6 +46,10 @@ public class LocalEnvironment {
 		return names.get(idx);
 	}
 
+	public LocationRange getRange(int idx) {
+		return report_ranges.get(idx);
+	}
+
 	public int size() {
 		return types.size();
 	}

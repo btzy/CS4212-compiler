@@ -51,8 +51,7 @@ public class MemberAssignStmt extends Stmt {
 
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
 		// TODO: throw more specific exception
-		// TODO: detect lookup matching a method name
-		ir3.Expr rhs_result = rhs_result_nullable.imbueType(fieldentry.type).orElseThrow(() -> new SemanticException("Type error", range));
+		ir3.Expr rhs_result = rhs_result_nullable.imbueType(fieldentry.type).orElseThrow(() -> new ir3.TypeImbueAssignException(rhs_result_nullable.getType(), expr.range, fieldentry.type, member, ctx.getFieldRange(obj_result.type, fieldentry.idx)));
 		
 		// generate the instruction
 		out.accept(new ir3.AssignMember(localidx, fieldentry.idx, rhs_result));

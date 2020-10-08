@@ -6,7 +6,7 @@ import java.io.PrintStream;
 public class NoSuchMemberFieldException extends SemanticException {
     private int hintMethodCount;
     public NoSuchMemberFieldException(String name, String classname, LocationRange range, int hintMethodCount) {
-        super("Type " + classname + " does not have field \"" + name + "\"", range);
+        super("Type \"" + classname + "\" does not have field \"" + name + "\"", range);
         this.hintMethodCount = hintMethodCount;
     }
 

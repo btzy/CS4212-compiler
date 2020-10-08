@@ -30,8 +30,7 @@ public class AssignStmt extends Stmt {
 		ir3.Context.Entry entry = ctx.lookup(target).orElseThrow(() -> new NoSuchNameException(target, target_range));
 
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
-		// TODO: throw more specific exception
-		ir3.Expr rhs_result = rhs_result_nullable.imbueType(entry.type).orElseThrow(() -> new SemanticException("Type error", range));
+		ir3.Expr rhs_result = rhs_result_nullable.imbueType(entry.type).orElseThrow(() -> new ir3.TypeImbueAssignException(rhs_result_nullable.getType(), expr.range, entry.type, target, ctx.getEntryRange(entry)));
 		
 		if (entry.isLocal) {
 			// normal assign statement

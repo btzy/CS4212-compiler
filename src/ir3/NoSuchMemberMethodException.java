@@ -8,7 +8,7 @@ import java.util.Optional;
 public class NoSuchMemberMethodException extends SemanticException {
     private Optional<LocationRange> hintField;
     public NoSuchMemberMethodException(String name, String classname, LocationRange range, Optional<LocationRange> hintField) {
-        super("Method \"" + name + "\" does not exist in class " + classname, range);
+        super("Method \"" + name + "\" does not exist in class \"" + classname + "\"", range);
         this.hintField = hintField;
     }
     

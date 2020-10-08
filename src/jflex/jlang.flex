@@ -25,12 +25,16 @@ import java.io.InputStreamReader;
   private ComplexSymbolFactory sf;
   private StringBuffer string = new StringBuffer();
   private String filename;
+  private Location string_start_location;
 
   private Symbol symbol(String name, int type) {
     return sf.newSymbol(name, type, new Location(yyline+1, Math.max(0, yycolumn)), new Location(yyline+1, yycolumn+yylength()));
   }
   private Symbol symbol(String name, int type, Object value) {
     return sf.newSymbol(name, type, new Location(yyline+1, Math.max(0, yycolumn)), new Location(yyline+1, yycolumn+yylength()), value);
+  }
+  private Symbol symbol(String name, int type, Object value, Location start_location) {
+    return sf.newSymbol(name, type, start_location, new Location(yyline+1, yycolumn+yylength()), value);
   }
 
   private static char decToChar(String value) {
@@ -94,7 +98,7 @@ NormalComment = "//" {InputCharacter}* {LineTerminator}?
   
   /* literals */
   {IntegerLiteral}               { return symbol("integer_literal", sym.INTEGER_LITERAL, Integer.valueOf(yytext())); }
-  \"                             { string.setLength(0); yybegin(STRING); }
+  \"                             { string.setLength(0); string_start_location = new Location(yyline+1, Math.max(0, yycolumn)); yybegin(STRING); }
 
   /* operators */
   "="                            { return symbol("\"=\"", sym.ASSIGN); }
@@ -132,7 +136,7 @@ NormalComment = "//" {InputCharacter}* {LineTerminator}?
 <STRING> {
   \"                             { yybegin(YYINITIAL);
                                    return symbol("", sym.STRING_LITERAL,
-                                   string.toString()); }
+                                   string.toString(), string_start_location); }
   [^\n\r\"\\]+                   { string.append( yytext() ); }
   \\t                            { string.append('\t'); }
   \\n                            { string.append('\n'); }

@@ -53,6 +53,14 @@ public class Context {
 					.orElseGet(() -> Optional.empty());
 			});
 	}
+	public LocationRange getEntryRange(Entry entry) {
+		if (entry.isLocal) {
+			return env.getRange(entry.idx);
+		}
+		else {
+			return this_cd.getFieldRange(entry.idx);
+		}
+	}
 
 	public static class FieldEntry {
 		public final TypeName type;
