@@ -31,7 +31,12 @@ public class SemanticException extends Exception {
 
     @FunctionalInterface
     public interface SemanticTask {
-        void run() throws SemanticException;
+        void run() throws SemanticException, SilentException;
+    }
+
+    @FunctionalInterface
+    public interface SemanticSupplier<T> {
+        T run() throws SemanticException, SilentException;
     }
 
     public static void bound(SemanticTask task) {
@@ -40,6 +45,20 @@ public class SemanticException extends Exception {
         }
         catch (SemanticException ex) {
             ex.handle();
+        }
+        catch (SilentException ex) {}
+    }
+
+    public static <T> T bound(SemanticSupplier<T> supplier, T def) {
+        try {
+            return supplier.run();
+        }
+        catch (SemanticException ex) {
+            ex.handle();
+            return def;
+        }
+        catch (SilentException ex) {
+            return def;
         }
     }
 }

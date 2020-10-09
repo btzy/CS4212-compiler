@@ -32,10 +32,10 @@ public class Compiler {
                 ir3_program = program.typeCheckAndEmitIR3();
             }
             catch (SilentException e) {}
-            catch (SemanticException e) {
+            /*catch (SemanticException e) {
                 e.handle();
                 System.exit(1);
-            }
+            }*/
             if (SemanticException.previouslyHandled) throw new Exception("Semantic checking aborted due to above errors.");
             ir3_program.print(System.out);
         }

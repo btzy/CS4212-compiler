@@ -15,5 +15,16 @@ Void main(){
     sr = k + "test";
     sr = "test" + k;
     sr = j + k;
+    if (i == j) {
+        ir = 1 + "1";
+    }
+    else {
+        ir = 1 + "1";
+    }
+    while (i == k) {
+        ir = 1 
+           + "1";
+        ir = 1 + "1" + "2";
+    }
 }
 }

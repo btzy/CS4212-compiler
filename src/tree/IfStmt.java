@@ -37,23 +37,24 @@ public class IfStmt extends Stmt {
 	 * Typecheck and emit IR3 code for this node.
 	 */
 	public void typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
-		ir3.NullableExpr cond_nullable = cond.typeCheckAndEmitIR3(ctx, out);
-		
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
 		// condition must be Bool
-		ir3.Expr cond_res = cond_nullable
-			.imbueType(ir3.TypeName.BOOL)
-			.orElseThrow(() -> new ir3.TypeImbueIfStatementConditionException(cond_nullable.getType(), cond.range));
+		ir3.Expr cond_res = SemanticException.bound(() -> {
+			ir3.NullableExpr cond_nullable = cond.typeCheckAndEmitIR3(ctx, out);
+			return cond_nullable
+				.imbueType(ir3.TypeName.BOOL)
+				.orElseThrow(() -> new ir3.TypeImbueIfStatementConditionException(cond_nullable.getType(), cond.range));
+		}, new ir3.BooleanLiteral(true));
 		
 		ir3.Label true_label = ctx.newLabel();
 		ir3.Label end_label = ctx.newLabel();
 
 		// generate the IR3 branching code
 		out.accept(new ir3.IfGoto(cond_res, true_label));
-		for (Stmt s : false_stmts) s.typeCheckAndEmitIR3(ctx, out);
+		for (Stmt s : false_stmts) SemanticException.bound(() -> { s.typeCheckAndEmitIR3(ctx, out); });
 		out.accept(new ir3.Goto(end_label));
 		out.accept(true_label);
-		for (Stmt s : true_stmts) s.typeCheckAndEmitIR3(ctx, out);
+		for (Stmt s : true_stmts) SemanticException.bound(() -> { s.typeCheckAndEmitIR3(ctx, out); });
 		out.accept(end_label);
 	}
 }

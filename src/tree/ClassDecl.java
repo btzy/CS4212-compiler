@@ -129,10 +129,12 @@ public class ClassDecl extends Node {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ArrayList<ir3.FuncBody> typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations) throws SemanticException {
+	public ArrayList<ir3.FuncBody> typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations) {
 		ArrayList<ir3.FuncBody> ret = new ArrayList<ir3.FuncBody>();
 		for (Method method : methods) {
-			ret.add(method.typeCheckAndEmitIR3(this_ctx, cds, func_specs, func_locations));
+			ir3.SemanticException.bound(() -> {
+				ret.add(method.typeCheckAndEmitIR3(this_ctx, cds, func_specs, func_locations));
+			});
 		}
 		return ret;
 	}

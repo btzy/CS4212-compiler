@@ -3,6 +3,7 @@ package tree;
 import java.util.ArrayList;
 import ir3.Context;
 import ir3.SemanticException;
+import ir3.SilentException;
 import util.LocationRange;
 
 public class Method extends Node implements ClassItem {
@@ -54,22 +55,34 @@ public class Method extends Node implements ClassItem {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ir3.FuncBody typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations) throws SemanticException {
+	public ir3.FuncBody typeCheckAndEmitIR3(ir3.ClassDescriptor this_ctx, ArrayList<ir3.ClassDescriptor> cds, ArrayList<ir3.FuncSpec> func_specs, ArrayList<LocationRange> func_locations) throws SilentException {
 		final ir3.LocalEnvironment env = new ir3.LocalEnvironment();
 		// add 'this'
-		env.add(declaration_range, this_ctx.getTypeName(), "this");
+		SemanticException.bound(() -> {
+			env.add(declaration_range, this_ctx.getTypeName(), "this");
+		});
+		final boolean se_ph = SemanticException.previouslyHandled;
+		SemanticException.previouslyHandled = false;
 		// add all the params
 		for (VarDecl vdecl : signature) {
-			env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
+			SemanticException.bound(() -> {
+				env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
+			});
 		}
 		// add all the locals
 		for (VarDecl vdecl : locals) {
-			env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
+			SemanticException.bound(() -> {
+				env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
+			});
 		}
+		if (SemanticException.previouslyHandled) throw new SilentException();
+		SemanticException.previouslyHandled = se_ph;
 		final Context ctx = new Context(env, this_ctx, cds, func_specs, func_locations, ir3.TypeName.getType(type), type_range);
 		final ArrayList<ir3.Instruction> insts = new ArrayList<>();
 		for (Stmt s : stmts) {
-			s.typeCheckAndEmitIR3(ctx, insts::add);
+			SemanticException.bound(() -> {
+				s.typeCheckAndEmitIR3(ctx, insts::add);
+			});
 		}
 		return new ir3.FuncBody(ctx.getLocalEnvironment(), signature.size() + 1, insts);
 	}

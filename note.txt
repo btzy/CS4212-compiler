@@ -23,3 +23,5 @@ f(Obj);
 f(null); //error
 
 nice errors for overloaded functions, even suggest matches
+
+prints multiple errors

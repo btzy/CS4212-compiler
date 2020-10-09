@@ -21,7 +21,7 @@ public class Program extends Node {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ir3.Program typeCheckAndEmitIR3() throws ir3.SemanticException, ir3.SilentException {
+	public ir3.Program typeCheckAndEmitIR3() throws ir3.SilentException {
 		ArrayList<ir3.ClassDescriptor> cds = new ArrayList<ir3.ClassDescriptor>();
 		ArrayList<ir3.FuncSpec> func_specs = new ArrayList<>();
 		ArrayList<LocationRange> func_locations = new ArrayList<>();
@@ -34,7 +34,6 @@ public class Program extends Node {
 		// so we should abort here
 		if (ir3.SemanticException.previouslyHandled) throw new ir3.SilentException();
 
-		// Note: null == "".  Convert all "" to null.
 		// ARMv7
 		// generate each class
 		ArrayList<ir3.FuncBody> funcs = new ArrayList<>();
