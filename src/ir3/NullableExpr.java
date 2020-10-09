@@ -13,6 +13,9 @@ public class NullableExpr {
 	public static NullableExpr of(Expr expr) { assert(expr != null); return new NullableExpr(expr); }
 	public static NullableExpr nullValue() { return new NullableExpr(null); }
 
+	/**
+	 * Coerces this NullableExpr to the given type.
+	 */
 	public Optional<Expr> imbueType(TypeName type) {
 		if (inner != null) {
 			if (inner.type == type) return Optional.of(inner);

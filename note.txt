@@ -12,6 +12,8 @@ x.y(1);
 
 null + null == null
 
+method and field can have same name
+
 If field lookup matches a method name, emit a note
 
 f(Int);
