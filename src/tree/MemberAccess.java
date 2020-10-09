@@ -29,8 +29,7 @@ public class MemberAccess extends Expr {
 	public NullableExpr typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
 		ir3.NullableExpr obj_result_nullable = obj.typeCheckAndEmitIR3(ctx, out);
 
-		// TODO: throw more specific exception
-		ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new SemanticException("Cannot be null here", range));
+		ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new ir3.NullMemberAccessException(range));
 
 		// new temporary local for obj_result
 		int localidx = ctx.newLocal(range, obj_result.type);
@@ -39,7 +38,6 @@ public class MemberAccess extends Expr {
 		out.accept(new ir3.Assign(localidx, obj_result));
 
 		// lookup field
-		// TODO: detect lookup matching a method name
 		ir3.Context.FieldEntry fieldentry = ctx.lookupField(obj_result.type, member).orElseThrow(() ->
 			new ir3.NoSuchMemberFieldException(member, obj_result.type.name, member_range, ctx.lookupMethod(obj_result.type, member).size()));
 
@@ -53,11 +51,9 @@ public class MemberAccess extends Expr {
 	public ir3.ExprAndFuncIdxArray typeCheckAndEmitIR3ForMethod(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
 		ir3.NullableExpr obj_result_nullable = obj.typeCheckAndEmitIR3(ctx, out);
 
-		// TODO: throw more specific exception
-		ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new SemanticException("Cannot be null here", range));
+		ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new ir3.NullMemberAccessException(range));
 
 		// lookup method
-		// TODO: detect lookup matching a method name
 		ArrayList<Integer> methodidxs = ctx.lookupMethod(obj_result.type, member);
 
 		return new ir3.ExprAndFuncIdxArray(obj_result, methodidxs, obj_result.type, member);

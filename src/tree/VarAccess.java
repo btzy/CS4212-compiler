@@ -38,7 +38,6 @@ public class VarAccess extends Expr {
 	 */
 	public ir3.ExprAndFuncIdxArray typeCheckAndEmitIR3ForMethod(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
 		// lookup method
-		// TODO: detect lookup matching a field name
 		ArrayList<Integer> methodidxs = ctx.lookupLocalMethod(target);
 
 		return new ir3.ExprAndFuncIdxArray(new ir3.LocalVariable(ctx.thisType(), ctx.getLocalEnvironment().thisIndex()), methodidxs, ctx.thisType(), target);

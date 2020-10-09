@@ -5,6 +5,7 @@ import tree.NestedPrintStream;
 import java_cup.runtime.SymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory;
 import ir3.SemanticException;
+import ir3.SilentException;
 import util.Errors;
 
 public class Compiler {
@@ -21,16 +22,21 @@ public class Compiler {
             if (p.userHasFatalError) System.exit(1);
             Program program = (Program) program_obj;
             //if (p.userHasError && !lenient) throw new Exception("Parse aborted due to above error.  To skip over error, try using lenient mode ('-lenient').");
-            if (p.userHasError) throw new Exception("Parse aborted due to above error.");
+            if (p.userHasError) throw new Exception("Parse aborted due to above errors.");
             // program.print(new NestedPrintStream(System.out));
+            SemanticException.printer = System.err;
+            SemanticException.filename = filename;
+            SemanticException.previouslyHandled = false;
             ir3.Program ir3_program = null;
             try {
                 ir3_program = program.typeCheckAndEmitIR3();
             }
+            catch (SilentException e) {}
             catch (SemanticException e) {
-                e.printNiceMessage(System.err, filename);
+                e.handle();
                 System.exit(1);
             }
+            if (SemanticException.previouslyHandled) throw new Exception("Semantic checking aborted due to above errors.");
             ir3_program.print(System.out);
         }
         catch (CommandArgumentException e) {
@@ -45,7 +51,7 @@ public class Compiler {
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
-            e.printStackTrace(System.err);
+            //e.printStackTrace(System.err);
             System.exit(1);
         }
     }

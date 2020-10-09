@@ -8,7 +8,7 @@ import java.io.PrintStream;
  * Subclasses should extend this class to print a note that explains why the imbued type is required.
  */
 public class TypeImbueAssignException extends TypeImbueException {
-    TypeName declared_type;
+    private TypeName declared_type;
     private String assignee_name;
     private LocationRange declaration_range;
     public TypeImbueAssignException(NullableTypeName arg_type, LocationRange range, TypeName declared_type, String assignee_name, LocationRange declaration_range) {

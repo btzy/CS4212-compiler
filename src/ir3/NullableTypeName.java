@@ -15,4 +15,7 @@ public class NullableTypeName {
 	public String getNullableName() { return inner != null ? inner.name : "null"; }
 
 	public Optional<TypeName> asOptional() { return Optional.ofNullable(inner); }
+
+	@Override
+	public String toString() { return getNullableName(); }
 }

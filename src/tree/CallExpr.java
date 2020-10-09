@@ -52,8 +52,13 @@ public class CallExpr extends Expr {
 		final ArrayList<ir3.Terminal> args_terminals = new ArrayList<>();
 		args_terminals.add(result_expr_funcidxs.expr.makeTerminalByMaybeEmitIR3(callee.range, ctx, out));
 		for (int i=0; i!=args_nullable.size(); ++i) {
-			// TODO more specific error
-			args_terminals.add(args_nullable.get(i).imbueType(param_types.get(i+1)).orElseThrow(() -> new SemanticException("Type error", range)).makeTerminalByMaybeEmitIR3(args.get(i).range, ctx, out));
+			// this error shouldn't actually happen because we already did overload resolution...
+			final int ii = i;
+			args_terminals.add(args_nullable
+				.get(ii)
+				.imbueType(param_types.get(ii+1))
+				.orElseThrow(() -> new ir3.TypeImbueException(args_nullable.get(ii).getType(), args.get(ii).range, param_types.get(ii+1)))
+				.makeTerminalByMaybeEmitIR3(args.get(ii).range, ctx, out));
 		}
 
 		return NullableExpr.of(new ir3.CallExpr(result_type, funcidx, args_terminals));

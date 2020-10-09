@@ -1,5 +1,6 @@
 package tree;
-
+
+
 import util.LocationRange;
 import ir3.Context;
 import ir3.NullableExpr;
@@ -31,8 +32,10 @@ public class UnaryOperation extends Expr {
 
 		ir3.UnOp ir3_op = op.getIR3Op();
 		
-		// TODO more specific error
-		ir3.Terminal e_term = e_nullable.imbueType(ir3_op.arg_type).orElseThrow(() -> new SemanticException("Type error", range)).makeTerminalByMaybeEmitIR3(expr.range, ctx, out);
+		ir3.Terminal e_term = e_nullable
+			.imbueType(ir3_op.arg_type)
+			.orElseThrow(() -> new ir3.TypeImbueUnaryOperatorException(e_nullable.getType(), expr.range, ir3_op, ir3_op.arg_type))
+			.makeTerminalByMaybeEmitIR3(expr.range, ctx, out);
 
 		return NullableExpr.of(new ir3.UnaryExpr(ir3_op.result_type, e_term, ir3_op));
 	}

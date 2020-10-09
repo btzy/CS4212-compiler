@@ -35,6 +35,9 @@ public class TypeName {
 		return this == INT || this == BOOL || this == STRING || this == VOID;
 	}
 
+	@Override
+	public String toString() { return name; }
+
 	public static final TypeName INT = addType("Int", null);
 	public static final TypeName BOOL = addType("Bool", null);
 	public static final TypeName STRING = addType("String", null);

@@ -40,9 +40,10 @@ public class IfStmt extends Stmt {
 		ir3.NullableExpr cond_nullable = cond.typeCheckAndEmitIR3(ctx, out);
 		
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
-		// TODO: throw more specific exception
 		// condition must be Bool
-		ir3.Expr cond_res = cond_nullable.imbueType(ir3.TypeName.BOOL).orElseThrow(() -> new SemanticException("Type error", range));
+		ir3.Expr cond_res = cond_nullable
+			.imbueType(ir3.TypeName.BOOL)
+			.orElseThrow(() -> new ir3.TypeImbueIfStatementConditionException(cond_nullable.getType(), cond.range));
 		
 		ir3.Label true_label = ctx.newLabel();
 		ir3.Label end_label = ctx.newLabel();

@@ -21,14 +21,19 @@ public class Program extends Node {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public ir3.Program typeCheckAndEmitIR3() throws ir3.SemanticException {
+	public ir3.Program typeCheckAndEmitIR3() throws ir3.SemanticException, ir3.SilentException {
 		ArrayList<ir3.ClassDescriptor> cds = new ArrayList<ir3.ClassDescriptor>();
 		ArrayList<ir3.FuncSpec> func_specs = new ArrayList<>();
 		ArrayList<LocationRange> func_locations = new ArrayList<>();
 		for (ClassDecl cdecl : classes) {
-			cds.add(cdecl.makeClassDescriptor(func_specs, func_locations, cdecl == classes.get(0)));
+			ir3.SemanticException.bound(() -> {
+				cds.add(cdecl.makeClassDescriptor(func_specs, func_locations, cdecl == classes.get(0)));
+			});
 		}
-		// TODO: tree should also store locations
+		// If we have semantic errors at this point, then the class descriptors would be missing some fields or methods.
+		// so we should abort here
+		if (ir3.SemanticException.previouslyHandled) throw new ir3.SilentException();
+
 		// Note: null == "".  Convert all "" to null.
 		// ARMv7
 		// generate each class

@@ -42,15 +42,19 @@ public class BinaryOperation extends Expr {
 			ir3_op = op.getIR3Op();
 		}
 
-		// TODO more specific error
-		ir3.Terminal left_term = left_nullable.imbueType(ir3_op.arg_type).orElseThrow(() -> new SemanticException("Type error", range)).makeTerminalByMaybeEmitIR3(left.range, ctx, out);
-		// TODO more specific error
-		ir3.Terminal right_term = right_nullable.imbueType(ir3_op.arg_type).orElseThrow(() -> new SemanticException("Type error", range)).makeTerminalByMaybeEmitIR3(right.range, ctx, out);
+		ir3.Terminal left_term = left_nullable
+			.imbueType(ir3_op.arg_type)
+			.orElseThrow(() -> new ir3.TypeImbueBinaryOperatorException(left_nullable.getType(), left.range, ir3_op, ir3_op.arg_type))
+			.makeTerminalByMaybeEmitIR3(left.range, ctx, out);
+		ir3.Terminal right_term = right_nullable
+			.imbueType(ir3_op.arg_type)
+			.orElseThrow(() -> new ir3.TypeImbueBinaryOperatorException(right_nullable.getType(), right.range, ir3_op, ir3_op.arg_type))
+			.makeTerminalByMaybeEmitIR3(right.range, ctx, out);
 
 		return NullableExpr.of(new ir3.BinaryExpr(ir3_op.result_type, left_term, right_term, ir3_op));
 	}
 
-	private ir3.BinOp resolvePlusOp(NullableExpr left_nullable, NullableExpr right_nullable) throws SemanticException {
+	private ir3.BinOp resolvePlusOp(NullableExpr left_nullable, NullableExpr right_nullable) throws ir3.TypeImbuePlusOperatorException {
 		ir3.TypeName left_type = left_nullable.getType().asOptional().orElse(ir3.TypeName.STRING); // nulls turn into String here
 		ir3.TypeName right_type = right_nullable.getType().asOptional().orElse(ir3.TypeName.STRING); // nulls turn into String here
 		if (left_type == ir3.TypeName.STRING && right_type == ir3.TypeName.STRING) {
@@ -59,7 +63,7 @@ public class BinaryOperation extends Expr {
 		if (left_type == ir3.TypeName.INT && right_type == ir3.TypeName.INT) {
 			return ir3.BinOp.PLUS;
 		}
-		// TODO: more specific exception
-		throw new SemanticException("Plus operator type error", range);
+		// cannot match either type of operator+
+		throw new ir3.TypeImbuePlusOperatorException(left_nullable.getType(), right_nullable.getType(), range);
 	}
 }

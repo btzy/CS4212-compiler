@@ -34,10 +34,8 @@ public class MemberAssignStmt extends Stmt {
 		ir3.NullableExpr obj_result_nullable = obj.typeCheckAndEmitIR3(ctx, out);
 		ir3.NullableExpr rhs_result_nullable = expr.typeCheckAndEmitIR3(ctx, out);
 
-		// TODO: throw more specific exception
-		ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new SemanticException("Cannot be null here", range));
+		ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new ir3.NullMemberAccessException(range));
 
-		// TODO: avoid generating this temporary when not needed
 		// new temporary local for obj_result
 		int localidx = ctx.newLocal(range, obj_result.type);
 
@@ -45,13 +43,12 @@ public class MemberAssignStmt extends Stmt {
 		out.accept(new ir3.Assign(localidx, obj_result));
 
 		// lookup field
-		// TODO: hint method location (if there is one method)
 		ir3.Context.FieldEntry fieldentry = ctx.lookupField(obj_result.type, member).orElseThrow(() ->
 			new ir3.NoSuchMemberFieldException(member, obj_result.type.name, member_range, ctx.lookupMethod(obj_result.type, member).size()));
 
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
-		// TODO: throw more specific exception
-		ir3.Expr rhs_result = rhs_result_nullable.imbueType(fieldentry.type).orElseThrow(() -> new ir3.TypeImbueAssignException(rhs_result_nullable.getType(), expr.range, fieldentry.type, member, ctx.getFieldRange(obj_result.type, fieldentry.idx)));
+		ir3.Expr rhs_result = rhs_result_nullable.imbueType(fieldentry.type).orElseThrow(() ->
+			new ir3.TypeImbueAssignException(rhs_result_nullable.getType(), expr.range, fieldentry.type, member, ctx.getFieldRange(obj_result.type, fieldentry.idx)));
 		
 		// generate the instruction
 		out.accept(new ir3.AssignMember(localidx, fieldentry.idx, rhs_result));
