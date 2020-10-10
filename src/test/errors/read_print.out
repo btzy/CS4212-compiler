@@ -1,0 +1,12 @@
+Error: Type "Main" cannot be the argument of a readln-statement ( line 7 col 12 - line 7 col 12 ) :
+7 |     readln(m);
+  |            ^
+Note: The allowed argument types for readln-statement are "Int", "Bool" or "String"
+Note: Variable "m" is declared as type "Main" here ( line 6 col 5 - line 6 col 10 ) :
+6 |     Main m;
+  |     ^^^^^^
+Error: Type "Main" cannot be the argument of a println-statement ( line 8 col 13 - line 8 col 13 ) :
+8 |     println(m);
+  |             ^
+Note: The allowed argument types for println-statement are "Int", "Bool" or "String"
+Semantic checking aborted due to above errors.

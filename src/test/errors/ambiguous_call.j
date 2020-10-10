@@ -8,8 +8,7 @@ Void main(Int i, Int a, Int b,Int d){
 }
 
 class A {
-    Int
-        g   ;
+    Int g   ;
     Void f(Bool b) { b = b; }
     Void f(String s) { s = s; }
     Void f(String s1, String s2) { s1 = s2; }

@@ -1,0 +1,19 @@
+Error: Return statement with no value is not allowed in method that returns "Int" ( line 13 col 16 - line 13 col 22 ) :
+13 |         x = x; return;
+   |                ^^^^^^^
+Note: Method declared to return "Int" here ( line 12 col 5 - line 12 col 7 ) :
+12 |     Int f() {
+   |     ^^^
+Error: Returning a value of type "String" is not allowed in method that returns "Int" ( line 16 col 16 - line 16 col 28 ) :
+16 |         x = x; return "abc";
+   |                ^^^^^^^^^^^^^
+Note: Method declared to return "Int" here ( line 15 col 5 - line 15 col 7 ) :
+15 |     Int g() {
+   |     ^^^
+Error: Returning a value of type "String" is not allowed in method that returns "Void" ( line 19 col 16 - line 19 col 28 ) :
+19 |         x = x; return "def";
+   |                ^^^^^^^^^^^^^
+Note: Method declared to return "Void" here ( line 18 col 5 - line 18 col 8 ) :
+18 |     Void h() {
+   |     ^^^^
+Semantic checking aborted due to above errors.

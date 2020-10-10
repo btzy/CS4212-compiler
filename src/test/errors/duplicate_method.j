@@ -8,5 +8,5 @@ class Dummy {
     Int x;
     Void f() { x = x;}
     Void f(String y) { x = y;}
-    Void f(String z) { x = z;}
+    Void f(String more_arg) { more_arg = x;}
 }

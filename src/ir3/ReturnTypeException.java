@@ -9,7 +9,7 @@ public class ReturnTypeException extends SemanticException {
     private final LocationRange declared_return_range;
     public ReturnTypeException(NullableTypeName arg_type, LocationRange range, TypeName declared_return_type, LocationRange declared_return_range) {
         super(((!arg_type.isNull() && arg_type.getTypeName() == TypeName.VOID)
-            ? "Return statement with no value is not allowed in method that returns "
+            ? "Return statement with no value is not allowed in method that returns \""
             : ("Returning a value of type \"" + arg_type.getNullableName() + "\" is not allowed in method that returns \""))
             + declared_return_type.name + "\"", range);
         

@@ -1,0 +1,7 @@
+Error: Duplicate declaration of method "f(String)" in class "Dummy" ( line 11 col 5 - line 11 col 27 ) :
+11 |     Void f(String more_arg) { more_arg = x;}
+   |     ^^^^^^^^^^^^^^^^^^^^^^^
+Note: Previously declared here ( line 10 col 5 - line 10 col 20 ) :
+10 |     Void f(String y) { x = y;}
+   |     ^^^^^^^^^^^^^^^^
+Semantic checking aborted due to above errors.

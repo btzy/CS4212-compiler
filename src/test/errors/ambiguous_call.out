@@ -1,0 +1,23 @@
+Error: Ambiguous method call to "f(null)" of class "A" ( line 4 col 5 - line 4 col 22 ) :
+4 |     (new A()).f(null);
+  |     ^^^^^^^^^^^^^^^^^^
+Hint: 3 candidate overloads matched
+Hint: Candidate overload "f(String)" matches ( line 13 col 5 - line 13 col 20 ) :
+13 |     Void f(String s) { s = s; }
+   |     ^^^^^^^^^^^^^^^^
+Hint: Candidate overload "f(A)" matches ( line 15 col 5 - line 15 col 15 ) :
+15 |     Void f(A a) { a=a;}
+   |     ^^^^^^^^^^^
+Hint: Candidate overload "f(Main)" matches ( line 16 col 5 - line 16 col 18 ) :
+16 |     Void f(Main s) {s=s;}
+   |     ^^^^^^^^^^^^^^
+Error: Method "f" does not exist in class "A" ( line 5 col 5 - line 5 col 21 ) :
+5 |     (new A()).f(123);
+  |     ^^^^^^^^^^^^^^^^^
+Error: Method "g" does not exist in class "A" ( line 6 col 5 - line 6 col 18 ) :
+6 |     (new A()).g();
+  |     ^^^^^^^^^^^^^^
+Hint: There is a field of the same name, did you intend to refer to it instead? ( line 11 col 5 - line 11 col 9 ) :
+11 |     Int g   ;
+   |     ^^^^^
+Semantic checking aborted due to above errors.

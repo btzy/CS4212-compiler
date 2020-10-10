@@ -92,14 +92,20 @@ public class ClassDecl extends Node {
 
 	public String getName() { return name; }
 
-	public ir3.ClassDescriptor makeClassDescriptor(ArrayList<ir3.FuncSpec> out_func_specs, ArrayList<LocationRange> out_func_locations, boolean isMainClass) throws ir3.SemanticException {
+	public void addThisType() throws ir3.SemanticException {
 		final ir3.TypeName this_type = ir3.TypeName.addType(name, report_range);
 		if (this_type == null) throw new ir3.DuplicateClassDeclException(name, report_range, ir3.TypeName.getType(name).report_range);
+	}
+
+	public ir3.ClassDescriptor makeClassDescriptor(ArrayList<ir3.FuncSpec> out_func_specs, ArrayList<LocationRange> out_func_locations, boolean isMainClass) throws ir3.SemanticException, ir3.SilentException {
+		final ir3.TypeName this_type = ir3.TypeName.getType(name);
+		if (this_type == null) throw new ir3.SilentException(); // if we throw, it means that 'addThisType' failed
 		final ir3.ClassDescriptor ret = new ir3.ClassDescriptor(this_type);
 		for (VarDecl vdecl : vars) {
 			SemanticException.bound(() -> {
 				final ir3.TypeName type = ir3.TypeName.getType(vdecl.getType());
 				if (type == null) throw new ir3.NoSuchTypeException(vdecl.getType(), vdecl.getTypeRange());
+				if (type == ir3.TypeName.VOID) throw new ir3.VoidTypeException(vdecl.getTypeRange());
 				ret.addField(vdecl.range, type, vdecl.getName());
 			});
 		}
@@ -110,9 +116,12 @@ public class ClassDecl extends Node {
 				ArrayList<ir3.TypeName> param_types = new ArrayList<>();
 				param_types.add(this_type); // the 'this' parameter
 				for (VarDecl vdecl : mtd.getSignature()) {
-					final ir3.TypeName ptype = ir3.TypeName.getType(vdecl.getType());
-					if (ptype == null) throw new ir3.NoSuchTypeException(vdecl.getType(), vdecl.getTypeRange());
-					param_types.add(ptype);
+					SemanticException.bound(() -> {
+						final ir3.TypeName ptype = ir3.TypeName.getType(vdecl.getType());
+						if (ptype == null) throw new ir3.NoSuchTypeException(vdecl.getType(), vdecl.getTypeRange());
+						if (ptype == ir3.TypeName.VOID) throw new ir3.VoidTypeException(vdecl.getTypeRange());
+						param_types.add(ptype);
+					});
 				}
 				final int funcidx = out_func_specs.size();
 				final ir3.FuncSpec fspec = isMainClass

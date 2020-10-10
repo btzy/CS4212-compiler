@@ -27,6 +27,13 @@ public class Program extends Node {
 		ArrayList<LocationRange> func_locations = new ArrayList<>();
 		for (ClassDecl cdecl : classes) {
 			ir3.SemanticException.bound(() -> {
+				cdecl.addThisType(); // adds forward-declarations of all types
+			});
+		}
+
+		for (ClassDecl cdecl : classes) {
+			ir3.SemanticException.bound(() -> {
+				// adds class fields and methods
 				cds.add(cdecl.makeClassDescriptor(func_specs, func_locations, cdecl == classes.get(0)));
 			});
 		}

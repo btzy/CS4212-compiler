@@ -1,0 +1,25 @@
+Error: Duplicate declaration of field "x" in class "Dummy" ( line 9 col 5 - line 9 col 12 ) :
+9 |     String x;
+  |     ^^^^^^^^
+Note: Previously declared here ( line 8 col 5 - line 8 col 9 ) :
+8 |     Int x;
+  |     ^^^^^
+Error: Duplicate declaration of field "x" in class "Dummy" ( line 10 col 5 - line 10 col 12 ) :
+10 |     String x;
+   |     ^^^^^^^^
+Note: Previously declared here ( line 8 col 5 - line 8 col 9 ) :
+8 |     Int x;
+  |     ^^^^^
+Error: Duplicate declaration of field "x" in class "Dummy" ( line 11 col 5 - line 11 col 10 ) :
+11 |     Bool x;
+   |     ^^^^^^
+Note: Previously declared here ( line 8 col 5 - line 8 col 9 ) :
+8 |     Int x;
+  |     ^^^^^
+Error: Duplicate declaration of class "Dummy" ( line 13 col 1 - line 13 col 11 ) :
+13 | class Dummy {}
+   | ^^^^^^^^^^^
+Note: Previously declared here ( line 7 col 1 - line 7 col 11 ) :
+7 | class Dummy {
+  | ^^^^^^^^^^^
+Semantic checking aborted due to above errors.

@@ -27,3 +27,5 @@ f(null); //error
 nice errors for overloaded functions, even suggest matches
 
 prints multiple errors
+
+what happens when using Void as a local variable or field ? (i.e. a non-return-type)

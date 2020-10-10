@@ -1,0 +1,9 @@
+Error: Expected expression to have type "Bool", but got type "Int" instead ( line 7 col 9 - line 7 col 9 ) :
+7 |     if (i) {
+  |         ^
+Note: Condition of if-statement must have type "Bool"
+Error: Expected expression to have type "Bool", but got type "String" instead ( line 13 col 12 - line 13 col 21 ) :
+13 |     while (cond + "b") { cond = cond + "a"; }
+   |            ^^^^^^^^^^
+Note: Condition of while-statement must have type "Bool"
+Semantic checking aborted due to above errors.

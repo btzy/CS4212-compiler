@@ -27,6 +27,7 @@ public class Alloc extends Expr {
 	public NullableExpr typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
 		ir3.TypeName type = ir3.TypeName.getType(classname);
 		if (type == null) throw new ir3.NoSuchTypeException(classname, type_range);
+		if (type == ir3.TypeName.VOID) throw new ir3.VoidTypeException(type_range);
 	
 		return NullableExpr.of(new ir3.AllocExpr(type));
 	}

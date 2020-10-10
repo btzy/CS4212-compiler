@@ -1,0 +1,13 @@
+Error: Duplicate declaration of class "Dummy" ( line 19 col 1 - line 19 col 11 ) :
+19 | class Dummy {
+   | ^^^^^^^^^^^
+Note: Previously declared here ( line 15 col 1 - line 15 col 11 ) :
+15 | class Dummy {
+   | ^^^^^^^^^^^
+Error: Duplicate declaration of class "Dummy" ( line 22 col 1 - line 22 col 11 ) :
+22 | class Dummy {
+   | ^^^^^^^^^^^
+Note: Previously declared here ( line 15 col 1 - line 15 col 11 ) :
+15 | class Dummy {
+   | ^^^^^^^^^^^
+Semantic checking aborted due to above errors.

@@ -1,7 +1,7 @@
 class Main {
 
 Void main(){
-    Int i; Int j; String k;
+    Int i; Int j; String cond;
     Int ir;
     String sr;
     if (i) {
@@ -10,5 +10,6 @@ Void main(){
     else {
         j = 2;
     }
+    while (cond + "b") { cond = cond + "a"; }
 }
 }

@@ -1,0 +1,39 @@
+Error: Invalid argument types for operator "+", found types "Int+Main" ( line 9 col 10 - line 9 col 23 ) :
+9 |     ir = i + new Main();
+  |          ^^^^^^^^^^^^^^
+Note: Expected arguments of binary operator "+" to be "Int+Int" or "String+String"
+Error: Invalid argument types for operator "+", found types "Int+null" ( line 10 col 10 - line 10 col 17 ) :
+10 |     ir = i + null;
+   |          ^^^^^^^^
+Note: Expected arguments of binary operator "+" to be "Int+Int" or "String+String"
+Error: Invalid argument types for operator "+", found types "null+Int" ( line 12 col 10 - line 12 col 17 ) :
+12 |     sr = null + i;
+   |          ^^^^^^^^
+Note: Expected arguments of binary operator "+" to be "Int+Int" or "String+String"
+Error: Invalid argument types for operator "+", found types "Int+String" ( line 17 col 10 - line 17 col 14 ) :
+17 |     sr = j + k;
+   |          ^^^^^
+Note: Expected arguments of binary operator "+" to be "Int+Int" or "String+String"
+Error: Invalid argument types for operator "+", found types "Int+String" ( line 22 col 14 - line 22 col 20 ) :
+22 |         ir = 1 + "1";
+   |              ^^^^^^^
+Note: Expected arguments of binary operator "+" to be "Int+Int" or "String+String"
+Error: Invalid argument types for operator "+", found types "Int+String" ( line 19 col 14 - line 19 col 20 ) :
+19 |         ir = 1 + "1";
+   |              ^^^^^^^
+Note: Expected arguments of binary operator "+" to be "Int+Int" or "String+String"
+Error: Expected expression to have type "Int", but got type "String" instead ( line 24 col 17 - line 24 col 17 ) :
+24 |     while (i == k) {
+   |                 ^
+Note: Arguments of binary operator "==" must have type "Int"
+Error: Invalid argument types for operator "+", found types "Int+String" ( line 25 col 14 - line 26 col 16 ) :
+25 |         ir = 1 
+   |              ^^
+26 |            + "1";
+   | ^^^^^^^^^^^^^^^^
+Note: Expected arguments of binary operator "+" to be "Int+Int" or "String+String"
+Error: Invalid argument types for operator "+", found types "Int+String" ( line 27 col 14 - line 27 col 20 ) :
+27 |         ir = 1 + "1" + "2";
+   |              ^^^^^^^
+Note: Expected arguments of binary operator "+" to be "Int+Int" or "String+String"
+Semantic checking aborted due to above errors.

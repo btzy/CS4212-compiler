@@ -66,13 +66,19 @@ public class Method extends Node implements ClassItem {
 		// add all the params
 		for (VarDecl vdecl : signature) {
 			SemanticException.bound(() -> {
-				env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
+				final ir3.TypeName type = ir3.TypeName.getType(vdecl.getType());
+				if (type == null) throw new ir3.NoSuchTypeException(vdecl.getType(), vdecl.getTypeRange());
+				if (type == ir3.TypeName.VOID) throw new ir3.VoidTypeException(vdecl.getTypeRange());
+				env.add(vdecl.range, type, vdecl.getName());
 			});
 		}
 		// add all the locals
 		for (VarDecl vdecl : locals) {
 			SemanticException.bound(() -> {
-				env.add(vdecl.range, ir3.TypeName.getType(vdecl.getType()), vdecl.getName());
+				final ir3.TypeName type = ir3.TypeName.getType(vdecl.getType());
+				if (type == null) throw new ir3.NoSuchTypeException(vdecl.getType(), vdecl.getTypeRange());
+				if (type == ir3.TypeName.VOID) throw new ir3.VoidTypeException(vdecl.getTypeRange());
+				env.add(vdecl.range, type, vdecl.getName());
 			});
 		}
 		if (SemanticException.previouslyHandled) throw new SilentException();
