@@ -150,10 +150,38 @@ TODO: which file has overloading
 A side effect of allowing method overloading is that we need to mangle function names in the IR3 code, in order to ensure that the function names are unique.  We use a simple mangling scheme, separating the class name, method name, and parameters types by `%`.  For ease of human consumption, the parameter types are separated from the method name by `%%%`.  For example, `A.f(String, String)` is mangled as `%A%f%%%A%String%String` (note: the additional `A` is the implicit "this" parameter; it may be redundant but it makes it easier to understand the actual list of function parameters, and it does not cause any harm).
 
 ## Implicit "this"
+Like Java, the programmer can omit the "this" keyword when using a field from the same class, unless there is a local variable of the same thing.  In other words, if the source code uses the name `name`, my compiler will first check for a local variable (or parameter) called `name`; failing which, it will check for a field (or method) of the current class that is called `name`.
+
+In IR3, all the implicit "this" is converted to the explicit version, because the the "this" parameter is made explicit there.
 
 ## Fields and methods with the same name
+It is possible to differentiate between fields and method calls in the parser.  My compiler takes advantage of this, allowing fields and methods to have the same name.
 
-# Parse errors
+For example, we might have the following class definition:
+
+```
+class A {
+    Int f;
+    Void f(Bool b) { ... }
+}
+```
+
+Then we will interpret the name `f` as a field or method depending on the context:
+```
+f = 1; // field
+f(true); // method
+a = new A();
+a.f = 2; // field
+a.f(false); // method
+```
+
+By syntactically differentiating fields and methods, they do not share the same namespace, and hence you can have a method that has the same name as a field.
+
+Java proper also has this feature.
+
+# Error handling
+
+
 
 To test the parse errors, you can run them like this (for example, we use `test/errors/error-recover.j`:
 ```

@@ -36,7 +36,8 @@ public class WhileStmt extends Stmt {
 			ir3.NullableExpr cond_nullable = cond.typeCheckAndEmitIR3(ctx, out);
 			return cond_nullable
 				.imbueType(ir3.TypeName.BOOL)
-				.orElseThrow(() -> new ir3.TypeImbueWhileStatementConditionException(cond_nullable.getType(), cond.range));
+				.orElseThrow(() -> new ir3.TypeImbueWhileStatementConditionException(cond_nullable.getType(), cond.range))
+				.makeRelExp3ByMaybeEmitIR3(cond.range, ctx, out);
 		}, new ir3.BooleanLiteral(true));
 		
 		ir3.Label start_label = ctx.newLabel();

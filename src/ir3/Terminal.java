@@ -14,4 +14,9 @@ public abstract class Terminal extends Expr {
 	public Terminal makeTerminalByMaybeEmitIR3(LocationRange virtual_range, Context ctx, Consumer<? super ir3.Instruction> out) {
 		return this;
 	}
+
+	@Override
+	public Terminal makeRelExp3ByMaybeEmitIR3(LocationRange virtual_range, Context ctx, Consumer<? super ir3.Instruction> out) {
+		return this;
+	}
 }

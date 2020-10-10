@@ -17,4 +17,8 @@ public enum BinOp {
 	public void print(PrintStream w) {
 		w.print(text);
 	}
+
+	public boolean isRelOp() {
+		return this == EQ || this == NE || this == LT || this == LE || this == GT || this == GE;
+	}
 }

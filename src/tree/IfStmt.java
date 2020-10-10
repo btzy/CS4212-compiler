@@ -37,14 +37,15 @@ public class IfStmt extends Stmt {
 	/**
 	 * Typecheck and emit IR3 code for this node.
 	 */
-	public void typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
+	public void typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) {
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
 		// condition must be Bool
 		ir3.Expr cond_res = SemanticException.bound(() -> {
 			ir3.NullableExpr cond_nullable = cond.typeCheckAndEmitIR3(ctx, out);
 			return cond_nullable
 				.imbueType(ir3.TypeName.BOOL)
-				.orElseThrow(() -> new ir3.TypeImbueIfStatementConditionException(cond_nullable.getType(), cond.range));
+				.orElseThrow(() -> new ir3.TypeImbueIfStatementConditionException(cond_nullable.getType(), cond.range))
+				.makeRelExp3ByMaybeEmitIR3(cond.range, ctx, out);
 		}, new ir3.BooleanLiteral(true));
 		
 		ir3.Label true_label = ctx.newLabel();

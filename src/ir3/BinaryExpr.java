@@ -1,5 +1,7 @@
 package ir3;
 
+import util.LocationRange;
+import java.util.function.Consumer;
 import java.io.PrintStream;
 
 /**
@@ -16,6 +18,12 @@ public class BinaryExpr extends Expr {
 		this.left = left;
 		this.right = right;
 		this.op = op;
+	}
+
+	@Override
+	public Expr makeRelExp3ByMaybeEmitIR3(LocationRange virtual_range, Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
+		if (op.isRelOp()) return this;
+		return super.makeRelExp3ByMaybeEmitIR3(virtual_range, ctx, out);
 	}
 
 	@Override
