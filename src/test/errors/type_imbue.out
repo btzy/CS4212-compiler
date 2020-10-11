@@ -13,7 +13,13 @@ Note: Variable "j" was declared as type "Int" here ( line 4 col 5 - line 4 col 9
 Error: Expected expression to have type "Int", but got type "String" instead ( line 7 col 19 - line 7 col 23 ) :
 7 |     (new A()).a = "ghi";
   |                   ^^^^^
-Note: Variable "a" was declared as type "Int" here ( line 11 col 5 - line 11 col 9 ) :
-11 |     Int a;
+Note: Variable "a" was declared as type "Int" here ( line 12 col 5 - line 12 col 9 ) :
+12 |     Int a;
    |     ^^^^^
+Error: Expected expression to have type "Int", but got type "null" instead ( line 8 col 9 - line 8 col 12 ) :
+8 |     j = null;
+  |         ^^^^
+Note: Variable "j" was declared as type "Int" here ( line 4 col 5 - line 4 col 9 ) :
+4 |     Int j;
+  |     ^^^^^
 Semantic checking aborted due to above errors.

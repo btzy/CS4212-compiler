@@ -3,6 +3,8 @@
 CS4212 Programming Assignment 2
 Bernard Teo Zhi Yi
 
+[Note: I have submitted both the markdown (.md) file and the equivalent HTML and PDF file containing the same information.  You can use either one, but the HTML version has the best formatting.]
+
 
 
 # Introduction
@@ -11,7 +13,7 @@ This submission builds on the parser from assignment 1, and processes the syntax
 
 The implementation of the type checker and IR3 generator goes beyond the requirement for assignment 2.  Firstly, **overloaded methods** are allowed to occur, and they are handled in a similar way to Java.  Secondly, each local variable is given an integer id in increasing order (unique within a function), allowing efficient manipulation and representation, and perhaps making it easier to do optimisations and generate assembly at a later stage.  The ids are mapped back to strings when printing the IR3 code.
 
-All kinds of errors (e.g. syntax errors, type errors, duplicate name checking, etc) will be detected, and my program will **print out details about the error, including highlighting the relevant text from the source file**.  In most situations, my compiler will also provide more information, such as the relevant declaration and its location.  After an error, the compiler will continue processing the rest of the program, allowing multiple errors to be reported at one go.
+All kinds of errors (e.g. syntax errors, type errors, duplicate name checking, etc) will be detected, and my program will **print out details about the error, including highlighting the relevant text from the source file**.  In most situations, my compiler will also provide more information, such as the relevant declaration and its location.  After an error, the compiler will continue processing the rest of the program, **allowing multiple errors to be reported at one go**.
 
 # Content of the submission
 The `src` directory contains all the files of my submission, including appropriate versions of the jflex and cup binaries.
@@ -87,13 +89,13 @@ The following is a brief overview of how the compiler works.
 
 We start with a syntax tree (that was produced by the parser).
 
-Semantic checking and IR3 codegen is done together.  The complier processes the syntax tree, generating type information along the way (stored in a separate data structure), and uses that information to generate IR3 code.
+Semantic checking and IR3 code generation is done together.  The complier processes the syntax tree, generating type information along the way (stored in a separate data structure), and uses that information to generate IR3 code.
 
-A first pass is done on the classes to generate the metadata for each class (containing the list of fields and their types, as well as the list of functions and their signatures).  It keeps the fields in an ordered list (ordered within the class), and the methods are extracted from the class and stored as a global list (with the extra 'this' parameter prepended).  Overload resolution tables are also generated at this stage.  We can think of the metadata as an extended version of class descriptors (it is the class "ClassDescriptor" in my code).  Since fields and methods are in lists, they are implicitly indexed, allowing the second pass to look up names and refer to fields and methods by their indices.  Duplicate class names, field names, and method names are checked at this point.
+A first pass is done on the classes to generate the metadata for each class (containing the list of fields and their types, as well as the list of functions and their signatures).  It keeps the fields of each class in an ordered list, and the methods are extracted from the class and stored as a global list (with the extra 'this' parameter prepended).  Overload resolution tables are also generated at this stage.  We can think of the metadata as an extended version of class descriptors (it is the class "ClassDescriptor" in my code).  Since fields and methods are in lists, they are implicitly indexed, allowing the second pass to look up names and refer to fields and methods by their indices.  Duplicate class names, field names, and method names are checked at this point.
 
 A second pass is done over each of the methods of each class, doing type-checking and then emitting the IR3 code for each method.  Type-checking is done on every statement and expression in the method, and it verifies whether each operator or function call can be done with the given argument types.  The type-checking is done from the leaf nodes up to the entire statement (with the exception of "null", where the type is "coerced" by the parent, see the next section for more information).  Because we have access to the class descriptors from the first pass, we can lookup the type of each variable we encounter.
 
-Each expression (or sub-expression) has its IR3 code generated immediately after it is type-checked.  It is actually a more compact form or IR3 code, where fields and methods are referenced by index instead of by name.
+Each expression (or sub-expression) has its IR3 code generated immediately after it is type-checked.  It is actually a more compact form of IR3 code, where fields and methods are referenced by index instead of by name.
 
 If both passes succeeds, my compiler will then print out the IR3 code, converting the indices back to human-readable field/method names to comply with the output requirements.
 
@@ -102,16 +104,16 @@ In both passes, the compiler tries to recover from semantic errors as soon as po
 # Features
 Some of the more interesting features of my compiler are highlighted here, in the hope of gaining me more marks :)
 
-Of course, my compiler does produce correct IR3 code for all valid Jlite programs, but that should be expected of everybody.  This section is for the more interesting features.
+Of course, my compiler does produce correct IR3 code for all valid Jlite programs, but that should be expected from all compilers.  This section is for the more interesting features.
 
 ## Handling of "null"
 As required by the Jlite specification, null represents two possible things depending on the context:
 - Indicating the lack of an object, or a "null object", which is usual Java behaviour
 - Indicating an empty string.
 
-In particular, this means that `null == ""` should return `true`, and `null + null` should return `null` (or `""`) (since string concatenation is allowed with the `+` operator.
+In particular, this means that `null == ""` should return `true`, and `null + null` should return `null` (or `""`) (since string concatenation is allowed with the `+` operator).
 
-My compiler treats the `null` expression as a special kind of type (which I call the "null type").  The null type can be present in the syntax tree, but cannot exist after type-checking as completed.  Specifically, as part of type-checking, the actual type of each `null` expression is determined, and the actual type is attached to the expression (the actual type can be either `String` or some class type).
+My compiler treats the `null` expression as a special kind of type (which I call the "null type").  The null type can be present in the syntax tree, but cannot exist after type-checking is completed.  Specifically, as part of type-checking, the actual type of each `null` expression is determined, and the actual type is attached to the expression (the actual type can be either `String` or some class type).
 
 The actual type is determined via a type coercion process, which depends on the context that the value is used in.  These are some examples:
 - When assigning to an variable (e.g. `x = null;`), the `null` is coerced to the type of the variable being assigned to
@@ -119,7 +121,7 @@ The actual type is determined via a type coercion process, which depends on the 
 - When used as an argument to a method call (e.g. `f(null)`), the `null` is coerced to the type required by the method being called (see the method overloading section for specifics)
 - When used in a return statement (e.g. `return null;`), the `null` is coerced to the return type of the method
 
-The coercion process works in all cases where it is reasonable to do so.  (If you want to look at the compiler code, search for the "imbueType" function.)
+The coercion process works in all cases where it is reasonable to do so.  (If you want to look at the compiler code, search for the `imbueType` function.)
 
 ## Method overloading
 My compiler implements the bonus requirement of proper method overloading.
@@ -137,16 +139,16 @@ class A {
 
 Suppose `x` is an object of type `A`.  Then, `x.f(true)` will call the first overload, `x.f("test")` will call the second overload, etc.  We could also have overloads with different number of arguments, as per the example class above.
 
-In a scenario without overloading, we might distinguish methods by just their class and name.  However, to make overloading work, we distinguish methods by the types of their arguments as well.  For example, the first overload would be treated as something like "A.f(Bool)", or equivalently, after conversion to regular free functions, it is "f(A,Bool)".  As another example, the third overload above would become "f(A,String,String)".  This transformation is done in the first pass.
+In a scenario without overloading, we might distinguish methods by just their class and name.  However, to make overloading work, we distinguish methods by the types of their arguments as well.  For example, the first overload would be treated as something like "A.f(Bool)", or equivalently, after conversion to regular free functions, it is "f(A,Bool)".  As another example, the third overload above would become "f(A,String,String)".  This transformation is done during the first pass.
 
 In the second pass, when we actually encounter call expressions and call statements, we look at the list of actual argument types (some of which could be `null`), and find the list of matching function declarations (also considering null coercions where possible, since `null` can coerce to `String` or to any class type).  If there is exactly one match, then the call is binded to that unique matching function.  If there are no matches or multiple matches, then it is an error and the compiler reports the appropriate error.  Error information is detailed, and will display the list of matching candidates and their locations in the source file.
 
-TODO: which file has overloading
+There is a test specially for overloading, called `test/overloading`.  This test would have been run when you did `./test.sh` earlier.
 
 ### Name mangling
 A side effect of allowing method overloading is that we need to mangle function names in the IR3 code, in order to ensure that the function names are unique.  We use a simple mangling scheme, separating the class name, method name, and parameters types by `%`.  For ease of human consumption, the parameter types are separated from the method name by `%%%`.  For example, `A.f(String, String)` is mangled as `%A%f%%%A%String%String` (note: the additional `A` is the implicit "this" parameter; it may be redundant but it makes it easier to understand the actual list of function parameters, and it does not cause any harm).
 
-In theory, this name mangling scheme would be able to support static methods too (i.e. those methods that do not take an implicit 'this' parameter.
+In theory, this name mangling scheme would be able to support static methods too (i.e. those methods that do not take an implicit 'this' parameter), although we do not have static methods in Jlite.
 
 The main function is exempt from name mangling, since it is required to be the only method in its class.
 
@@ -183,7 +185,7 @@ Java proper also has this feature.
 ## Void type
 It is not useful to have the `Void` type as a local variable or field, because it does not contain anything.
 
-As we want to do the "natural" thing, the `Void` type is only allowed as the return type of a method.  The use of `Void` in all other contexts will lead to a semantic error, like this one:
+As we want to do the "natural" thing, the `Void` type is only allowed as the return type of a method.  My compiler exlicitly checks that `Void` is only used as the return type of a method, so the use of `Void` in all other contexts will lead to a semantic error, like this one:
 
 ```
 Error: Void type not allowed here ( line 4 col 13 - line 4 col 16 ) :
@@ -201,7 +203,7 @@ My compiler comes with top-of-the-class error handling and reporting functionali
 
 Since this report is for assignment 2, we will not discuss syntax errors here.  Syntax error detection is equally excellent, and also has the behaviour of the first two points above.
 
-The tests related to semantic errors are in the `test/errors/` subdirectory.  You can follow the examples below to try it.
+The tests related to semantic errors are in the `test/errors/` subdirectory.  You can follow the examples below to try them.
 
 ## Duplicate classes, fields, methods, parameters, or local variables
 Duplicate items (such as classes, fields, methods, parameters, or local variables) print an error showing the item that was double-declared, its location, and the location of the previous declaration.
@@ -301,7 +303,7 @@ Semantic checking aborted due to above errors.
 ```
 
 The above error message demonstrates that:
-1. Function calls may be ambiguous when the argument is `null`, because `null` can represent a `String` or any class type.
+1. Function calls may be ambiguous when the argument is `null`, because `null` can represent a `String` or any class type.  This is the case when there are multiple overloads in which `null` can be coerced to.
 2. When overload resolution is ambiguous, an error message will be produced by my compiler.  Further, the compiler will print additional hints, specifying all the candidates that match.
 3. If a method name does not exist, an error message is printed.
 4. If there is a field of the same name as a method that does not exist, then an additional hint will be provided, showing the declaration of that field.  Note that (as mentioned above) it is perfectly valid to have a field and a method with the same name, but the hint is produced in case the programmer actually wanted to refer to the field.  Similarly, when there is a method of the same name as a field that does not exist, an additional hint will also be provided.
@@ -351,7 +353,7 @@ The above error message demonstrates that:
 1. The conditions of 'if' and 'while' statements are checked, to ensure that they have type `Bool`.   If they have a wrong type, my compiler will print a friendly error message highlighting the exact location of the error.
 
 ## Assignment type checking
-This test contains some general assign statements, to check that type-checking detects type errors for local variables, parameters, and fields, even in other classes
+This test contains some general assign statements, to check that type-checking detects type errors for local variables, parameters, and fields, even in other classes.
 
 For example, we could try `test/errors/type_imbue.j`:
 ```
@@ -367,6 +369,7 @@ Void main(Int i, Int a, Int b,Int d){
     i = "abc";
     j = true;
     (new A()).a = "ghi";
+    j = null;
 }
 }
 class A {
@@ -392,9 +395,15 @@ Note: Variable "j" was declared as type "Int" here ( line 4 col 5 - line 4 col 9
 Error: Expected expression to have type "Int", but got type "String" instead ( line 7 col 19 - line 7 col 23 ) :
 7 |     (new A()).a = "ghi";
   |                   ^^^^^
-Note: Variable "a" was declared as type "Int" here ( line 11 col 5 - line 11 col 9 ) :
-11 |     Int a;
+Note: Variable "a" was declared as type "Int" here ( line 12 col 5 - line 12 col 9 ) :
+12 |     Int a;
    |     ^^^^^
+Error: Expected expression to have type "Int", but got type "null" instead ( line 8 col 9 - line 8 col 12 ) :
+8 |     j = null;
+  |         ^^^^
+Note: Variable "j" was declared as type "Int" here ( line 4 col 5 - line 4 col 9 ) :
+4 |     Int j;
+  |     ^^^^^
 Semantic checking aborted due to above errors.
 ```
 
@@ -416,7 +425,7 @@ For brevity, the code and output are omitted from this report, but they can be a
 
 ## All error tests
 
-There are 9 tests that will lead to semantic errors.  They demonstrate the resilience of my compiler to errors, and the friendly output that is produced.  Each can be run separately using the `run.sh` script, e.g.:
+There are in total 9 tests that will lead to semantic errors.  They demonstrate the resilience of my compiler to errors, and the friendly output that is produced.  Each can be run separately using the `run.sh` script, e.g.:
 ```
 ./run.sh errors/ambiguous_call
 ./run.sh errors/duplicate_class

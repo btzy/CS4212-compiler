@@ -1,1 +1,0 @@
-jdb -classpath cup/java-cup-11b-runtime.jar;. Compiler test/%1.j
