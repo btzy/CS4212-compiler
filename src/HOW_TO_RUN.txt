@@ -24,28 +24,31 @@ Step 3: Run all successful test cases:
 
 You should get an output like this:
 ```
-Testing test/default1 ... OK
-Testing test/default2 ... OK
-Testing test/fibonacci ... OK
-Testing test/many-func ... OK
-Testing test/nest ... OK
-Testing test/operator ... OK
-Testing test/string-literal ... OK
-Testing test/test-all-grammar ... OK
+Testing test/default ... OK
+Testing test/expressions ... OK
+Testing test/fast_exp ... OK
+Testing test/loops ... OK
+Testing test/multiclass ... OK
+Testing test/overloading ... OK
+Testing test/statements ... OK
 ```
 
-To run a single test (e.g. test/test-all-grammar.j):
+To run a single test (e.g. test/fast_exp.j):
 ```
-./run.sh test-all-grammar
+./run.sh fast_exp
 ```
 
-Parse error tests are in test/errors/ (e.g. test/errors/error-recover.j), and you have to run each one separately.  For example (do each line separately!):
+Semantic error tests are in test/errors/ (e.g. test/errors/ambiguous_call.j), and you have to run each one separately.  For example (do each line separately!):
 ```
-./run.sh errors/error-recover
-./run.sh errors/expr-error
-./run.sh errors/lexer-error
-./run.sh errors/capital-error
-./run.sh errors/capital-error2
+./run.sh errors/ambiguous_call
+./run.sh errors/duplicate_class
+./run.sh errors/duplicate_field
+./run.sh errors/duplicate_method
+./run.sh errors/if_condition
+./run.sh errors/operator_plus
+./run.sh errors/read_print
+./run.sh errors/return_type
+./run.sh errors/type_imbue
 ```
 
 The expected output is also available in the `test/errors` directory.
