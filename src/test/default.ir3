@@ -1,0 +1,34 @@
+======= CData3 =======
+
+class MainC{
+}
+
+class Functional{
+  Int a;
+}
+
+=======  CMtd3 =======
+
+Void main(MainC this){
+  Functional fo;
+  Int i;
+  Int j;
+  readln(i);
+  if(i > 0) goto 1;
+  println("Error");
+  goto 2;
+ Label 1:
+  fo = new Functional();
+  j = %Functional%f%%%Functional%Int(fo,i);
+  println(j);
+ Label 2:
+  return;
+}
+
+Int %Functional%f%%%Functional%Int(Functional this,Int b){
+  Int _t1;
+  _t1 = 3;
+  return _t1;
+}
+
+======= End of IR3 Program =======

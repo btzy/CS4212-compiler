@@ -1,0 +1,74 @@
+======= CData3 =======
+
+class A{
+}
+
+class F{
+}
+
+class B{
+}
+
+=======  CMtd3 =======
+
+Void main(A this){
+  F f;
+  A _t1;
+  B _t2;
+  f = new F();
+  %F%func%%%F(f);
+  %F%func%%%F%Int(f,1);
+  %F%func%%%F%String(f,"a");
+  %F%func%%%F%Int%String(f,1,"a");
+  %F%func%%%F%String%Int(f,"a",1);
+  %F%func%%%F%String(f,null);
+  %F%func%%%F%Int%String(f,1,null);
+  _t1 = new A();
+  %F%gg%%%F%A(f,_t1);
+  _t2 = new B();
+  %F%gg%%%F%B(f,_t2);
+}
+
+Int %F%func%%%F(F this){
+  Int _t1;
+  _t1 = 1;
+  return _t1;
+}
+
+Int %F%func%%%F%Int(F this,Int i){
+  Int _t1;
+  _t1 = 2;
+  return _t1;
+}
+
+Int %F%func%%%F%String(F this,String s){
+  Int _t1;
+  _t1 = 3;
+  return _t1;
+}
+
+Int %F%func%%%F%Int%String(F this,Int i,String s){
+  Int _t1;
+  _t1 = 4;
+  return _t1;
+}
+
+Int %F%func%%%F%String%Int(F this,String s,Int i){
+  Int _t1;
+  _t1 = 5;
+  return _t1;
+}
+
+Int %F%gg%%%F%A(F this,A a){
+  Int _t1;
+  _t1 = 6;
+  return _t1;
+}
+
+Int %F%gg%%%F%B(F this,B b){
+  Int _t1;
+  _t1 = 7;
+  return _t1;
+}
+
+======= End of IR3 Program =======

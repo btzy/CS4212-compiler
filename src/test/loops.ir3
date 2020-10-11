@@ -1,0 +1,69 @@
+======= CData3 =======
+
+class MainC{
+}
+
+class Loop1{
+}
+
+=======  CMtd3 =======
+
+Void main(MainC this){
+  Loop1 l;
+  Int arg;
+  Int _t1;
+  Int _t2;
+  l = new Loop1();
+  arg = 25;
+  _t1 = arg * 3;
+  %Loop1%normal_loop%%%Loop1%Int(l,_t1);
+  _t2 = arg * 2;
+  %Loop1%call_loop%%%Loop1%Int(l,_t2);
+  %Loop1%call_loop_2%%%Loop1%Int(l,arg);
+}
+
+Void %Loop1%normal_loop%%%Loop1%Int(Loop1 this,Int x){
+ Label 1:
+  if(x > 0) goto 2;
+  goto 3;
+ Label 2:
+  x = x - 1;
+  goto 1;
+ Label 3:
+}
+
+Int %Loop1%call_loop%%%Loop1%Int(Loop1 this,Int x){
+  Int _t1;
+  Int _t2;
+  Int _t3;
+  Int _t4;
+  if(x > 0) goto 1;
+  _t1 = 1;
+  return _t1;
+  goto 2;
+ Label 1:
+  _t2 = x - 1;
+  _t3 = %Loop1%call_loop_2%%%Loop1%Int(this,_t2);
+  _t4 = _t3 * 2;
+  return _t4;
+ Label 2:
+}
+
+Int %Loop1%call_loop_2%%%Loop1%Int(Loop1 this,Int x){
+  Int _t1;
+  Int _t2;
+  Int _t3;
+  Int _t4;
+  if(x > 0) goto 1;
+  _t1 = 1;
+  return _t1;
+  goto 2;
+ Label 1:
+  _t2 = x - 1;
+  _t3 = %Loop1%call_loop%%%Loop1%Int(this,_t2);
+  _t4 = _t3 * 3;
+  return _t4;
+ Label 2:
+}
+
+======= End of IR3 Program =======

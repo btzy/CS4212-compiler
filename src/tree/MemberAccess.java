@@ -1,5 +1,6 @@
 package tree;
-
+
+
 import util.LocationRange;
 import ir3.Context;
 import ir3.NullableExpr;
@@ -27,22 +28,19 @@ public class MemberAccess extends Expr {
 	 * Typecheck and emit IR3 code for this node.
 	 */
 	public NullableExpr typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
-		ir3.NullableExpr obj_result_nullable = obj.typeCheckAndEmitIR3(ctx, out);
+		final ir3.NullableExpr obj_result_nullable = obj.typeCheckAndEmitIR3(ctx, out);
 
-		ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new ir3.NullMemberAccessException(range));
+		final ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new ir3.NullMemberAccessException(range));
 
 		// new temporary local for obj_result
-		int localidx = ctx.newLocal(range, obj_result.type);
-
-		// emit assign to temporary
-		out.accept(new ir3.Assign(localidx, obj_result));
+		final ir3.LocalVariable local = obj_result.makeLocalVariableByMaybeEmitIR3(range, ctx, out);
 
 		// lookup field
-		ir3.Context.FieldEntry fieldentry = ctx.lookupField(obj_result.type, member).orElseThrow(() ->
+		final ir3.Context.FieldEntry fieldentry = ctx.lookupField(obj_result.type, member).orElseThrow(() ->
 			new ir3.NoSuchMemberFieldException(member, obj_result.type.name, member_range, ctx.lookupMethod(obj_result.type, member).size()));
 
 		// generate the instruction
-		return NullableExpr.of(new ir3.MemberExpr(fieldentry.type, localidx, fieldentry.idx));
+		return NullableExpr.of(new ir3.MemberExpr(fieldentry.type, local.idx, fieldentry.idx));
 	}
 	
 	/**

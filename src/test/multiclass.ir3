@@ -1,0 +1,82 @@
+======= CData3 =======
+
+class MainC{
+}
+
+class A{
+}
+
+class B{
+}
+
+class C{
+  B b;
+}
+
+=======  CMtd3 =======
+
+Void main(MainC this){
+  A a;
+  B b;
+  C c;
+  B _t1;
+  a = new A();
+  b = new B();
+  c = new C();
+  %A%f%%%A%Int(a,123);
+  %A%g%%%A%Int(a,456);
+  %B%f%%%B%Int(b,789);
+  %B%g%%%B%String(b,"a");
+  %C%setB%%%C%B(c,b);
+  _t1 = %C%getB%%%C(c);
+  %B%f%%%B%Int(_t1,345);
+  main(this);
+}
+
+Int %A%f%%%A%Int(A this,Int x){
+  B _t1;
+  MainC _t2;
+  B _t3;
+  Int _t4;
+  %A%g%%%A%Int(this,x);
+  _t1 = new B();
+  %B%f%%%B%Int(_t1,x);
+  _t2 = new MainC();
+  main(_t2);
+  _t3 = new B();
+  _t4 = %B%g%%%B%String(_t3,null);
+  return _t4;
+}
+
+Int %A%g%%%A%Int(A this,Int x){
+  Int _t1;
+  _t1 = 1;
+  return _t1;
+}
+
+Int %B%f%%%B%Int(B this,Int x){
+  A _t1;
+  Int _t2;
+  %B%g%%%B%String(this,"test");
+  _t1 = new A();
+  _t2 = %A%f%%%A%Int(_t1,x);
+  return _t2;
+}
+
+Int %B%g%%%B%String(B this,String s){
+  Int _t1;
+  _t1 = 1;
+  return _t1;
+}
+
+Void %C%setB%%%C%B(C this,B b){
+  this.b = b;
+}
+
+B %C%getB%%%C(C this){
+  B _t1;
+  _t1 = this.b;
+  return _t1;
+}
+
+======= End of IR3 Program =======

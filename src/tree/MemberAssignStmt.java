@@ -31,26 +31,23 @@ public class MemberAssignStmt extends Stmt {
 	 */
 	public void typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
 		// Order of evaluation of Java is from left-to-right, so we must emit 'obj' before 'expr'
-		ir3.NullableExpr obj_result_nullable = obj.typeCheckAndEmitIR3(ctx, out);
-		ir3.NullableExpr rhs_result_nullable = expr.typeCheckAndEmitIR3(ctx, out);
+		final ir3.NullableExpr obj_result_nullable = obj.typeCheckAndEmitIR3(ctx, out);
+		final ir3.NullableExpr rhs_result_nullable = expr.typeCheckAndEmitIR3(ctx, out);
 
-		ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new ir3.NullMemberAccessException(range));
+		final ir3.Expr obj_result = obj_result_nullable.fixType().orElseThrow(() -> new ir3.NullMemberAccessException(range));
 
 		// new temporary local for obj_result
-		int localidx = ctx.newLocal(range, obj_result.type);
-
-		// emit assign to temporary
-		out.accept(new ir3.Assign(localidx, obj_result));
+		final ir3.LocalVariable local = obj_result.makeLocalVariableByMaybeEmitIR3(range, ctx, out);
 
 		// lookup field
-		ir3.Context.FieldEntry fieldentry = ctx.lookupField(obj_result.type, member).orElseThrow(() ->
+		final ir3.Context.FieldEntry fieldentry = ctx.lookupField(obj_result.type, member).orElseThrow(() ->
 			new ir3.NoSuchMemberFieldException(member, obj_result.type.name, member_range, ctx.lookupMethod(obj_result.type, member).size()));
 
 		// will throw if the type can't be converted (the only time it might be converted is for nulls)
-		ir3.Expr rhs_result = rhs_result_nullable.imbueType(fieldentry.type).orElseThrow(() ->
+		final ir3.Expr rhs_result = rhs_result_nullable.imbueType(fieldentry.type).orElseThrow(() ->
 			new ir3.TypeImbueAssignException(rhs_result_nullable.getType(), expr.range, fieldentry.type, member, ctx.getFieldRange(obj_result.type, fieldentry.idx)));
 		
 		// generate the instruction
-		out.accept(new ir3.AssignMember(localidx, fieldentry.idx, rhs_result));
+		out.accept(new ir3.AssignMember(local.idx, fieldentry.idx, rhs_result));
 	}
 }

@@ -1,0 +1,50 @@
+======= CData3 =======
+
+class A{
+}
+
+class F{
+}
+
+=======  CMtd3 =======
+
+Void main(A this){
+  F f;
+  Int _t1;
+  Int _t2;
+  Int _t3;
+  f = new F();
+  _t1 = %F%pow%%%F%Int%Int(f,2,20);
+  println(_t1);
+  _t2 = %F%pow%%%F%Int%Int(f,3,15);
+  println(_t2);
+  _t3 = %F%pow%%%F%Int%Int(f,4,10);
+  println(_t3);
+}
+
+Int %F%pow%%%F%Int%Int(F this,Int base,Int exp){
+  Int half;
+  Int res;
+  Int ans;
+  Int _t1;
+  Int _t2;
+  if(exp == 0) goto 1;
+  half = exp / 2;
+  res = %F%pow%%%F%Int%Int(this,base,half);
+  res = res * res;
+  _t1 = half * 2;
+  if(_t1 < exp) goto 3;
+  ans = res;
+  goto 4;
+ Label 3:
+  ans = res * base;
+ Label 4:
+  return ans;
+  goto 2;
+ Label 1:
+  _t2 = 1;
+  return _t2;
+ Label 2:
+}
+
+======= End of IR3 Program =======

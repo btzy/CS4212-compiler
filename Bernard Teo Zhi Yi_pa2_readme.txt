@@ -1,4 +1,5 @@
 
+
 CS4212 Programming Assignment 2
 Bernard Teo Zhi Yi
 
@@ -47,9 +48,9 @@ make
 Then will take a while to compile.  Be patient, and it should be done after a while.
 
 ## Run
-You can use the `run.sh` script, which will use the specified Jlite source file from the test folder.  For example to run the `test/test-all-grammar.j` file, you can do:
+You can use the `run.sh` script, which will use the specified Jlite source file from the test folder.  For example to run the `test/fast_exp.j` file, you can do:
 ```
-./run.sh test-all-grammar
+./run.sh fast_exp
 ```
 
 Remember that you do not add the file extension here.
@@ -57,10 +58,9 @@ Remember that you do not add the file extension here.
 Alternatively, you may type in the command manually (see the content of `run.sh` for the exact syntax).
 
 # Tests
-TODO
-All the successful tests are in `src/test`.  Those tests meant to be parse errors are in `src/test/errors`.
+All the successful tests are in `src/test`.  Those tests meant to be semantic errors are in `src/test/errors`.
 
-There are 6 successful tests (apart from the default), and 5 parse error tests.
+There are 6 successful tests (apart from the default), and 9 semantic error tests.
 
 To run all the successful tests, do:
 ```
@@ -69,21 +69,18 @@ To run all the successful tests, do:
 
 You should get an output like this:
 ```
-Testing test/default1 ... OK
-Testing test/default2 ... OK
-Testing test/fibonacci ... OK
-Testing test/many-func ... OK
-Testing test/nest ... OK
-Testing test/operator ... OK
-Testing test/string-literal ... OK
-Testing test/test-all-grammar ... OK
+Testing test/default ... OK
+Testing test/expressions ... OK
+Testing test/fast_exp ... OK
+Testing test/loops ... OK
+Testing test/multiclass ... OK
+Testing test/overloading ... OK
+Testing test/statements ... OK
 ```
 
-The `default1` and `default2` tests are those that came with the assignment.
+The `default` test is the one that came with the assignment.
 
-The `fibonacci` test is a small test that does a bit of recursive function calls.  The `many-func` test has a lot of methods, and a few of the `new X()` syntax, which is a place in which Jlite differs from Java.  The `nest` test does many tested if-statements.  The `operator` test tries all the binary operators, and sprinkles some unary minus too.  The `string-literal` test is for things like "\032" and "\x08".  The `test-all-grammar` test is a catch-all that tests almost every production in the grammar.
-
-Note: When printing string literals, we do not add back the '\' characters.  For example, `println("\\")` will turn into `Println("\")`.  This is deliberate -- so that you can see that I actually have rules to recognise the escape characters.  (If not, I could have treated "\n", "\r", "\\" etc as two separate characters.)
+The `expressions`, `loops`, `multiclass`, `overloading`, and `statements` tests are extensive tests that test all possible variations of the various parts of the compiler.  The `fast_exp` test is a program that does exponentiation in logarithmic time (by repeatedly squaring the number).
 
 # Brief overview of the compiler
 The following is a brief overview of how the compiler works.
@@ -149,6 +146,8 @@ TODO: which file has overloading
 ### Name mangling
 A side effect of allowing method overloading is that we need to mangle function names in the IR3 code, in order to ensure that the function names are unique.  We use a simple mangling scheme, separating the class name, method name, and parameters types by `%`.  For ease of human consumption, the parameter types are separated from the method name by `%%%`.  For example, `A.f(String, String)` is mangled as `%A%f%%%A%String%String` (note: the additional `A` is the implicit "this" parameter; it may be redundant but it makes it easier to understand the actual list of function parameters, and it does not cause any harm).
 
+In theory, this name mangling scheme would be able to support static methods too (i.e. those methods that do not take an implicit 'this' parameter.
+
 The main function is exempt from name mangling, since it is required to be the only method in its class.
 
 ## Implicit "this"
@@ -182,7 +181,9 @@ By syntactically differentiating fields and methods, they do not share the same 
 Java proper also has this feature.
 
 ## Void type
-As we follow Java, the `Void` type is only allowed as the return type of a method.  The use of `Void` in all other contexts will lead to a semantic error, like this one:
+It is not useful to have the `Void` type as a local variable or field, because it does not contain anything.
+
+As we want to do the "natural" thing, the `Void` type is only allowed as the return type of a method.  The use of `Void` in all other contexts will lead to a semantic error, like this one:
 
 ```
 Error: Void type not allowed here ( line 4 col 13 - line 4 col 16 ) :

@@ -1,0 +1,69 @@
+======= CData3 =======
+
+class MainC{
+}
+
+class Cl{
+  Cl inner;
+  Int field;
+}
+
+=======  CMtd3 =======
+
+Void main(MainC this,Int a,String b,Bool c){
+  Int x;
+  String y;
+  Bool z;
+  Cl cl;
+  readln(x);
+  readln(y);
+  readln(z);
+  readln(a);
+  readln(b);
+  readln(c);
+  println(x);
+  println(y);
+  println(z);
+  println(a);
+  println(b);
+  println(c);
+  if(x == a) goto 1;
+ Label 3:
+  if(z) goto 4;
+  goto 5;
+ Label 4:
+  z = x < a;
+  goto 3;
+ Label 5:
+  cl = new Cl();
+  cl.inner = cl;
+  cl.field = 123;
+  %Cl%f%%%Cl(cl);
+  return;
+  goto 2;
+ Label 1:
+  x = a;
+  a = x;
+  y = b;
+  b = y;
+  z = c;
+  c = z;
+ Label 2:
+  main(this,x,y,z);
+}
+
+Int %Cl%f%%%Cl(Cl this){
+  Cl _t1;
+  Cl _t2;
+  Cl _t3;
+  Int _t4;
+  _t1 = this.inner;
+  _t2 = this.inner;
+  _t2.field = %Cl%f%%%Cl(_t1);
+  _t3 = this.inner;
+  this.field = _t3.field;
+  _t4 = this.field;
+  return _t4;
+}
+
+======= End of IR3 Program =======
