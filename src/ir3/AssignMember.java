@@ -18,4 +18,14 @@ public class AssignMember extends Instruction {
 		val.print(w, pc);
 		w.println(';');
 	}
+
+	@Override
+	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		final EmitFunc.StorageLocation sl = ef.storage_locations.get(idx);
+		final int output_reg = val.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+		final int ptr_reg = AsmEmitter.emitPseudoLoadVariable(w, output_reg == EmitFunc.Registers.FP ? EmitFunc.Registers.LR : EmitFunc.Registers.FP, sl, ef.env.getType(idx));
+		final EmitClass ec = ctx.getEmitClass(ef.env.getType(idx));
+		AsmEmitter.emitPseudoStr(w, ptr_reg, ec.field_offsets.get(field), output_reg, ec.field_types.get(field));
+	}
+
 }

@@ -12,4 +12,10 @@ public class Goto extends Instruction {
 		w.print(target.index + 1); // offset so 1-indexed
 		w.println(';');
 	}
+
+	@Override
+	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		final String name = ctx.addLabel(ef.env, target.index);
+		AsmEmitter.emitB(w, name);
+	}
 }

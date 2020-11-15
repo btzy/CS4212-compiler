@@ -21,4 +21,23 @@ public class UnaryExpr extends Expr {
 		op.print(w);
 		arg.print(w, pc);
 	}
+
+	@Override
+	public int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		final int arg_reg = arg.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+		return emitOpInstruction(w, op, hint_output_reg, arg_reg);
+	}
+
+	private static int emitOpInstruction(PrintStream w, UnOp op, int output_reg, int arg_reg) {
+		switch (op) {
+			case MINUS:
+				AsmEmitter.emitRsbImm(w, output_reg, arg_reg, 0);
+				return output_reg;
+			case NEGATION:
+				AsmEmitter.emitEorImm(w, output_reg, arg_reg, 1);
+				return output_reg;
+		}
+		assert(false);
+		return -1;
+	}
 }

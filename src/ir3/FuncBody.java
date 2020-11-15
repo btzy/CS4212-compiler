@@ -40,4 +40,58 @@ public class FuncBody {
 		}
 		w.println('}');
 	}
+
+	/**
+	 * Determine where to store each variable, and amount to shift the sp.
+	 */
+	public EmitFunc determineStorage(boolean optimize) {
+		if (!optimize) return determineStorageUnoptimized();
+		else throw new UnsupportedOperationException(); // TODO
+	}
+
+	
+	public EmitFunc determineStorageUnoptimized() {
+		// 2+k callee-saved registers to store: fp, lr, <all args from registers>
+		// and all locals except params go onto the stack
+		final int stackBytes = (2 + Math.min(num_params, 4) + (env.size() - num_params)) * 4;
+		ArrayList<Integer> saved_regs = new ArrayList<>();
+		ArrayList<Integer> saved_params = new ArrayList<>();
+		saved_regs.add(EmitFunc.Registers.FP);
+		saved_regs.add(EmitFunc.Registers.LR);
+		for (int i=0; i!=Math.min(num_params, 4); ++i) {
+			saved_params.add(i);
+		}
+		ArrayList<EmitFunc.StorageLocation> storage_locations = new ArrayList<>();
+		for (int i=0; i!=env.size(); ++i) {
+			if (i < num_params) {
+				// is a param
+				if (i < 4) storage_locations.add(EmitFunc.StorageLocation.makeMemLocal(stackBytes - (2 + Math.min(num_params, 4) - i) * 4));
+				else storage_locations.add(EmitFunc.StorageLocation.makeMemLocal(stackBytes + (i - 4) * 4));
+			}
+			else {
+				storage_locations.add(EmitFunc.StorageLocation.makeMemLocal(stackBytes - (3 + Math.min(num_params, 4) + (i - num_params)) * 4));
+			}
+		}
+		// round up to 8 to satisfy ARM stack alignment
+		return new EmitFunc(roundUpToMultipleOf8(stackBytes), saved_regs, saved_params, storage_locations, env);
+	}
+
+	private int roundUpToMultipleOf8(int val) {
+		return (val + 7) & (-8);
+	}
+
+	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		// emit function prologue
+		AsmEmitter.emitPrologue(w, ef);
+
+		// emit all instructions
+		for (Instruction inst : insts) {
+			inst.emitAsm(w, ef, ctx, optimize);
+		}
+
+		// emit function epilogue
+		AsmEmitter.emitEpilogue(w, ef);
+	}
+
+	
 }

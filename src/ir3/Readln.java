@@ -12,4 +12,10 @@ public class Readln extends Instruction {
 		w.print(pc.env.getName(idx));
 		w.println(");");
 	}
+
+	@Override
+	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		assert(false);
+		// TODO: add this
+	}
 }

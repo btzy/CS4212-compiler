@@ -15,4 +15,11 @@ public class Assign extends Instruction {
 		val.print(w, pc);
 		w.println(';');
 	}
+
+	@Override
+	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		final EmitFunc.StorageLocation sl = ef.storage_locations.get(idx);
+		final int output_reg = val.emitAsm(w, sl.isRegister ? sl.value : EmitFunc.Registers.FP, ef, ctx, optimize);
+		AsmEmitter.emitPseudoStoreVariable(w, sl, output_reg, ef.env.getType(idx));
+	}
 }

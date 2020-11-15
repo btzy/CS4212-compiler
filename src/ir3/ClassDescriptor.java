@@ -91,5 +91,36 @@ public class ClassDescriptor {
 		}
 		w.println('}');
 	}
+
+	/**
+	 * Generate offsets for each field.  Respects alignment requirements.  May reorder fields.
+	 */
+	public EmitClass generateLayout() {
+		ArrayList<Integer> offsets = new ArrayList<>();
+		int size = 0;
+		int bool_space_start = 0, bool_space_end = 0;
+		for (TypeName field_type : field_types) {
+			if (field_type.size == 1) {
+				assert(field_type.alignment == 1);
+				if (bool_space_start == bool_space_end) {
+					// no space
+					bool_space_start = size;
+					size += 4;
+					bool_space_end = size;
+				}
+				assert(bool_space_start < bool_space_end);
+				offsets.add(bool_space_start++);
+			}
+			else {
+				// should not have 'Void' in a class field
+				assert(field_type.size == 4);
+				assert(field_type.alignment == 4);
+				offsets.add(size);
+				size += field_type.size;
+			}
+		}
+		assert(size % 4 == 0);
+		return new EmitClass(this_type, field_types, offsets, size);
+	}
 }
 

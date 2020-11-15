@@ -20,4 +20,13 @@ public class Return extends Instruction {
 			w.println(';');
 		}
 	}
+
+	@Override
+	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		val.ifPresent(lv -> {
+			final int reg = lv.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
+			if (reg != EmitFunc.Registers.A1) AsmEmitter.emitMovReg(w, EmitFunc.Registers.A1, reg);
+		});
+		AsmEmitter.emitEpilogue(w, ef);
+	}
 }

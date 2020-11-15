@@ -46,4 +46,5 @@ public abstract class Expr {
 	}
 
 	public abstract void print(PrintStream w, PrintContext pc);
+	public abstract int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize);
 }

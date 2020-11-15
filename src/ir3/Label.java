@@ -12,4 +12,11 @@ public class Label extends Instruction {
 		w.print(index + 1); // offset so 1-indexed
 		w.println(':');
 	}
+
+	@Override
+	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		final String name = ctx.addLabel(ef.env, index);
+		w.print(name);
+		w.println(':');
+	}
 }

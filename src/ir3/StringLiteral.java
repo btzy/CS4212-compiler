@@ -16,4 +16,11 @@ public class StringLiteral extends Literal {
 			w.print('\"');
 		}
 	}
+
+	@Override
+	public int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		String name = ctx.addStringLiteral(value);
+		AsmEmitter.emitLdrLitAddr(w, hint_output_reg, name);
+		return hint_output_reg;
+	}
 }

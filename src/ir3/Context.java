@@ -9,7 +9,6 @@ import util.LocationRange;
 public class Context {
 	private final LocalEnvironment env;
 	private final ClassDescriptor this_cd;
-	//private final ArrayList<ClassDescriptor> cds;
 	private final HashMap<TypeName, ClassDescriptor> cd_lookup;
 	private ArrayList<FuncSpec> func_specs;
 	private ArrayList<LocationRange> func_locations;

@@ -1,0 +1,17 @@
+We have a mapping from localvar to mem/reg location.
+
+The unoptimised compiler allocates all temporaries on the stack.
+
+String is stored on the heap, not null-terminated.  Size of string (4 bytes) is placed before the string, on the heap.
+
+sizeof(Integer) == 4
+sizeof(Boolean) == 1
+sizeof(String) == 4 (this is a pointer)
+sizeof(Object) == 4 (this is a pointer)
+alignment is 4 for everything except booleans
+
+Compiler respects field alignment, but might reorder fields for more efficient packing.
+
+Note: RelOps now not optimised, we could meld into some cmp/cmn instruction
+
+- Test calls with many arguments (so that they spill onto the stack)
