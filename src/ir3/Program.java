@@ -51,10 +51,14 @@ public class Program {
 		ctx.emitPreCode(w);
 
 		// Emit ARM assembly
-		for (FuncBody fb : func_bodies) {
+		for (int i=0; i != func_bodies.size(); ++i) {
+			FuncSpec fs = func_specs.get(i);
+			FuncBody fb = func_bodies.get(i);
 			// Determine where to place each variable
 			EmitFunc ef = fb.determineStorage(optimize);
 			// Emit asm code
+			w.print(fs.getMangledName());
+			w.println(':');
 			fb.emitAsm(w, ef, ctx, optimize);
 		}
 

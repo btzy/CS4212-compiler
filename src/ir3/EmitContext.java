@@ -90,11 +90,43 @@ public class EmitContext {
 		return name;
 	}
 
-	public void emitPreCode(PrintStream w){
-		// TODO
+	public void emitPreCode(PrintStream w) {
+		w.println(".text");
+		w.println(".global main");
 	}
 
-	public void emitPostCode(PrintStream w){
-		// TODO
+	public void emitPostCode(PrintStream w) {
+		w.println(".data");
+		for (int i=0; i!=literals.size(); ++i) {
+			w.print(literal_names.get(i));
+			w.println(':');
+			w.print(".ascii \"");
+			final String text = literals.get(i);
+			int len = text.length();
+			for (int j=0; j!=4; ++j) {
+				w.print('\\');
+				octalPrint(w, len % 256);
+				len /= 256;
+			}
+			w.print(text);
+			w.println('\"');
+		}
+		for (int i=0; i!=cstrliterals.size(); ++i) {
+			w.print(cstrliteral_names.get(i));
+			w.println(':');
+			w.print(".asciz \"");
+			w.print(cstrliterals.get(i));
+			w.println('\"');
+		}
+	}
+
+	private static void octalPrint(PrintStream w, int val) {
+		final int l1 = val % 8;
+		val /= 8;
+		final int l2 = val % 8;
+		val /= 8;
+		w.print(val);
+		w.print(l2);
+		w.print(l1);
 	}
 }
