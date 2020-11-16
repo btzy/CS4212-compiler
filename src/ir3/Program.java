@@ -34,6 +34,22 @@ public class Program {
 	}
 
 	/**
+	 * Transform main function to return 0 instead of return void.
+	 */
+	public void transformMainFunc() {
+		for (int i=0; i!=func_specs.size(); ++i) {
+			FuncSpec spec = func_specs.get(i);
+			if (spec.getMangledName() == "main") {
+				final FuncBody body = func_bodies.get(i);
+				assert(spec.result_type == TypeName.VOID);
+				spec = new FuncSpec(TypeName.INT, spec.param_types, spec.getMangledName());
+				body.transformMainFunc();
+				func_specs.set(i, spec);
+			}
+		}
+	}
+
+	/**
 	 * Actually compile this program into ARM assembly.
 	 * `optimize` - whether to use optimisations.
 	 */

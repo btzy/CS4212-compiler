@@ -27,7 +27,7 @@ public class ReturnValueStmt extends Stmt {
 		ir3.Expr result = result_nullable.imbueType(ctx.getReturnType()).orElseThrow(() -> new ir3.ReturnTypeException(result_nullable.getType(), range, ctx.getReturnType(), ctx.getReturnRange()));
 	
 		// since return statements require an id3 instead of Exp3, we need to convert Exp3 to id3
-		ir3.LocalVariable terminal = result.makeLocalVariableByMaybeEmitIR3(range, ctx, out);
+		ir3.Terminal terminal = result.makeTerminalByMaybeEmitIR3(range, ctx, out);
 		
 		out.accept(new ir3.Return(terminal));
 	}

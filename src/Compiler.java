@@ -37,6 +37,7 @@ public class Compiler {
                 System.exit(1);
             }*/
             if (SemanticException.previouslyHandled) throw new Exception("Semantic checking aborted due to above errors.");
+            ir3_program.transformMainFunc();
             ir3_program.compile(System.out, false);
         }
         catch (CommandArgumentException e) {

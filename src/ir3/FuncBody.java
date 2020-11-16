@@ -93,5 +93,17 @@ public class FuncBody {
 		AsmEmitter.emitEpilogue(w, ef);
 	}
 
-	
+	/**
+	 * Transforms all `return` to `return 0`, and append `return 0` to the end of the function.
+	 */
+	public void transformMainFunc() {
+		for (int i=0; i!=insts.size(); ++i) {
+			final Instruction inst = insts.get(i);
+			if (inst instanceof Return) {
+				assert(((Return)inst).val.isEmpty());
+				insts.set(i, new Return(new IntegerLiteral(0)));
+			}
+		}
+		insts.add(new Return(new IntegerLiteral(0)));
+	}
 }
