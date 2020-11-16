@@ -363,8 +363,8 @@ public class AsmEmitter {
 		"pc"};
 
 	public static void emitPrologue(PrintStream w, EmitFunc ef) {
-		ArrayList<Integer> combined_regs = new ArrayList<>(ef.saved_regs);
-		combined_regs.addAll(ef.saved_params);
+		ArrayList<Integer> combined_regs = new ArrayList<>(ef.saved_params);
+		combined_regs.addAll(ef.saved_regs);
 		if (!combined_regs.isEmpty()) AsmEmitter.emitStmfd(w, EmitFunc.Registers.SP, combined_regs);
 		final int diff = ef.stack_space - combined_regs.size() * 4;
 		if (diff != 0) AsmEmitter.emitSubImm(w, EmitFunc.Registers.SP, EmitFunc.Registers.SP, diff);
