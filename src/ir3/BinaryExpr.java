@@ -121,7 +121,7 @@ public class BinaryExpr extends Expr {
 
 		// Allocate heap memory and write the size
 		AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, scratch1_reg, 4); // 4 extra bytes for storing the length
-		AsmEmitter.emitBlPlt(w, "_Znwj");
+		AsmEmitter.emitBlPlt(w, "malloc");
 		AsmEmitter.emitStr(w, EmitFunc.Registers.A1, 0, scratch1_reg);
 		AsmEmitter.emitMovReg(w, tmp_output_reg, EmitFunc.Registers.A1);
 		// now the new buffer is stored in tmp_output_reg
