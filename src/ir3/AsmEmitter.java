@@ -162,7 +162,7 @@ public class AsmEmitter {
 		w.println(']');
 	}
 	public static void emitStrb(PrintStream w, int dest_reg, int offset, int source_reg) {
-		w.print("str ");
+		w.print("strb ");
 		w.print(reg_names[source_reg]);
 		w.print(",[");
 		w.print(reg_names[dest_reg]);
@@ -180,7 +180,7 @@ public class AsmEmitter {
 		w.println("]!");
 	}
 	public static void emitStrbPreOffset(PrintStream w, int dest_reg, int offset, int source_reg) {
-		w.print("str ");
+		w.print("strb ");
 		w.print(reg_names[source_reg]);
 		w.print(",[");
 		w.print(reg_names[dest_reg]);

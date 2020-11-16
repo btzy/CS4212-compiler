@@ -80,13 +80,13 @@ stmfd sp!,{a1,a2,a3,fp,lr}
 sub sp,sp,#20
 ldr fp,[sp,#20]
 ldrb fp,[fp,#0]
-str fp,[sp,#16]
+strb fp,[sp,#16]
 ldrb fp,[sp,#16]
 cmp fp,#0
 bne .L2
 mov fp,#1
 ldr lr,[sp,#20]
-str fp,[lr,#0]
+strb fp,[lr,#0]
 ldr a2,[sp,#24]
 ldr a1,[sp,#20]
 bl $Compute$square$$$Compute$Int
