@@ -49,6 +49,9 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L1:
+mov a1,#0
+add sp,sp,#40
+ldmfd sp!,{fp,pc}
 add sp,sp,#40
 ldmfd sp!,{fp,pc}
 $Compute$square$$$Compute$Int:
