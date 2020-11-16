@@ -32,7 +32,7 @@ public class EmitContext {
 		}
 		@Override
 		public int hashCode() { 
-			return System.identityHashCode(this) * 31 + index;
+			return System.identityHashCode(namespace) * 31 + index;
 		}
 	}
 
