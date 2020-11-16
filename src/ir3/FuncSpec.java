@@ -18,13 +18,13 @@ public class FuncSpec {
 		this.result_type = result_type;
 		this.param_types = param_types;
 		StringBuilder sb = new StringBuilder();
-		sb.append('%');
+		sb.append('$');
 		sb.append(class_type.name);
-		sb.append('%');
+		sb.append('$');
 		sb.append(method_name);
-		sb.append("%%");
+		sb.append("$$");
 		for (TypeName t : param_types) {
-			sb.append('%');
+			sb.append('$');
 			sb.append(t.name);
 		}
 		this.mangled_name = sb.toString();
