@@ -319,19 +319,31 @@ public class AsmEmitter {
 		}
 	}
 	public static void emitPseudoStr(PrintStream w, int dest_reg, int offset, int source_reg, TypeName type) {
-		if (type.size == 1) emitStrb(w, dest_reg, offset, source_reg);
-		assert(type.size == 4);
-		emitStr(w, dest_reg, offset, source_reg);
+		if (type.size == 1) {
+			emitStrb(w, dest_reg, offset, source_reg);
+		}
+		else {
+			assert(type.size == 4);
+			emitStr(w, dest_reg, offset, source_reg);
+		}
 	}
 	public static void emitPseudoStrPreOffset(PrintStream w, int dest_reg, int offset, int source_reg, TypeName type) {
-		if (type.size == 1) emitStrbPreOffset(w, dest_reg, offset, source_reg);
-		assert(type.size == 4);
-		emitStrPreOffset(w, dest_reg, offset, source_reg);
+		if (type.size == 1) {
+			emitStrbPreOffset(w, dest_reg, offset, source_reg);
+		}
+		else {
+			assert(type.size == 4);
+			emitStrPreOffset(w, dest_reg, offset, source_reg);
+		}
 	}
 	public static void emitPseudoLdr(PrintStream w, int dest_reg, int source_reg, int offset, TypeName type) {
-		if (type.size == 1) emitLdrb(w, dest_reg, source_reg, offset);
-		assert(type.size == 4);
-		emitLdr(w, dest_reg, source_reg, offset);
+		if (type.size == 1) {
+			emitLdrb(w, dest_reg, source_reg, offset);
+		}
+		else {
+			assert(type.size == 4);
+			emitLdr(w, dest_reg, source_reg, offset);
+		}
 	}
 
 
