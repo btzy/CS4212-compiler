@@ -35,12 +35,12 @@ public class AsmEmitter {
 		w.println(reg_names[src2]);
 	}
 	public static void emitAddRegShift(PrintStream w, int dest, int src1, int src2, Shift shift, int amount) {
-		w.print("mov ");
+		w.print("add ");
 		w.print(reg_names[dest]);
 		w.print(',');
 		w.print(reg_names[src1]);
 		w.print(',');
-		w.println(reg_names[src2]);
+		w.print(reg_names[src2]);
 		w.print(',');
 		w.print(shift.text);
 		w.print('#');
@@ -150,7 +150,7 @@ public class AsmEmitter {
 		w.print(',');
 		w.print(reg_names[src1]);
 		w.print(',');
-		w.println(reg_names[src2]);
+		w.print(reg_names[src2]);
 		w.print(',');
 		w.print(shift.text);
 		w.print('#');
@@ -224,7 +224,7 @@ public class AsmEmitter {
 		w.print("cmp ");
 		w.print(reg_names[src1]);
 		w.print(',');
-		w.println(reg_names[src2]);
+		w.print(reg_names[src2]);
 		w.print(',');
 		w.print(shift.text);
 		w.print('#');
