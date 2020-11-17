@@ -98,6 +98,7 @@ public class EmitContext {
 	public void emitPostCode(PrintStream w) {
 		w.println(".data");
 		for (int i=0; i!=literals.size(); ++i) {
+			w.println(".align 2");
 			w.print(literal_names.get(i));
 			w.println(':');
 			w.print(".ascii \"");
