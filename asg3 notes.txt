@@ -15,3 +15,4 @@ Compiler respects field alignment, but might reorder fields for more efficient p
 Note: RelOps now not optimised, we could meld into some cmp/cmn instruction
 
 - Test calls with many arguments (so that they spill onto the stack)
+- Proper division using long div method is implemented

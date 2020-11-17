@@ -24,6 +24,28 @@ public class AsmEmitter {
 		w.print(',');
 		w.println(reg_names[src2]);
 	}
+	public static void emitAddCondReg(PrintStream w, Cond cond, int dest, int src1, int src2) {
+		w.print("add");
+		w.print(cond.text);
+		w.print(' ');
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src1]);
+		w.print(',');
+		w.println(reg_names[src2]);
+	}
+	public static void emitAddRegShift(PrintStream w, int dest, int src1, int src2, Shift shift, int amount) {
+		w.print("mov ");
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src1]);
+		w.print(',');
+		w.println(reg_names[src2]);
+		w.print(',');
+		w.print(shift.text);
+		w.print('#');
+		w.println(amount);
+	}
 	public static void emitSubImm(PrintStream w, int dest, int src, int imm) {
 		w.print("sub ");
 		w.print(reg_names[dest]);
@@ -34,6 +56,16 @@ public class AsmEmitter {
 	}
 	public static void emitSubReg(PrintStream w, int dest, int src1, int src2) {
 		w.print("sub ");
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src1]);
+		w.print(',');
+		w.println(reg_names[src2]);
+	}
+	public static void emitSubCondReg(PrintStream w, Cond cond, int dest, int src1, int src2) {
+		w.print("sub");
+		w.print(cond.text);
+		w.print(' ');
 		w.print(reg_names[dest]);
 		w.print(',');
 		w.print(reg_names[src1]);
@@ -58,14 +90,6 @@ public class AsmEmitter {
 	}
 	public static void emitMulReg(PrintStream w, int dest, int src1, int src2) {
 		w.print("mul ");
-		w.print(reg_names[dest]);
-		w.print(',');
-		w.print(reg_names[src1]);
-		w.print(',');
-		w.println(reg_names[src2]);
-	}
-	public static void emitSDivReg(PrintStream w, int dest, int src1, int src2) {
-		w.print("sdiv ");
 		w.print(reg_names[dest]);
 		w.print(',');
 		w.print(reg_names[src1]);
@@ -120,11 +144,61 @@ public class AsmEmitter {
 		w.print(',');
 		w.println(reg_names[src2]);
 	}
+	public static void emitEorRegShift(PrintStream w, int dest, int src1, int src2, Shift shift, int amount) {
+		w.print("eor ");
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src1]);
+		w.print(',');
+		w.println(reg_names[src2]);
+		w.print(',');
+		w.print(shift.text);
+		w.print('#');
+		w.println(amount);
+	}
 	public static void emitMovReg(PrintStream w, int dest, int src) {
 		w.print("mov ");
 		w.print(reg_names[dest]);
-		w.print(",");
+		w.print(',');
 		w.println(reg_names[src]);
+	}
+	public static void emitMovFlagsReg(PrintStream w, int dest, int src) {
+		w.print("movs ");
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.println(reg_names[src]);
+	}
+	public static void emitMovFlagsRegShift(PrintStream w, int dest, int src, Shift shift, int amount) {
+		w.print("movs ");
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src]);
+		w.print(',');
+		w.print(shift.text);
+		w.print('#');
+		w.println(amount);
+	}
+	public static void emitMovRegShift(PrintStream w, int dest, int src, Shift shift, int amount) {
+		w.print("mov ");
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src]);
+		w.print(',');
+		w.print(shift.text);
+		w.print('#');
+		w.println(amount);
+	}
+	public static void emitMovCondRegShift(PrintStream w, Cond cond, int dest, int src, Shift shift, int amount) {
+		w.print("mov");
+		w.print(cond.text);
+		w.print(' ');
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src]);
+		w.print(',');
+		w.print(shift.text);
+		w.print('#');
+		w.println(amount);
 	}
 	public static void emitMovImm(PrintStream w, int dest, int imm) {
 		w.print("mov ");
@@ -145,6 +219,16 @@ public class AsmEmitter {
 		w.print(reg_names[src1]);
 		w.print(',');
 		w.println(reg_names[src2]);
+	}
+	public static void emitCmpRegShift(PrintStream w, int src1, int src2, Shift shift, int amount) {
+		w.print("cmp ");
+		w.print(reg_names[src1]);
+		w.print(',');
+		w.println(reg_names[src2]);
+		w.print(',');
+		w.print(shift.text);
+		w.print('#');
+		w.println(amount);
 	}
 	public static void emitCmpImm(PrintStream w, int src, int imm) {
 		w.print("cmp ");
@@ -354,6 +438,15 @@ public class AsmEmitter {
 
 		private Cond(String text) { this.text = text; }
 	} 
+
+
+	public static enum Shift {
+		LSL("LSL"), LSR("LSR"), ASR("ASR"), ROR("ROR");
+
+		public final String text;
+
+		private Shift(String text) { this.text = text; }
+	}
 
 
 	private static String[] reg_names = new String[]{

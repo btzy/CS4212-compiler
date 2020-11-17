@@ -37,13 +37,16 @@ public class BinaryExpr extends Expr {
 
 	@Override
 	public int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
-		if (op != BinOp.CONCAT) {
+		if (op == BinOp.CONCAT)	{
+			return emitConcatInstruction(w, hint_output_reg, left, right, ef, ctx, optimize);
+		}
+		else if (op == BinOp.DIVIDE) {
+			return emitDivideInstruction(w, hint_output_reg, left, right, ef, ctx, optimize);
+		}
+		else {
 			final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
 			final int right_reg = right.emitAsm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
 			return emitOpInstruction(w, op, hint_output_reg, left_reg, right_reg);
-		}
-		else {
-			return emitConcatInstruction(w, hint_output_reg, left, right, ef, ctx, optimize);
 		}
 	}
 
@@ -87,9 +90,6 @@ public class BinaryExpr extends Expr {
 				return output_reg;
 			case TIMES:
 				AsmEmitter.emitMulReg(w, output_reg, left_reg, right_reg);
-				return output_reg;
-			case DIVIDE:
-				AsmEmitter.emitSDivReg(w, output_reg, left_reg, right_reg);
 				return output_reg;
 			case CONJUNCTION:
 				AsmEmitter.emitAndReg(w, output_reg, left_reg, right_reg);
@@ -143,6 +143,65 @@ public class BinaryExpr extends Expr {
 		// now the string data has been copied, and tmp_output_reg still contains the pointer to the new string
 
 		return tmp_output_reg;
+	}
+
+	private static int emitDivideInstruction(PrintStream w, int hint_output_reg, Terminal left, Terminal right, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		// % assembly code for long division:
+		// mov __A1,left                  %divisor
+		// mov A4,__A1,ASR #31            % -1 if negative, 0 otherwise
+		// add A3,__A1,__A1,ASR #31       % magic to take absolute value
+		// eor A1,A3,__A1,ASR #31         % magic to take absolute value
+		// mov __A2,right                 %dividend
+		// eor A4,A4,__A2,ASR #31         % -1 if sign different, 0 if same
+		// add A3,__A2,__A2,ASR #31       % magic to take absolute value
+		// eor A2,A3,__A2,ASR #31         % magic to take absolute value
+		// % now A1 contains nonnegative dividend, A2 contains nonnegative divisor
+		// mov A3,#1
+		// L1:
+		// cmp A1,A2,LSL #1               % shift A2 and A3 to the biggest digit
+		// movcs A2,A2,LSL #1
+		// movcs A3,A3,LSL #1
+		// bcs L1
+		// mov hint_output_reg,A4         % set output to -1 if we need to flip the sign later, otherwise 0.
+		// L2:
+		// cmp A1,A2
+		// subcs A1,A1,A2
+		// addcs hint_output_reg,hint_output_reg,A3
+		// movs A3,A3,LSR #1
+		// movne A2,A2,LSR #1
+		// bne L2
+		// eor hint_output_reg,hint_output_reg,A4  % set the sign
+
+		final Object label_namespace = new Object();
+		final int left_reg = left.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
+		AsmEmitter.emitMovRegShift(w, EmitFunc.Registers.A4, left_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitAddRegShift(w, EmitFunc.Registers.A3, left_reg, left_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A1, EmitFunc.Registers.A3, left_reg, AsmEmitter.Shift.ASR, 31);
+		final int right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
+		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A4, EmitFunc.Registers.A4, right_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitAddRegShift(w, EmitFunc.Registers.A3, right_reg, right_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A2, EmitFunc.Registers.A3, right_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitMovImm(w, EmitFunc.Registers.A3, 1);
+		final String label1 = ctx.addLabel(label_namespace, 1);
+		w.print(label1);
+		w.println(':');
+		AsmEmitter.emitCmpRegShift(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, AsmEmitter.Shift.LSL, 1);
+		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, EmitFunc.Registers.A2, EmitFunc.Registers.A2, AsmEmitter.Shift.LSL, 1);
+		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, EmitFunc.Registers.A3, EmitFunc.Registers.A3, AsmEmitter.Shift.LSL, 1);
+		AsmEmitter.emitBCond(w, AsmEmitter.Cond.CS, label1);
+		AsmEmitter.emitMovReg(w, hint_output_reg, EmitFunc.Registers.A4);
+		final String label2 = ctx.addLabel(label_namespace, 2);
+		w.print(label2);
+		w.println(':');
+		AsmEmitter.emitCmpReg(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2);
+		AsmEmitter.emitSubCondReg(w, AsmEmitter.Cond.CS, EmitFunc.Registers.A1, EmitFunc.Registers.A1, EmitFunc.Registers.A2);
+		AsmEmitter.emitAddCondReg(w, AsmEmitter.Cond.CS, hint_output_reg, hint_output_reg, EmitFunc.Registers.A3);
+		AsmEmitter.emitMovFlagsRegShift(w, EmitFunc.Registers.A3, EmitFunc.Registers.A3, AsmEmitter.Shift.LSR, 1);
+		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A2, EmitFunc.Registers.A2, AsmEmitter.Shift.LSR, 1);
+		AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, label2);
+		AsmEmitter.emitEorReg(w, hint_output_reg, hint_output_reg, EmitFunc.Registers.A4);
+
+		return hint_output_reg;
 	}
 
 	private static boolean isThisReg(Terminal t, int reg, EmitFunc ef) {
