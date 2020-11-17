@@ -72,6 +72,14 @@ public class AsmEmitter {
 		w.print(',');
 		w.println(reg_names[src2]);
 	}
+	public static void emitSubFlagsImm(PrintStream w, int dest, int src, int imm) {
+		w.print("subs ");
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src]);
+		w.print(",#");
+		w.println(imm);
+	}
 	public static void emitRsbImm(PrintStream w, int dest, int src, int imm) {
 		w.print("rsb ");
 		w.print(reg_names[dest]);
@@ -272,6 +280,22 @@ public class AsmEmitter {
 		w.print(offset);
 		w.println("]!");
 	}
+	public static void emitStrPostOffset(PrintStream w, int dest_reg, int offset, int source_reg) {
+		w.print("str ");
+		w.print(reg_names[source_reg]);
+		w.print(",[");
+		w.print(reg_names[dest_reg]);
+		w.print("],#");
+		w.println(offset);
+	}
+	public static void emitStrbPostOffset(PrintStream w, int dest_reg, int offset, int source_reg) {
+		w.print("strb ");
+		w.print(reg_names[source_reg]);
+		w.print(",[");
+		w.print(reg_names[dest_reg]);
+		w.print("],#");
+		w.println(offset);
+	}
 	public static void emitLdr(PrintStream w, int dest_reg, int source_reg, int offset) {
 		w.print("ldr ");
 		w.print(reg_names[dest_reg]);
@@ -310,6 +334,14 @@ public class AsmEmitter {
 	}
 	public static void emitLdrPostOffset(PrintStream w, int dest_reg, int source_reg, int offset) {
 		w.print("ldr ");
+		w.print(reg_names[dest_reg]);
+		w.print(",[");
+		w.print(reg_names[source_reg]);
+		w.print("],#");
+		w.println(offset);
+	}
+	public static void emitLdrbPostOffset(PrintStream w, int dest_reg, int source_reg, int offset) {
+		w.print("ldrb ");
 		w.print(reg_names[dest_reg]);
 		w.print(",[");
 		w.print(reg_names[source_reg]);

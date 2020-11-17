@@ -106,7 +106,7 @@ public class BinaryExpr extends Expr {
 	private static int emitConcatInstruction(PrintStream w, int hint_output_reg, Terminal left, Terminal right, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		// This part contains "microcode" of sorts to allocate a new string and copy the original data to it
 		final int scratch1_reg = EmitFunc.Registers.FP;
-		final int scratch2_reg = EmitFunc.Registers.LR;
+		final int scratch2_reg = EmitFunc.Registers.LR; // note: this reg is not preserved across function calls
 		final int tmp_output_reg = isThisReg(left, hint_output_reg, ef) || isThisReg(right, hint_output_reg, ef) ? scratch1_reg : hint_output_reg;
 
 		// Determine resultant string size
@@ -128,21 +128,42 @@ public class BinaryExpr extends Expr {
 
 		// Copy strings into new memory
 		{
-			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, tmp_output_reg, 4);
+			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, EmitFunc.Registers.A1, 4);
 			final int left_reg = left.emitAsm(w, scratch2_reg, ef, ctx, optimize);
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A2, left_reg, 4);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, left_reg, 0);
-			AsmEmitter.emitMovReg(w, scratch2_reg, EmitFunc.Registers.A3);
-			AsmEmitter.emitBlPlt(w, "memcpy");
-			AsmEmitter.emitAddReg(w, EmitFunc.Registers.A1, EmitFunc.Registers.A1, scratch2_reg);
+			emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
 			final int right_reg = right.emitAsm(w, scratch2_reg, ef, ctx, optimize);
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A2, right_reg, 4);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, right_reg, 0);
-			AsmEmitter.emitBlPlt(w, "memcpy");
+			emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
 		}
 		// now the string data has been copied, and tmp_output_reg still contains the pointer to the new string
 
 		return tmp_output_reg;
+	}
+
+	/**
+	 * Emits something like memcpy, but modifies the given regs.  `clobber_reg` is clobbered.
+	 * Upon returning, the regs will contain these values:
+	 * dest_reg <- dest_reg + count_reg;
+	 * src_reg <- src_reg + count_reg;
+	 * count_reg <- 0;
+	 */
+	private static void emitMemcpySequence(PrintStream w, int dest_reg, int src_reg, int count_reg, int clobber_reg, EmitContext ctx) {
+		final Object label_namespace = new Object();
+		final String label_start = ctx.addLabel(label_namespace, 1);
+		final String label_end = ctx.addLabel(label_namespace, 2);
+		AsmEmitter.emitCmpImm(w, count_reg, 0);
+		AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, label_end);
+		w.print(label_start);
+		w.println(':');
+		AsmEmitter.emitLdrbPostOffset(w, clobber_reg, src_reg, 1);
+		AsmEmitter.emitStrbPostOffset(w, dest_reg, 1, clobber_reg);
+		AsmEmitter.emitSubFlagsImm(w, count_reg, count_reg, 1);
+		AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, label_start);
+		w.print(label_end);
+		w.println(':');
 	}
 
 	private static int emitDivideInstruction(PrintStream w, int hint_output_reg, Terminal left, Terminal right, EmitFunc ef, EmitContext ctx, boolean optimize) {
