@@ -53,7 +53,7 @@ public class FuncBody {
 	public EmitFunc determineStorageUnoptimized() {
 		// 2+k callee-saved registers to store: fp, lr, <all args from registers>
 		// and all locals except params go onto the stack
-		final int stackBytes = (2 + Math.min(num_params, 4) + (env.size() - num_params)) * 4;
+		final int stackBytes = roundUpToMultipleOf8((2 + Math.min(num_params, 4) + (env.size() - num_params)) * 4);
 		ArrayList<Integer> saved_regs = new ArrayList<>();
 		ArrayList<Integer> saved_params = new ArrayList<>();
 		saved_regs.add(EmitFunc.Registers.FP);
@@ -73,7 +73,7 @@ public class FuncBody {
 			}
 		}
 		// round up to 8 to satisfy ARM stack alignment
-		return new EmitFunc(roundUpToMultipleOf8(stackBytes), saved_regs, saved_params, storage_locations, env);
+		return new EmitFunc(stackBytes, saved_regs, saved_params, storage_locations, env);
 	}
 
 	private int roundUpToMultipleOf8(int val) {
