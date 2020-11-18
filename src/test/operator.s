@@ -2,12 +2,12 @@
 .global main
 main:
 stmfd sp!,{a1,fp,lr}
-sub sp,sp,#196
+sub sp,sp,#204
 mov fp,#100
-str fp,[sp,#188]
+str fp,[sp,#200]
 mov fp,#10
-str fp,[sp,#184]
-ldr fp,[sp,#188]
+str fp,[sp,#196]
+ldr fp,[sp,#200]
 mov lr,#99
 cmp fp,lr
 movgt fp,#1
@@ -25,7 +25,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L1:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
 movgt fp,#1
@@ -43,7 +43,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L3:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#101
 cmp fp,lr
 movgt fp,#1
@@ -61,7 +61,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L5:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#99
 cmp fp,lr
 movlt fp,#1
@@ -79,7 +79,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L7:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
 movlt fp,#1
@@ -97,7 +97,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L9:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#101
 cmp fp,lr
 movlt fp,#1
@@ -115,7 +115,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L11:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#99
 cmp fp,lr
 movge fp,#1
@@ -133,7 +133,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L13:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
 movge fp,#1
@@ -151,7 +151,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L15:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#101
 cmp fp,lr
 movge fp,#1
@@ -169,7 +169,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L17:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#99
 cmp fp,lr
 movle fp,#1
@@ -187,7 +187,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L19:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
 movle fp,#1
@@ -205,7 +205,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L21:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#101
 cmp fp,lr
 movle fp,#1
@@ -223,8 +223,8 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L23:
-ldr fp,[sp,#188]
-ldr lr,[sp,#184]
+ldr fp,[sp,#200]
+ldr lr,[sp,#196]
 cmp fp,lr
 movgt fp,#1
 movle fp,#0
@@ -241,8 +241,8 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L25:
-ldr fp,[sp,#188]
-ldr lr,[sp,#184]
+ldr fp,[sp,#200]
+ldr lr,[sp,#196]
 cmp fp,lr
 movlt fp,#1
 movge fp,#0
@@ -259,8 +259,8 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L27:
-ldr fp,[sp,#188]
-ldr lr,[sp,#184]
+ldr fp,[sp,#200]
+ldr lr,[sp,#196]
 cmp fp,lr
 movge fp,#1
 movlt fp,#0
@@ -277,8 +277,8 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L29:
-ldr fp,[sp,#188]
-ldr lr,[sp,#184]
+ldr fp,[sp,#200]
+ldr lr,[sp,#196]
 cmp fp,lr
 movle fp,#1
 movgt fp,#0
@@ -295,7 +295,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L31:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#99
 cmp fp,lr
 moveq fp,#1
@@ -313,7 +313,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L33:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
 moveq fp,#1
@@ -331,7 +331,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L35:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#101
 cmp fp,lr
 moveq fp,#1
@@ -349,7 +349,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L37:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#99
 cmp fp,lr
 movne fp,#1
@@ -367,7 +367,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L39:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
 movne fp,#1
@@ -385,7 +385,7 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L41:
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#101
 cmp fp,lr
 movne fp,#1
@@ -403,32 +403,32 @@ ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 .L43:
-ldr fp,[sp,#188]
-ldr lr,[sp,#184]
+ldr fp,[sp,#200]
+ldr lr,[sp,#196]
 add fp,fp,lr
-str fp,[sp,#180]
-ldr a2,[sp,#180]
+str fp,[sp,#192]
+ldr a2,[sp,#192]
 ldr a1,=.LZ1
 bl printf(PLT)
 mov a2,#321
 ldr a1,=.LZ1
 bl printf(PLT)
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#10
 add fp,fp,lr
-str fp,[sp,#176]
-ldr a2,[sp,#176]
+str fp,[sp,#188]
+ldr a2,[sp,#188]
 ldr a1,=.LZ1
 bl printf(PLT)
 mov fp,#12
-ldr lr,[sp,#188]
+ldr lr,[sp,#200]
 add fp,fp,lr
-str fp,[sp,#172]
-ldr a2,[sp,#172]
+str fp,[sp,#184]
+ldr a2,[sp,#184]
 ldr a1,=.LZ1
 bl printf(PLT)
 mov fp,#99
-ldr lr,[sp,#188]
+ldr lr,[sp,#200]
 cmp fp,lr
 movlt fp,#1
 movge fp,#0
@@ -446,15 +446,15 @@ ldr a1,=.LZ0
 bl printf(PLT)
 .L45:
 mov fp,#99
-ldr lr,[sp,#188]
+ldr lr,[sp,#200]
 cmp fp,lr
 movlt fp,#1
 movge fp,#0
-strb fp,[sp,#168]
-ldrb fp,[sp,#168]
+strb fp,[sp,#180]
+ldrb fp,[sp,#180]
 eor fp,fp,#1
-strb fp,[sp,#164]
-ldrb fp,[sp,#164]
+strb fp,[sp,#176]
+ldrb fp,[sp,#176]
 cmp fp,#0
 bne .L46
 ldr a3,=.LC3
@@ -500,59 +500,61 @@ strb a4,[a1],#1
 subs a3,a3,#1
 bne .L50
 .L51:
-str fp,[sp,#160]
-ldr a3,[sp,#160]
+str fp,[sp,#172]
+ldr a3,[sp,#172]
 ldr a2,[a3],#4
 ldr a1,=.LZ0
 bl printf(PLT)
 mov fp,#1
 mov lr,#2
 add fp,fp,lr
-str fp,[sp,#156]
-ldr fp,[sp,#156]
+str fp,[sp,#168]
+ldr fp,[sp,#168]
 mov lr,#3
 add fp,fp,lr
-str fp,[sp,#152]
-ldr fp,[sp,#152]
+str fp,[sp,#164]
+ldr fp,[sp,#164]
 mov lr,#4
 add fp,fp,lr
-str fp,[sp,#148]
-ldr fp,[sp,#148]
+str fp,[sp,#160]
+ldr fp,[sp,#160]
 mov lr,#5
 add fp,fp,lr
+str fp,[sp,#156]
+ldr a2,[sp,#156]
+ldr a1,=.LZ1
+bl printf(PLT)
+ldr fp,[sp,#200]
+ldr lr,[sp,#196]
+sub fp,fp,lr
+str fp,[sp,#152]
+ldr a2,[sp,#152]
+ldr a1,=.LZ1
+bl printf(PLT)
+ldr fp,[sp,#196]
+ldr lr,[sp,#200]
+sub fp,fp,lr
+str fp,[sp,#148]
+ldr a2,[sp,#148]
+ldr a1,=.LZ1
+bl printf(PLT)
+ldr fp,[sp,#196]
+ldr lr,[sp,#200]
+mul fp,fp,lr
 str fp,[sp,#144]
 ldr a2,[sp,#144]
 ldr a1,=.LZ1
 bl printf(PLT)
-ldr fp,[sp,#188]
-ldr lr,[sp,#184]
-sub fp,fp,lr
-str fp,[sp,#140]
-ldr a2,[sp,#140]
-ldr a1,=.LZ1
-bl printf(PLT)
-ldr fp,[sp,#184]
-ldr lr,[sp,#188]
-sub fp,fp,lr
-str fp,[sp,#136]
-ldr a2,[sp,#136]
-ldr a1,=.LZ1
-bl printf(PLT)
-ldr fp,[sp,#184]
-ldr lr,[sp,#188]
-mul fp,fp,lr
-str fp,[sp,#132]
-ldr a2,[sp,#132]
-ldr a1,=.LZ1
-bl printf(PLT)
-ldr a1,[sp,#188]
-mov a4,a1,ASR#31
+ldr a2,[sp,#196]
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq fp,#0
+beq .L54
+ldr a1,[sp,#200]
+eor a4,a4,a1,ASR#31
 add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
-ldr a2,[sp,#184]
-eor a4,a4,a2,ASR#31
-add a3,a2,a2,ASR#31
-eor a2,a3,a2,ASR#31
 mov a3,#1
 .L52:
 cmp a1,a2,LSL#1
@@ -568,50 +570,75 @@ movs a3,a3,LSR#1
 movne a2,a2,LSR#1
 bne .L53
 eor fp,fp,a4
-str fp,[sp,#128]
-ldr a2,[sp,#128]
+.L54:
+str fp,[sp,#140]
+ldr a2,[sp,#140]
 ldr a1,=.LZ1
 bl printf(PLT)
-ldr a1,[sp,#184]
-mov a4,a1,ASR#31
+ldr a2,[sp,#200]
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq fp,#0
+beq .L57
+ldr a1,[sp,#196]
+eor a4,a4,a1,ASR#31
 add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
-ldr a2,[sp,#188]
-eor a4,a4,a2,ASR#31
-add a3,a2,a2,ASR#31
-eor a2,a3,a2,ASR#31
 mov a3,#1
-.L54:
+.L55:
 cmp a1,a2,LSL#1
 movcs a2,a2,LSL#1
 movcs a3,a3,LSL#1
-bcs .L54
+bcs .L55
 mov fp,a4
-.L55:
+.L56:
 cmp a1,a2
 subcs a1,a1,a2
 addcs fp,fp,a3
 movs a3,a3,LSR#1
 movne a2,a2,LSR#1
-bne .L55
+bne .L56
 eor fp,fp,a4
-str fp,[sp,#124]
-ldr a2,[sp,#124]
+.L57:
+str fp,[sp,#136]
+ldr a2,[sp,#136]
 ldr a1,=.LZ1
 bl printf(PLT)
-ldr fp,[sp,#184]
+ldr fp,[sp,#196]
 rsb fp,fp,#0
-str fp,[sp,#120]
-ldr a2,[sp,#120]
+str fp,[sp,#132]
+ldr a2,[sp,#132]
 ldr a1,=.LZ1
 bl printf(PLT)
-ldr fp,[sp,#188]
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
 moveq fp,#1
 movne fp,#0
+strb fp,[sp,#128]
+ldr fp,[sp,#196]
+mov lr,#10
+cmp fp,lr
+moveq fp,#1
+movne fp,#0
+strb fp,[sp,#124]
+ldrb fp,[sp,#128]
+ldrb lr,[sp,#124]
+and fp,fp,lr
+strb fp,[sp,#120]
+ldrb fp,[sp,#120]
+cmp fp,#0
+ldrne a1,=.LZ2
+ldreq a1,=.LZ3
+bl puts(PLT)
+ldr fp,[sp,#200]
+mov lr,#100
+cmp fp,lr
+movne fp,#1
+moveq fp,#0
 strb fp,[sp,#116]
-ldr fp,[sp,#184]
+ldr fp,[sp,#196]
 mov lr,#10
 cmp fp,lr
 moveq fp,#1
@@ -625,18 +652,18 @@ ldrb fp,[sp,#108]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
-cmp fp,lr
-movne fp,#1
-moveq fp,#0
-strb fp,[sp,#104]
-ldr fp,[sp,#184]
-mov lr,#10
 cmp fp,lr
 moveq fp,#1
 movne fp,#0
+strb fp,[sp,#104]
+ldr fp,[sp,#196]
+mov lr,#10
+cmp fp,lr
+movne fp,#1
+moveq fp,#0
 strb fp,[sp,#100]
 ldrb fp,[sp,#104]
 ldrb lr,[sp,#100]
@@ -646,14 +673,14 @@ ldrb fp,[sp,#96]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
-moveq fp,#1
-movne fp,#0
+movne fp,#1
+moveq fp,#0
 strb fp,[sp,#92]
-ldr fp,[sp,#184]
+ldr fp,[sp,#196]
 mov lr,#10
 cmp fp,lr
 movne fp,#1
@@ -667,35 +694,35 @@ ldrb fp,[sp,#84]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
-movne fp,#1
-moveq fp,#0
+moveq fp,#1
+movne fp,#0
 strb fp,[sp,#80]
-ldr fp,[sp,#184]
+ldr fp,[sp,#196]
 mov lr,#10
 cmp fp,lr
-movne fp,#1
-moveq fp,#0
+moveq fp,#1
+movne fp,#0
 strb fp,[sp,#76]
 ldrb fp,[sp,#80]
 ldrb lr,[sp,#76]
-and fp,fp,lr
+orr fp,fp,lr
 strb fp,[sp,#72]
 ldrb fp,[sp,#72]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
-moveq fp,#1
-movne fp,#0
+movne fp,#1
+moveq fp,#0
 strb fp,[sp,#68]
-ldr fp,[sp,#184]
+ldr fp,[sp,#196]
 mov lr,#10
 cmp fp,lr
 moveq fp,#1
@@ -709,18 +736,18 @@ ldrb fp,[sp,#60]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
-cmp fp,lr
-movne fp,#1
-moveq fp,#0
-strb fp,[sp,#56]
-ldr fp,[sp,#184]
-mov lr,#10
 cmp fp,lr
 moveq fp,#1
 movne fp,#0
+strb fp,[sp,#56]
+ldr fp,[sp,#196]
+mov lr,#10
+cmp fp,lr
+movne fp,#1
+moveq fp,#0
 strb fp,[sp,#52]
 ldrb fp,[sp,#56]
 ldrb lr,[sp,#52]
@@ -730,14 +757,14 @@ ldrb fp,[sp,#48]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
-moveq fp,#1
-movne fp,#0
+movne fp,#1
+moveq fp,#0
 strb fp,[sp,#44]
-ldr fp,[sp,#184]
+ldr fp,[sp,#196]
 mov lr,#10
 cmp fp,lr
 movne fp,#1
@@ -751,44 +778,48 @@ ldrb fp,[sp,#36]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
-movne fp,#1
-moveq fp,#0
+moveq fp,#1
+movne fp,#0
 strb fp,[sp,#32]
-ldr fp,[sp,#184]
-mov lr,#10
-cmp fp,lr
-movne fp,#1
-moveq fp,#0
-strb fp,[sp,#28]
 ldrb fp,[sp,#32]
-ldrb lr,[sp,#28]
-orr fp,fp,lr
+cmp fp,#0
+ldrne a1,=.LZ2
+ldreq a1,=.LZ3
+bl puts(PLT)
+ldr fp,[sp,#200]
+mov lr,#100
+cmp fp,lr
+moveq fp,#1
+movne fp,#0
+strb fp,[sp,#28]
+ldrb fp,[sp,#28]
+eor fp,fp,#1
 strb fp,[sp,#24]
 ldrb fp,[sp,#24]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
-moveq fp,#1
-movne fp,#0
+movne fp,#1
+moveq fp,#0
 strb fp,[sp,#20]
 ldrb fp,[sp,#20]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
+bl puts(PLT)
+ldr fp,[sp,#200]
 mov lr,#100
 cmp fp,lr
-moveq fp,#1
-movne fp,#0
+movne fp,#1
+moveq fp,#0
 strb fp,[sp,#16]
 ldrb fp,[sp,#16]
 eor fp,fp,#1
@@ -797,36 +828,114 @@ ldrb fp,[sp,#12]
 cmp fp,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
-mov lr,#100
-cmp fp,lr
-movne fp,#1
-moveq fp,#0
-strb fp,[sp,#8]
-ldrb fp,[sp,#8]
-cmp fp,#0
-ldrne a1,=.LZ2
-ldreq a1,=.LZ3
-bl printf(PLT)
-ldr fp,[sp,#188]
-mov lr,#100
-cmp fp,lr
-movne fp,#1
-moveq fp,#0
-strb fp,[sp,#4]
-ldrb fp,[sp,#4]
-eor fp,fp,#1
-strb fp,[sp,#0]
-ldrb fp,[sp,#0]
-cmp fp,#0
-ldrne a1,=.LZ2
-ldreq a1,=.LZ3
+bl puts(PLT)
+ldr fp,=.LC12
+ldr fp,[fp,#0]
+ldr lr,=.LC13
+ldr lr,[lr,#0]
+add fp,fp,lr
+add a1,fp,#4
+bl malloc(PLT)
+str fp,[a1,#0]
+mov fp,a1
+add a1,a1,#4
+ldr lr,=.LC12
+add a2,lr,#4
+ldr a3,[lr,#0]
+cmp a3,#0
+beq .L59
+.L58:
+ldrb a4,[a2],#1
+strb a4,[a1],#1
+subs a3,a3,#1
+bne .L58
+.L59:
+ldr lr,=.LC13
+add a2,lr,#4
+ldr a3,[lr,#0]
+cmp a3,#0
+beq .L61
+.L60:
+ldrb a4,[a2],#1
+strb a4,[a1],#1
+subs a3,a3,#1
+bne .L60
+.L61:
+str fp,[sp,#8]
+ldr fp,[sp,#8]
+ldr fp,[fp,#0]
+ldr lr,=.LC13
+ldr lr,[lr,#0]
+add fp,fp,lr
+add a1,fp,#4
+bl malloc(PLT)
+str fp,[a1,#0]
+mov fp,a1
+add a1,a1,#4
+ldr lr,[sp,#8]
+add a2,lr,#4
+ldr a3,[lr,#0]
+cmp a3,#0
+beq .L63
+.L62:
+ldrb a4,[a2],#1
+strb a4,[a1],#1
+subs a3,a3,#1
+bne .L62
+.L63:
+ldr lr,=.LC13
+add a2,lr,#4
+ldr a3,[lr,#0]
+cmp a3,#0
+beq .L65
+.L64:
+ldrb a4,[a2],#1
+strb a4,[a1],#1
+subs a3,a3,#1
+bne .L64
+.L65:
+str fp,[sp,#4]
+ldr fp,[sp,#4]
+ldr fp,[fp,#0]
+ldr lr,=.LC14
+ldr lr,[lr,#0]
+add fp,fp,lr
+add a1,fp,#4
+bl malloc(PLT)
+str fp,[a1,#0]
+mov fp,a1
+add a1,a1,#4
+ldr lr,[sp,#4]
+add a2,lr,#4
+ldr a3,[lr,#0]
+cmp a3,#0
+beq .L67
+.L66:
+ldrb a4,[a2],#1
+strb a4,[a1],#1
+subs a3,a3,#1
+bne .L66
+.L67:
+ldr lr,=.LC14
+add a2,lr,#4
+ldr a3,[lr,#0]
+cmp a3,#0
+beq .L69
+.L68:
+ldrb a4,[a2],#1
+strb a4,[a1],#1
+subs a3,a3,#1
+bne .L68
+.L69:
+str fp,[sp,#0]
+ldr a3,[sp,#0]
+ldr a2,[a3],#4
+ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#0
-add sp,sp,#200
+add sp,sp,#208
 ldmfd sp!,{fp,pc}
-add sp,sp,#200
+add sp,sp,#208
 ldmfd sp!,{fp,pc}
 .data
 .align 2
@@ -865,6 +974,15 @@ ldmfd sp!,{fp,pc}
 .align 2
 .LC11:
 .ascii "\007\000\000\000defghij"
+.align 2
+.LC12:
+.ascii "\004\000\000\000test"
+.align 2
+.LC13:
+.ascii "\000\000\000\000"
+.align 2
+.LC14:
+.ascii "\002\000\000\000ab"
 .LZ0:
 .asciz "%.*s\012\000"
 .LZ1:

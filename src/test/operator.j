@@ -52,5 +52,6 @@ Void main(){
   println(!(n==100));
   println(n!=100);
   println(!(n!=100));
+  println("test"+null+null+"ab");
 }
 }
