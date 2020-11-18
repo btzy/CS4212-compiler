@@ -29,7 +29,7 @@ public class Println extends Instruction {
 			AsmEmitter.emitCmpImm(w, arg_reg, 0);
 			AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A1, true_lit);
 			AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.EQ, EmitFunc.Registers.A1, false_lit);
-			AsmEmitter.emitBlPlt(w, "printf");
+			AsmEmitter.emitBlPlt(w, "puts");
 		}
 		else if (term.type == TypeName.STRING) {
 			final String format = ctx.addCStringLiteral("%.*s\\012\\000");
