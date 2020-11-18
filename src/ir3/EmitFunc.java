@@ -64,5 +64,13 @@ public class EmitFunc {
 		this.storage_locations = storage_locations;
 		this.env = env;
 	}
+
+	public EmitFunc transpose(int offset) {
+		ArrayList<StorageLocation> new_storage_locations = new ArrayList<>();
+		for (StorageLocation x : storage_locations) {
+			new_storage_locations.add(x.isRegister ? x : StorageLocation.makeMemLocal(x.value - offset));
+		}
+		return new EmitFunc(stack_space - offset, saved_regs, saved_params, new_storage_locations, env);
+	}
 }
 
