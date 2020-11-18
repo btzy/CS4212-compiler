@@ -168,14 +168,16 @@ public class BinaryExpr extends Expr {
 
 	private static int emitDivideInstruction(PrintStream w, int hint_output_reg, Terminal left, Terminal right, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		// % assembly code for long division:
+		// mov __A2,right                 %dividend
+		// mov A4,__A2,ASR #31            % -1 if negative, 0 otherwise
+		// add A3,__A2,__A2,ASR #31       % magic to take absolute value
+		// eors A2,A3,__A2,ASR #31        % magic to take absolute value
+		// moveq hint_output_reg,#0       % if divisor is zero, set output to 0, and skip to end
+		// beq L3
 		// mov __A1,left                  %divisor
-		// mov A4,__A1,ASR #31            % -1 if negative, 0 otherwise
+		// eor A4,A4,__A1,ASR #31         % -1 if sign different, 0 if same
 		// add A3,__A1,__A1,ASR #31       % magic to take absolute value
 		// eor A1,A3,__A1,ASR #31         % magic to take absolute value
-		// mov __A2,right                 %dividend
-		// eor A4,A4,__A2,ASR #31         % -1 if sign different, 0 if same
-		// add A3,__A2,__A2,ASR #31       % magic to take absolute value
-		// eor A2,A3,__A2,ASR #31         % magic to take absolute value
 		// % now A1 contains nonnegative dividend, A2 contains nonnegative divisor
 		// mov A3,#1
 		// L1:
@@ -192,18 +194,24 @@ public class BinaryExpr extends Expr {
 		// movne A2,A2,LSR #1
 		// bne L2
 		// eor hint_output_reg,hint_output_reg,A4  % set the sign
+		// L3:
 
 		final Object label_namespace = new Object();
+		final String label1 = ctx.addLabel(label_namespace, 1);
+		final String label2 = ctx.addLabel(label_namespace, 2);
+		final String label3 = ctx.addLabel(label_namespace, 3);
+
+		final int right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
+		AsmEmitter.emitMovRegShift(w, EmitFunc.Registers.A4, right_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitAddRegShift(w, EmitFunc.Registers.A3, right_reg, right_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitEorFlagsRegShift(w, EmitFunc.Registers.A2, EmitFunc.Registers.A3, right_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, hint_output_reg, 0);
+		AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, label3);
 		final int left_reg = left.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
-		AsmEmitter.emitMovRegShift(w, EmitFunc.Registers.A4, left_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A4, EmitFunc.Registers.A4, left_reg, AsmEmitter.Shift.ASR, 31);
 		AsmEmitter.emitAddRegShift(w, EmitFunc.Registers.A3, left_reg, left_reg, AsmEmitter.Shift.ASR, 31);
 		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A1, EmitFunc.Registers.A3, left_reg, AsmEmitter.Shift.ASR, 31);
-		final int right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
-		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A4, EmitFunc.Registers.A4, right_reg, AsmEmitter.Shift.ASR, 31);
-		AsmEmitter.emitAddRegShift(w, EmitFunc.Registers.A3, right_reg, right_reg, AsmEmitter.Shift.ASR, 31);
-		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A2, EmitFunc.Registers.A3, right_reg, AsmEmitter.Shift.ASR, 31);
 		AsmEmitter.emitMovImm(w, EmitFunc.Registers.A3, 1);
-		final String label1 = ctx.addLabel(label_namespace, 1);
 		w.print(label1);
 		w.println(':');
 		AsmEmitter.emitCmpRegShift(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, AsmEmitter.Shift.LSL, 1);
@@ -211,7 +219,6 @@ public class BinaryExpr extends Expr {
 		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, EmitFunc.Registers.A3, EmitFunc.Registers.A3, AsmEmitter.Shift.LSL, 1);
 		AsmEmitter.emitBCond(w, AsmEmitter.Cond.CS, label1);
 		AsmEmitter.emitMovReg(w, hint_output_reg, EmitFunc.Registers.A4);
-		final String label2 = ctx.addLabel(label_namespace, 2);
 		w.print(label2);
 		w.println(':');
 		AsmEmitter.emitCmpReg(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2);
@@ -221,6 +228,8 @@ public class BinaryExpr extends Expr {
 		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A2, EmitFunc.Registers.A2, AsmEmitter.Shift.LSR, 1);
 		AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, label2);
 		AsmEmitter.emitEorReg(w, hint_output_reg, hint_output_reg, EmitFunc.Registers.A4);
+		w.print(label3);
+		w.println(':');
 
 		return hint_output_reg;
 	}

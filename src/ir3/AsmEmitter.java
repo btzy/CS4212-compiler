@@ -164,6 +164,18 @@ public class AsmEmitter {
 		w.print('#');
 		w.println(amount);
 	}
+	public static void emitEorFlagsRegShift(PrintStream w, int dest, int src1, int src2, Shift shift, int amount) {
+		w.print("eors ");
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src1]);
+		w.print(',');
+		w.print(reg_names[src2]);
+		w.print(',');
+		w.print(shift.text);
+		w.print('#');
+		w.println(amount);
+	}
 	public static void emitMovReg(PrintStream w, int dest, int src) {
 		w.print("mov ");
 		w.print(reg_names[dest]);
