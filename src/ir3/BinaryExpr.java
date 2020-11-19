@@ -108,34 +108,44 @@ public class BinaryExpr extends Expr {
 	private static int emitConcatInstruction(PrintStream w, int hint_output_reg, Terminal left, Terminal right, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		// This part contains "microcode" of sorts to allocate a new string and copy the original data to it
 		final int scratch1_reg = EmitFunc.Registers.FP;
-		final int scratch2_reg = EmitFunc.Registers.LR; // note: this reg is not preserved across function calls
-		final int tmp_output_reg = isThisReg(left, hint_output_reg, ef) || isThisReg(right, hint_output_reg, ef) ? scratch1_reg : hint_output_reg;
+		final int scratch2_reg = EmitFunc.Registers.V6;
+		final int scratch3_reg = EmitFunc.Registers.V7;
+		boolean hasScratch1 = isThisReg(left, scratch1_reg, ef) || isThisReg(right, scratch1_reg, ef);
+		boolean hasScratch2 = isThisReg(left, scratch2_reg, ef) || isThisReg(right, scratch2_reg, ef);
+		boolean hasScratch3 = isThisReg(left, scratch3_reg, ef) || isThisReg(right, scratch3_reg, ef);
+		final int scratch_reg = hasScratch1 ? (hasScratch2 ? scratch3_reg : scratch2_reg) : scratch1_reg;
+		boolean hasOutput1 = isThisReg(left, scratch1_reg, ef) || isThisReg(right, scratch1_reg, ef) || scratch_reg == scratch1_reg;
+		boolean hasOutput2 = isThisReg(left, scratch2_reg, ef) || isThisReg(right, scratch2_reg, ef) || scratch_reg == scratch2_reg;
+		boolean hasOutput3 = isThisReg(left, scratch3_reg, ef) || isThisReg(right, scratch3_reg, ef) || scratch_reg == scratch3_reg;
+		final int tmp_output_reg = isThisReg(left, hint_output_reg, ef) || isThisReg(right, hint_output_reg, ef) || scratch_reg == hint_output_reg ? (
+			hasOutput1 ? (hasOutput2 ? (hasOutput3 ? EmitFunc.Registers.LR : scratch3_reg) : scratch2_reg) : scratch1_reg 
+			) : hint_output_reg;
 
 		// Determine resultant string size
 		{
-			final int left_reg = left.emitAsm(w, scratch1_reg, ef, ctx, optimize);
-			AsmEmitter.emitLdr(w, scratch1_reg, left_reg, 0);
-			final int right_reg = right.emitAsm(w, scratch2_reg, ef, ctx, optimize);
-			AsmEmitter.emitLdr(w, scratch2_reg, right_reg, 0);
-			AsmEmitter.emitAddReg(w, scratch1_reg, scratch1_reg, scratch2_reg);
+			final int left_reg = left.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
+			AsmEmitter.emitLdr(w, EmitFunc.Registers.A1, left_reg, 0);
+			final int right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
+			AsmEmitter.emitLdr(w, EmitFunc.Registers.A2, right_reg, 0);
+			AsmEmitter.emitAddReg(w, scratch_reg, EmitFunc.Registers.A1, EmitFunc.Registers.A2);
 		}
 		// now resultant string size is stored in scratch1_reg
 
 		// Allocate heap memory and write the size
-		AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, scratch1_reg, 4); // 4 extra bytes for storing the length
+		AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, scratch_reg, 4); // 4 extra bytes for storing the length
 		AsmEmitter.emitBlPlt(w, "malloc");
-		AsmEmitter.emitStr(w, EmitFunc.Registers.A1, 0, scratch1_reg);
+		AsmEmitter.emitStr(w, EmitFunc.Registers.A1, 0, scratch_reg);
 		AsmEmitter.emitMovReg(w, tmp_output_reg, EmitFunc.Registers.A1);
 		// now the new buffer is stored in tmp_output_reg
 
 		// Copy strings into new memory
 		{
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, EmitFunc.Registers.A1, 4);
-			final int left_reg = left.emitAsm(w, scratch2_reg, ef, ctx, optimize);
+			final int left_reg = left.emitAsm(w, scratch_reg, ef, ctx, optimize);
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A2, left_reg, 4);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, left_reg, 0);
 			emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
-			final int right_reg = right.emitAsm(w, scratch2_reg, ef, ctx, optimize);
+			final int right_reg = right.emitAsm(w, scratch_reg, ef, ctx, optimize);
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A2, right_reg, 4);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, right_reg, 0);
 			emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
@@ -171,12 +181,12 @@ public class BinaryExpr extends Expr {
 	private static int emitDivideInstruction(PrintStream w, int hint_output_reg, Terminal left, Terminal right, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		// % assembly code for long division:
 		// mov __A2,right                 %dividend
+		// mov __A1,left                  %divisor
 		// mov A4,__A2,ASR #31            % -1 if negative, 0 otherwise
 		// add A3,__A2,__A2,ASR #31       % magic to take absolute value
 		// eors A2,A3,__A2,ASR #31        % magic to take absolute value
 		// moveq hint_output_reg,#0       % if divisor is zero, set output to 0, and skip to end
 		// beq L3
-		// mov __A1,left                  %divisor
 		// eor A4,A4,__A1,ASR #31         % -1 if sign different, 0 if same
 		// add A3,__A1,__A1,ASR #31       % magic to take absolute value
 		// eor A1,A3,__A1,ASR #31         % magic to take absolute value
@@ -203,33 +213,62 @@ public class BinaryExpr extends Expr {
 		final String label2 = ctx.addLabel(label_namespace, 2);
 		final String label3 = ctx.addLabel(label_namespace, 3);
 
-		final int right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
-		AsmEmitter.emitMovRegShift(w, EmitFunc.Registers.A4, right_reg, AsmEmitter.Shift.ASR, 31);
-		AsmEmitter.emitAddRegShift(w, EmitFunc.Registers.A3, right_reg, right_reg, AsmEmitter.Shift.ASR, 31);
-		AsmEmitter.emitEorFlagsRegShift(w, EmitFunc.Registers.A2, EmitFunc.Registers.A3, right_reg, AsmEmitter.Shift.ASR, 31);
+		int right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
+		int left_reg = left.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
+		int eA1 = EmitFunc.Registers.A1, eA2 = EmitFunc.Registers.A2, eA3 = EmitFunc.Registers.A3, eA4 = EmitFunc.Registers.A4;
+		if (left_reg == eA2) {
+			int tmp = eA1;
+			eA1 = eA2;
+			eA2 = tmp;
+		}
+		if (left_reg == eA3) {
+			int tmp = eA1;
+			eA1 = eA3;
+			eA3 = tmp;
+		}
+		if (left_reg == eA4) {
+			int tmp = eA1;
+			eA1 = eA4;
+			eA4 = tmp;
+		}
+		if (right_reg == eA3) {
+			int tmp = eA2;
+			eA2 = eA3;
+			eA3 = tmp;
+		}
+		if (right_reg == eA4) {
+			int tmp = eA2;
+			eA2 = eA4;
+			eA4 = tmp;
+		}
+		if (right_reg == left_reg && left_reg == eA1) {
+			AsmEmitter.emitMovReg(w, eA2, left_reg);
+		}
+		AsmEmitter.emitMovRegShift(w, eA4, right_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitAddRegShift(w, eA3, right_reg, right_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitEorFlagsRegShift(w, eA2, eA3, right_reg, AsmEmitter.Shift.ASR, 31);
 		AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, hint_output_reg, 0);
 		AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, label3);
-		final int left_reg = left.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
-		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A4, EmitFunc.Registers.A4, left_reg, AsmEmitter.Shift.ASR, 31);
-		AsmEmitter.emitAddRegShift(w, EmitFunc.Registers.A3, left_reg, left_reg, AsmEmitter.Shift.ASR, 31);
-		AsmEmitter.emitEorRegShift(w, EmitFunc.Registers.A1, EmitFunc.Registers.A3, left_reg, AsmEmitter.Shift.ASR, 31);
-		AsmEmitter.emitMovImm(w, EmitFunc.Registers.A3, 1);
+		AsmEmitter.emitEorRegShift(w, eA4, eA4, left_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitAddRegShift(w, eA3, left_reg, left_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitEorRegShift(w, eA1, eA3, left_reg, AsmEmitter.Shift.ASR, 31);
+		AsmEmitter.emitMovImm(w, eA3, 1);
 		w.print(label1);
 		w.println(':');
-		AsmEmitter.emitCmpRegShift(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, AsmEmitter.Shift.LSL, 1);
-		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, EmitFunc.Registers.A2, EmitFunc.Registers.A2, AsmEmitter.Shift.LSL, 1);
-		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, EmitFunc.Registers.A3, EmitFunc.Registers.A3, AsmEmitter.Shift.LSL, 1);
+		AsmEmitter.emitCmpRegShift(w, eA1, eA2, AsmEmitter.Shift.LSL, 1);
+		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, eA2, eA2, AsmEmitter.Shift.LSL, 1);
+		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, eA3, eA3, AsmEmitter.Shift.LSL, 1);
 		AsmEmitter.emitBCond(w, AsmEmitter.Cond.CS, label1);
-		AsmEmitter.emitMovReg(w, hint_output_reg, EmitFunc.Registers.A4);
+		AsmEmitter.emitMovReg(w, hint_output_reg, eA4);
 		w.print(label2);
 		w.println(':');
-		AsmEmitter.emitCmpReg(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2);
-		AsmEmitter.emitSubCondReg(w, AsmEmitter.Cond.CS, EmitFunc.Registers.A1, EmitFunc.Registers.A1, EmitFunc.Registers.A2);
-		AsmEmitter.emitAddCondReg(w, AsmEmitter.Cond.CS, hint_output_reg, hint_output_reg, EmitFunc.Registers.A3);
-		AsmEmitter.emitMovFlagsRegShift(w, EmitFunc.Registers.A3, EmitFunc.Registers.A3, AsmEmitter.Shift.LSR, 1);
-		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A2, EmitFunc.Registers.A2, AsmEmitter.Shift.LSR, 1);
+		AsmEmitter.emitCmpReg(w, eA1, eA2);
+		AsmEmitter.emitSubCondReg(w, AsmEmitter.Cond.CS, eA1, eA1, eA2);
+		AsmEmitter.emitAddCondReg(w, AsmEmitter.Cond.CS, hint_output_reg, hint_output_reg, eA3);
+		AsmEmitter.emitMovFlagsRegShift(w, eA3, eA3, AsmEmitter.Shift.LSR, 1);
+		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.NE, eA2, eA2, AsmEmitter.Shift.LSR, 1);
 		AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, label2);
-		AsmEmitter.emitEorReg(w, hint_output_reg, hint_output_reg, EmitFunc.Registers.A4);
+		AsmEmitter.emitEorReg(w, hint_output_reg, hint_output_reg, eA4);
 		w.print(label3);
 		w.println(':');
 
@@ -258,6 +297,9 @@ public class BinaryExpr extends Expr {
 			ret.add(EmitFunc.Registers.A2);
 			ret.add(EmitFunc.Registers.A3);
 			ret.add(EmitFunc.Registers.A4);
+			ret.add(EmitFunc.Registers.V6);
+			ret.add(EmitFunc.Registers.V7);
+			ret.add(EmitFunc.Registers.FP);
 			ret.add(EmitFunc.Registers.LR);
 		}
 		else if (op == BinOp.DIVIDE) {
