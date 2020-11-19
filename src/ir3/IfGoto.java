@@ -33,13 +33,13 @@ public class IfGoto extends Instruction {
 
 	@Override
 	public ArrayList<Integer> getUses() {
-		ArrayList<Integer> ret = cond.getUses();
-		ret.add(EmitFunc.Registers.FP);
-		return ret;
+		return cond.getUses();
 	}
 	
 	@Override
 	public ArrayList<Integer> getClobberedRegs() {
-		return cond.getClobberedRegs();
+		ArrayList<Integer> ret = cond.getClobberedRegs();
+		ret.add(EmitFunc.Registers.FP);
+		return ret;
 	}
 }

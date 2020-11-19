@@ -96,6 +96,7 @@ public class InterferenceGraph {
 						new_live.addAll(live_at_inst[currline]);
 					});
 					new_live.addAll(inst.getUses());
+					//System.out.println(inst.getUses());
 				}
 				for (int bl : backlinks[currline]) {
 					boolean need_update = false;
