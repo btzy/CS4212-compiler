@@ -1,6 +1,8 @@
 package ir3;
 
 import java.io.PrintStream;
+import java.util.OptionalInt;
+import java.util.ArrayList;
 
 public class IfGoto extends Instruction {
 	public final Expr cond;
@@ -24,5 +26,20 @@ public class IfGoto extends Instruction {
 		final int reg = cond.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
 		AsmEmitter.emitCmpImm(w, reg, 0);
 		AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, name);
+	}
+
+	@Override
+	public OptionalInt getDef() { return OptionalInt.empty(); }
+
+	@Override
+	public ArrayList<Integer> getUses() {
+		ArrayList<Integer> ret = cond.getUses();
+		ret.add(EmitFunc.Registers.FP);
+		return ret;
+	}
+	
+	@Override
+	public ArrayList<Integer> getClobberedRegs() {
+		return cond.getClobberedRegs();
 	}
 }

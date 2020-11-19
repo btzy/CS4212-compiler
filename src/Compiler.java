@@ -38,6 +38,7 @@ public class Compiler {
             }*/
             if (SemanticException.previouslyHandled) throw new Exception("Semantic checking aborted due to above errors.");
             ir3_program.transformMainFunc();
+            //ir3_program.print(System.out);
             ir3_program.compile(System.out, hasArg(argmap, "O"));
         }
         catch (CommandArgumentException e) {
@@ -52,7 +53,7 @@ public class Compiler {
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
-            //e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
             System.exit(1);
         }
     }

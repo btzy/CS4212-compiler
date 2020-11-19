@@ -517,6 +517,7 @@ public class AsmEmitter {
 		if (!combined_regs.isEmpty()) AsmEmitter.emitStmfd(w, EmitFunc.Registers.SP, combined_regs);
 		final int diff = ef.stack_space - combined_regs.size() * 4;
 		if (diff != 0) AsmEmitter.emitSubImm(w, EmitFunc.Registers.SP, EmitFunc.Registers.SP, diff);
+		AsmEmitter.emitAutomoveParams(w, ef.num_params_for_automove, ef.storage_locations, ef.stack_space, ef.env);
 	}
 
 	public static void emitEpilogue(PrintStream w, EmitFunc ef) {
@@ -536,6 +537,74 @@ public class AsmEmitter {
 			}
 		}
 		return ret;
+	}
+
+	private static void emitAutomoveParams(PrintStream w, int num_params, ArrayList<EmitFunc.StorageLocation> storage_locations, int stack_bytes, LocalEnvironment env) {
+		if (num_params == 0) return;
+		final int num_reg_params = Math.min(num_params, 4);
+		int[] done_params = new int[num_reg_params];
+		for (int i=0; i!=num_reg_params; ++i) {
+			if (done_params[i] == 0) {
+				if (emitAutomoveParamsImpl(w, done_params, i, storage_locations, env) && done_params[i] == 1) {
+					AsmEmitter.emitMovReg(w, storage_locations.get(i).value, EmitFunc.Registers.LR);
+				}
+			}
+		}
+		for (int i=0; i!=num_reg_params; ++i) {
+			if (done_params[i] == 0) {
+				emitAutomoveParamsImplLast(w, done_params, i, storage_locations, env);
+			}
+		}
+		for (int i=num_reg_params; i!=num_params; ++i) {
+			final EmitFunc.StorageLocation sl = storage_locations.get(i);
+			if (sl.isRegister) {
+				AsmEmitter.emitPseudoLdr(w, sl.value, EmitFunc.Registers.SP, stack_bytes + (i-num_reg_params) * 4, env.getType(i));
+			}
+		}
+	}
+
+	private static boolean emitAutomoveParamsImpl(PrintStream w, int[] done_params, int i, ArrayList<EmitFunc.StorageLocation> storage_locations, LocalEnvironment env) {
+		final EmitFunc.StorageLocation sl = storage_locations.get(i);
+		if (sl.value == EmitFunc.Registers.LR) {
+			done_params[i] = 0;
+			return false;
+		}
+		done_params[i] = 1;
+		if (sl.isRegister && sl.value < done_params.length) {
+			if (sl.value == i) {
+				done_params[i] = 2;
+				return true;
+			}
+			if (done_params[sl.value] == 1) {
+				AsmEmitter.emitMovReg(w, EmitFunc.Registers.LR, sl.value);
+				return true;
+			}
+			else if (done_params[sl.value] == 0) {
+				if (!emitAutomoveParamsImpl(w, done_params, sl.value, storage_locations, env)) {
+					done_params[i] = 0;
+					return false;
+				}
+				if (done_params[sl.value] == 1) {
+					AsmEmitter.emitMovReg(w, storage_locations.get(sl.value).value, sl.value);
+					return true;
+				}
+			}
+		}
+		done_params[i] = 2;
+		emitPseudoStoreVariable(w, sl, i, env.getType(i));
+		return true;
+	}
+
+	private static void emitAutomoveParamsImplLast(PrintStream w, int[] done_params, int i, ArrayList<EmitFunc.StorageLocation> storage_locations, LocalEnvironment env) {
+		done_params[i] = 1;
+		final EmitFunc.StorageLocation sl = storage_locations.get(i);
+		if (sl.isRegister && sl.value < done_params.length) {
+			if (done_params[sl.value] == 0) {
+				emitAutomoveParamsImplLast(w, done_params, sl.value, storage_locations, env);
+			}
+		}
+		done_params[i] = 2;
+		emitPseudoStoreVariable(w, sl, i, env.getType(i));
 	}
 }
 

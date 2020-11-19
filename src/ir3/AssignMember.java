@@ -1,6 +1,8 @@
 package ir3;
 
 import java.io.PrintStream;
+import java.util.OptionalInt;
+import java.util.ArrayList;
 
 public class AssignMember extends Instruction {
 	public final int idx; // localidx
@@ -26,6 +28,24 @@ public class AssignMember extends Instruction {
 		final int ptr_reg = AsmEmitter.emitPseudoLoadVariable(w, output_reg == EmitFunc.Registers.FP ? EmitFunc.Registers.LR : EmitFunc.Registers.FP, sl, ef.env.getType(idx));
 		final EmitClass ec = ctx.getEmitClass(ef.env.getType(idx));
 		AsmEmitter.emitPseudoStr(w, ptr_reg, ec.field_offsets.get(field), output_reg, ec.field_types.get(field));
+	}
+
+	@Override
+	public OptionalInt getDef() { return OptionalInt.empty(); }
+
+	@Override
+	public ArrayList<Integer> getUses() {
+		final ArrayList<Integer> ret = val.getUses();
+		ret.add(idx);
+		return ret;
+	}
+	
+	@Override
+	public ArrayList<Integer> getClobberedRegs() {
+		final ArrayList<Integer> ret = new ArrayList<>(val.getClobberedRegs());
+		ret.add(EmitFunc.Registers.FP);
+		ret.add(EmitFunc.Registers.LR);
+		return ret;
 	}
 
 }

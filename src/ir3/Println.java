@@ -1,6 +1,8 @@
 package ir3;
 
 import java.io.PrintStream;
+import java.util.OptionalInt;
+import java.util.ArrayList;
 
 public class Println extends Instruction {
 	public final Terminal term;
@@ -25,7 +27,7 @@ public class Println extends Instruction {
 		else if (term.type == TypeName.BOOL) {
 			final String true_lit = ctx.addCStringLiteral("true\\012\\000");
 			final String false_lit = ctx.addCStringLiteral("false\\012\\000");
-			final int arg_reg = term.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+			final int arg_reg = term.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
 			AsmEmitter.emitCmpImm(w, arg_reg, 0);
 			AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A1, true_lit);
 			AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.EQ, EmitFunc.Registers.A1, false_lit);
@@ -47,5 +49,26 @@ public class Println extends Instruction {
 		else {
 			assert(false);
 		}
+	}
+
+	@Override
+	public OptionalInt getDef() { return OptionalInt.empty(); }
+
+	@Override
+	public ArrayList<Integer> getUses() {
+		final ArrayList<Integer> ret = new ArrayList<>();
+		ret.addAll(term.getUses());
+		return ret;
+	}
+
+	@Override
+	public ArrayList<Integer> getClobberedRegs() {
+		final ArrayList<Integer> ret = new ArrayList<>(term.getClobberedRegs());
+		ret.add(EmitFunc.Registers.A1);
+		ret.add(EmitFunc.Registers.A2);
+		ret.add(EmitFunc.Registers.A3);
+		ret.add(EmitFunc.Registers.A4);
+		ret.add(EmitFunc.Registers.LR);
+		return ret;
 	}
 }

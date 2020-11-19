@@ -1,6 +1,8 @@
 package ir3;
 
 import java.io.PrintStream;
+import java.util.OptionalInt;
+import java.util.ArrayList;
 
 public class MemberExpr extends Expr {
 	public final int idx; // localidx
@@ -21,5 +23,17 @@ public class MemberExpr extends Expr {
 		final EmitClass ec = ctx.getEmitClass(ef.env.getType(idx));
 		AsmEmitter.emitPseudoLdr(w, hint_output_reg, ptr_reg, ec.field_offsets.get(field), ec.field_types.get(field));
 		return hint_output_reg;
+	}
+
+	@Override
+	public ArrayList<Integer> getUses() {
+		final ArrayList<Integer> ret = new ArrayList<Integer>();
+		ret.add(idx);
+		return ret;
+	}
+	
+	@Override
+	public ArrayList<Integer> getClobberedRegs() {
+		return new ArrayList<>();
 	}
 }

@@ -15,6 +15,7 @@ public class EmitFunc {
 	public final int stack_space;
 	public final ArrayList<Integer> saved_regs;
 	public final ArrayList<Integer> saved_params;
+	public final int num_params_for_automove;
 	public final ArrayList<StorageLocation> storage_locations;
 	public final LocalEnvironment env;
 
@@ -57,10 +58,11 @@ public class EmitFunc {
 	}
 
 
-	public EmitFunc(int stack_space, ArrayList<Integer> saved_regs, ArrayList<Integer> saved_params, ArrayList<StorageLocation> storage_locations, LocalEnvironment env) {
+	public EmitFunc(int stack_space, ArrayList<Integer> saved_regs, ArrayList<Integer> saved_params, int num_params_for_automove, ArrayList<StorageLocation> storage_locations, LocalEnvironment env) {
 		this.stack_space = stack_space;
 		this.saved_regs = saved_regs;
 		this.saved_params = saved_params;
+		this.num_params_for_automove = num_params_for_automove;
 		this.storage_locations = storage_locations;
 		this.env = env;
 	}
@@ -70,7 +72,7 @@ public class EmitFunc {
 		for (StorageLocation x : storage_locations) {
 			new_storage_locations.add(x.isRegister ? x : StorageLocation.makeMemLocal(x.value - offset));
 		}
-		return new EmitFunc(stack_space - offset, saved_regs, saved_params, new_storage_locations, env);
+		return new EmitFunc(stack_space - offset, saved_regs, saved_params, num_params_for_automove, new_storage_locations, env);
 	}
 }
 

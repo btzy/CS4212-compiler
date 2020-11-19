@@ -3,6 +3,8 @@ package ir3;
 import util.LocationRange;
 import java.util.function.Consumer;
 import java.io.PrintStream;
+import java.util.OptionalInt;
+import java.util.ArrayList;
 
 /**
  * Represents a Expr with real type (cannot be nullptr_t).
@@ -47,4 +49,6 @@ public abstract class Expr {
 
 	public abstract void print(PrintStream w, PrintContext pc);
 	public abstract int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize);
+	public abstract ArrayList<Integer> getUses();
+	public abstract ArrayList<Integer> getClobberedRegs();
 }

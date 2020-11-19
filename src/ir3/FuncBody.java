@@ -2,6 +2,7 @@ package ir3;
 
 import java.util.ArrayList;
 import java.io.PrintStream;
+import java.util.Collections;
 
 public class FuncBody {
 	private final LocalEnvironment env;
@@ -46,14 +47,14 @@ public class FuncBody {
 	 */
 	public EmitFunc determineStorage(boolean optimize) {
 		if (!optimize) return determineStorageUnoptimized();
-		else throw new UnsupportedOperationException(); // TODO
+		else return determineStorageOptimized();
 	}
 
 	
 	public EmitFunc determineStorageUnoptimized() {
 		// 2+k callee-saved registers to store: fp, lr, <all args from registers>
 		// and all locals except params go onto the stack
-		final int stackBytes = roundUpToMultipleOf8((2 + Math.min(num_params, 4) + (env.size() - num_params)) * 4);
+		final int stackBytes = CallUtil.roundUpToMultipleOf8((2 + Math.min(num_params, 4) + (env.size() - num_params)) * 4);
 		ArrayList<Integer> saved_regs = new ArrayList<>();
 		ArrayList<Integer> saved_params = new ArrayList<>();
 		saved_regs.add(EmitFunc.Registers.FP);
@@ -73,11 +74,47 @@ public class FuncBody {
 			}
 		}
 		// round up to 8 to satisfy ARM stack alignment
-		return new EmitFunc(stackBytes, saved_regs, saved_params, storage_locations, env);
+		return new EmitFunc(stackBytes, saved_regs, saved_params, 0, storage_locations, env);
 	}
 
-	private int roundUpToMultipleOf8(int val) {
-		return (val + 7) & (-8);
+	public EmitFunc determineStorageOptimized() {
+		// Generate graph using liveness analysis
+		InterferenceGraph graph = InterferenceGraph.generate(env, num_params, insts);
+		// Run graph colouring
+		EmitFunc.StorageLocation[] assignment = graph.colour();
+
+		// Prepare the EmitFunc
+		boolean[] used_regs = new boolean[16];
+		used_regs[EmitFunc.Registers.LR] = true;
+		int num_spills = 0;
+		for (EmitFunc.StorageLocation sl : assignment) {
+			if (sl.isRegister) used_regs[sl.value] = true;
+		}
+		ArrayList<Integer> saved_regs = new ArrayList<>();
+		for (int i=4;i!=used_regs.length; ++i) {
+			if (used_regs[i]) saved_regs.add(i);
+		}
+		for (int i=0; i!=assignment.length; ++i){
+			if (!assignment[i].isRegister && (i < 4 || i >= num_params)) {
+				++num_spills;
+			}
+		}
+		final int stack_bytes = CallUtil.roundUpToMultipleOf8((saved_regs.size() + num_spills) * 4);
+		int offset = 0;
+		for (int i=0; i!=assignment.length; ++i){
+			if (!assignment[i].isRegister) {
+				if (i < 4 || i >= num_params) {
+					assignment[i] = EmitFunc.StorageLocation.makeMemLocal(stack_bytes - (saved_regs.size() + (++offset)) * 4);
+				}
+				else {
+					assignment[i] = EmitFunc.StorageLocation.makeMemLocal(stack_bytes + (i - 4) * 4);
+				}
+			}
+		}
+
+		ArrayList<EmitFunc.StorageLocation> storage_locations = new ArrayList<>();
+		Collections.addAll(storage_locations, assignment);
+		return new EmitFunc(stack_bytes, saved_regs, new ArrayList<>(), num_params, storage_locations, env);
 	}
 
 	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
@@ -106,4 +143,6 @@ public class FuncBody {
 		}
 		insts.add(new Return(new IntegerLiteral(0)));
 	}
+
+	// TODO: transform general funcs to add return to last statement if not present.
 }

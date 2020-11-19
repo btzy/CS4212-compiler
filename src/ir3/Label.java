@@ -1,6 +1,8 @@
 package ir3;
 
 import java.io.PrintStream;
+import java.util.OptionalInt;
+import java.util.ArrayList;
 
 public class Label extends Instruction {
 	public final int index;
@@ -18,5 +20,18 @@ public class Label extends Instruction {
 		final String name = ctx.addLabel(ef.env, index);
 		w.print(name);
 		w.println(':');
+	}
+
+	@Override
+	public OptionalInt getDef() { return OptionalInt.empty(); }
+
+	@Override
+	public ArrayList<Integer> getUses() {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public ArrayList<Integer> getClobberedRegs() {
+		return new ArrayList<>();
 	}
 }

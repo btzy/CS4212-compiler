@@ -3,6 +3,8 @@ package ir3;
 import util.LocationRange;
 import java.util.function.Consumer;
 import java.io.PrintStream;
+import java.util.OptionalInt;
+import java.util.ArrayList;
 
 /**
  * Represents a BinaryExpr with real type (cannot be nullptr_t).
@@ -238,5 +240,36 @@ public class BinaryExpr extends Expr {
 		if (!(t instanceof LocalVariable)) return false;
 		final EmitFunc.StorageLocation sl = ef.storage_locations.get(((LocalVariable)t).idx);
 		return sl.isRegister && sl.value == reg;
+	}
+
+	@Override
+	public ArrayList<Integer> getUses() {
+		final ArrayList<Integer> ret = left.getUses();
+		ret.addAll(right.getUses());
+		return ret;
+	}
+	
+	@Override
+	public ArrayList<Integer> getClobberedRegs() {
+		final ArrayList<Integer> ret = left.getClobberedRegs();
+		ret.addAll(right.getClobberedRegs());
+		if (op == BinOp.CONCAT) {
+			ret.add(EmitFunc.Registers.A1);
+			ret.add(EmitFunc.Registers.A2);
+			ret.add(EmitFunc.Registers.A3);
+			ret.add(EmitFunc.Registers.A4);
+			ret.add(EmitFunc.Registers.LR);
+		}
+		else if (op == BinOp.DIVIDE) {
+			ret.add(EmitFunc.Registers.A1);
+			ret.add(EmitFunc.Registers.A2);
+			ret.add(EmitFunc.Registers.A3);
+			ret.add(EmitFunc.Registers.A4);
+		}
+		else {
+			ret.add(EmitFunc.Registers.FP);
+			ret.add(EmitFunc.Registers.LR);
+		}
+		return ret;
 	}
 }

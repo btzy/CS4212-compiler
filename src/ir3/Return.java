@@ -2,6 +2,8 @@ package ir3;
 
 import java.util.Optional;
 import java.io.PrintStream;
+import java.util.OptionalInt;
+import java.util.ArrayList;
 
 public class Return extends Instruction {
 	public final Optional<Terminal> val; // might return nothing
@@ -28,5 +30,23 @@ public class Return extends Instruction {
 			if (reg != EmitFunc.Registers.A1) AsmEmitter.emitMovReg(w, EmitFunc.Registers.A1, reg);
 		});
 		AsmEmitter.emitEpilogue(w, ef);
+	}
+
+	@Override
+	public OptionalInt getDef() { return OptionalInt.empty(); }
+
+	@Override
+	public ArrayList<Integer> getUses() {
+		final ArrayList<Integer> ret = new ArrayList<>();
+		val.ifPresent(term -> {
+			ret.addAll(term.getUses());
+		});
+		return ret;
+	}
+
+	@Override
+	public ArrayList<Integer> getClobberedRegs() {
+		if (val.isPresent()) return val.get().getClobberedRegs();
+		else return new ArrayList<>();
 	}
 }
