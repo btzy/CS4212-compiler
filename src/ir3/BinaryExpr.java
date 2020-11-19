@@ -244,9 +244,8 @@ public class BinaryExpr extends Expr {
 		final String label2 = ctx.addLabel(label_namespace, 2);
 		final String label3 = ctx.addLabel(label_namespace, 3);
 
-		int right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
-		int left_reg = left.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
 		int eA1 = EmitFunc.Registers.A1, eA2 = EmitFunc.Registers.A2, eA3 = EmitFunc.Registers.A3, eA4 = EmitFunc.Registers.A4;
+		int left_reg = left.emitAsm(w, isThisReg(right, eA1, ef) ? eA2 : eA1, ef, ctx, optimize);
 		if (left_reg == eA2) {
 			int tmp = eA1;
 			eA1 = eA2;
@@ -262,6 +261,7 @@ public class BinaryExpr extends Expr {
 			eA1 = eA4;
 			eA4 = tmp;
 		}
+		int right_reg = right.emitAsm(w, eA2, ef, ctx, optimize);
 		if (right_reg == eA3) {
 			int tmp = eA2;
 			eA2 = eA3;

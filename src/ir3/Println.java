@@ -25,8 +25,8 @@ public class Println extends Instruction {
 			AsmEmitter.emitBlPlt(w, "printf");
 		}
 		else if (term.type == TypeName.BOOL) {
-			final String true_lit = ctx.addCStringLiteral("true\\012\\000");
-			final String false_lit = ctx.addCStringLiteral("false\\012\\000");
+			final String true_lit = ctx.addCStringLiteral("true");
+			final String false_lit = ctx.addCStringLiteral("false");
 			final int arg_reg = term.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
 			AsmEmitter.emitCmpImm(w, arg_reg, 0);
 			AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A1, true_lit);

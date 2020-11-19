@@ -26,7 +26,7 @@ public class UnaryExpr extends Expr {
 
 	@Override
 	public int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
-		final int arg_reg = arg.emitAsm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
+		final int arg_reg = arg.emitAsm(w, hint_output_reg, ef, ctx, optimize);
 		return emitOpInstruction(w, op, hint_output_reg, arg_reg);
 	}
 
@@ -50,8 +50,6 @@ public class UnaryExpr extends Expr {
 	
 	@Override
 	public ArrayList<Integer> getClobberedRegs() {
-		ArrayList<Integer> ret = arg.getClobberedRegs();
-		ret.add(EmitFunc.Registers.LR);
-		return ret;
+		return arg.getClobberedRegs();
 	}
 }
