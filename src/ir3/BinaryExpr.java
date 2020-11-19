@@ -113,19 +113,50 @@ public class BinaryExpr extends Expr {
 		boolean hasScratch1 = isThisReg(left, scratch1_reg, ef) || isThisReg(right, scratch1_reg, ef);
 		boolean hasScratch2 = isThisReg(left, scratch2_reg, ef) || isThisReg(right, scratch2_reg, ef);
 		boolean hasScratch3 = isThisReg(left, scratch3_reg, ef) || isThisReg(right, scratch3_reg, ef);
+		boolean hasLR = isThisReg(left, EmitFunc.Registers.LR, ef) || isThisReg(right, EmitFunc.Registers.LR, ef);
 		final int scratch_reg = hasScratch1 ? (hasScratch2 ? scratch3_reg : scratch2_reg) : scratch1_reg;
-		boolean hasOutput1 = isThisReg(left, scratch1_reg, ef) || isThisReg(right, scratch1_reg, ef) || scratch_reg == scratch1_reg;
-		boolean hasOutput2 = isThisReg(left, scratch2_reg, ef) || isThisReg(right, scratch2_reg, ef) || scratch_reg == scratch2_reg;
-		boolean hasOutput3 = isThisReg(left, scratch3_reg, ef) || isThisReg(right, scratch3_reg, ef) || scratch_reg == scratch3_reg;
-		final int tmp_output_reg = isThisReg(left, hint_output_reg, ef) || isThisReg(right, hint_output_reg, ef) || scratch_reg == hint_output_reg ? (
-			hasOutput1 ? (hasOutput2 ? (hasOutput3 ? EmitFunc.Registers.LR : scratch3_reg) : scratch2_reg) : scratch1_reg 
+		if (scratch_reg == scratch1_reg) hasScratch1 = true;
+		else if (scratch_reg == scratch2_reg) hasScratch2 = true;
+		else if (scratch_reg == scratch3_reg) hasScratch3 = true;
+		final int tmp_output_reg = isThisReg(left, hint_output_reg, ef) || isThisReg(right, hint_output_reg, ef) || scratch_reg == hint_output_reg || hint_output_reg < 3 ? (
+			hasLR ? (hasScratch1 ? (hasScratch2 ? (hasScratch3 ? EmitFunc.Registers.LR : scratch3_reg) : scratch2_reg) : scratch1_reg) : EmitFunc.Registers.LR
 			) : hint_output_reg;
+
+		int override_left_reg = -1, override_right_reg = -1;
+		if (isThisReg(left, EmitFunc.Registers.A1, ef) || isThisReg(left, EmitFunc.Registers.A2, ef) || isThisReg(left, EmitFunc.Registers.A3, ef) || isThisReg(left, EmitFunc.Registers.A4, ef)) {
+			override_left_reg = hasScratch1 ? (hasScratch2 ? scratch3_reg : scratch2_reg) : scratch1_reg;
+			if (override_left_reg == scratch1_reg) hasScratch1 = true;
+			else if (override_left_reg == scratch2_reg) hasScratch2 = true;
+			else if (override_left_reg == scratch3_reg) hasScratch3 = true;
+		}
+		if (isThisReg(right, EmitFunc.Registers.A1, ef) || isThisReg(right, EmitFunc.Registers.A2, ef) || isThisReg(right, EmitFunc.Registers.A3, ef) || isThisReg(right, EmitFunc.Registers.A4, ef)) {
+			override_right_reg = hasScratch1 ? (hasScratch2 ? scratch3_reg : scratch2_reg) : scratch1_reg;
+			if (override_right_reg == scratch1_reg) hasScratch1 = true;
+			else if (override_right_reg == scratch2_reg) hasScratch2 = true;
+			else if (override_right_reg == scratch3_reg) hasScratch3 = true;
+		}
 
 		// Determine resultant string size
 		{
-			final int left_reg = left.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
+			int left_reg;
+			if (override_left_reg != -1) {
+				left_reg = left.emitAsm(w, override_left_reg, ef, ctx, optimize);
+				if (left_reg != override_left_reg) AsmEmitter.emitMovReg(w, override_left_reg, left_reg);
+				left_reg = override_left_reg;
+			}
+			else {
+				left_reg = left.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
+			}
+			int right_reg;
+			if (override_right_reg != -1) {
+				right_reg = right.emitAsm(w, override_right_reg, ef, ctx, optimize);
+				if (right_reg != override_right_reg) AsmEmitter.emitMovReg(w, override_right_reg, right_reg);
+				right_reg = override_right_reg;
+			}
+			else {
+				right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
+			}
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A1, left_reg, 0);
-			final int right_reg = right.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A2, right_reg, 0);
 			AsmEmitter.emitAddReg(w, scratch_reg, EmitFunc.Registers.A1, EmitFunc.Registers.A2);
 		}
@@ -141,11 +172,11 @@ public class BinaryExpr extends Expr {
 		// Copy strings into new memory
 		{
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, EmitFunc.Registers.A1, 4);
-			final int left_reg = left.emitAsm(w, scratch_reg, ef, ctx, optimize);
+			final int left_reg = override_left_reg == -1 ? left.emitAsm(w, scratch_reg, ef, ctx, optimize) : override_left_reg;
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A2, left_reg, 4);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, left_reg, 0);
 			emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
-			final int right_reg = right.emitAsm(w, scratch_reg, ef, ctx, optimize);
+			final int right_reg = override_right_reg == -1 ? right.emitAsm(w, scratch_reg, ef, ctx, optimize) : override_right_reg;
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A2, right_reg, 4);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, right_reg, 0);
 			emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
@@ -244,6 +275,9 @@ public class BinaryExpr extends Expr {
 		if (right_reg == left_reg && left_reg == eA1) {
 			AsmEmitter.emitMovReg(w, eA2, left_reg);
 		}
+		if (hint_output_reg == eA1 || hint_output_reg == eA2 || hint_output_reg == eA3 || hint_output_reg == eA4) {
+			hint_output_reg = EmitFunc.Registers.LR;
+		}
 		AsmEmitter.emitMovRegShift(w, eA4, right_reg, AsmEmitter.Shift.ASR, 31);
 		AsmEmitter.emitAddRegShift(w, eA3, right_reg, right_reg, AsmEmitter.Shift.ASR, 31);
 		AsmEmitter.emitEorFlagsRegShift(w, eA2, eA3, right_reg, AsmEmitter.Shift.ASR, 31);
@@ -307,6 +341,7 @@ public class BinaryExpr extends Expr {
 			ret.add(EmitFunc.Registers.A2);
 			ret.add(EmitFunc.Registers.A3);
 			ret.add(EmitFunc.Registers.A4);
+			ret.add(EmitFunc.Registers.LR);
 		}
 		else {
 			ret.add(EmitFunc.Registers.FP);
