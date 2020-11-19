@@ -3,14 +3,14 @@
 main:
 stmfd sp!,{a1,fp,lr}
 sub sp,sp,#36
-mov fp,#1
-str fp,[sp,#32]
-mov fp,#2
-str fp,[sp,#28]
-mov fp,#3
-str fp,[sp,#24]
-mov fp,#4
-str fp,[sp,#20]
+mov lr,#1
+str lr,[sp,#32]
+mov lr,#2
+str lr,[sp,#28]
+mov lr,#3
+str lr,[sp,#24]
+mov lr,#4
+str lr,[sp,#20]
 mov a1,#8
 bl malloc(PLT)
 str a1,[sp,#8]
@@ -25,8 +25,8 @@ bl $Compute$square$$$Compute$Int
 str a1,[sp,#0]
 ldr fp,[sp,#4]
 ldr lr,[sp,#0]
-add fp,fp,lr
-str fp,[sp,#16]
+add lr,fp,lr
+str lr,[sp,#16]
 ldr a2,[sp,#20]
 ldr a1,[sp,#8]
 bl $Compute$square$$$Compute$Int
@@ -57,11 +57,11 @@ ldmfd sp!,{fp,pc}
 $Compute$square$$$Compute$Int:
 stmfd sp!,{a1,a2,fp,lr}
 sub sp,sp,#8
-ldr fp,[sp,#8]
-ldr lr,[sp,#8]
-mul fp,fp,lr
-str fp,[sp,#0]
-ldr a1,[sp,#0]
+ldr fp,[sp,#12]
+ldr lr,[sp,#12]
+mul lr,fp,lr
+str lr,[sp,#4]
+ldr a1,[sp,#4]
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
 add sp,sp,#16
@@ -71,8 +71,8 @@ stmfd sp!,{a1,a2,a3,fp,lr}
 sub sp,sp,#4
 ldr fp,[sp,#8]
 ldr lr,[sp,#12]
-add fp,fp,lr
-str fp,[sp,#0]
+add lr,fp,lr
+str lr,[sp,#0]
 ldr a1,[sp,#0]
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
@@ -81,9 +81,9 @@ ldmfd sp!,{fp,pc}
 $Compute$addSquares$$$Compute$Int$Int:
 stmfd sp!,{a1,a2,a3,fp,lr}
 sub sp,sp,#20
-ldr fp,[sp,#20]
-ldrb fp,[fp,#0]
-strb fp,[sp,#16]
+ldr lr,[sp,#20]
+ldrb lr,[lr,#0]
+strb lr,[sp,#16]
 ldrb fp,[sp,#16]
 cmp fp,#0
 bne .L2
@@ -108,9 +108,9 @@ add sp,sp,#32
 ldmfd sp!,{fp,pc}
 b .L3
 .L2:
-ldr fp,[sp,#20]
-ldr fp,[fp,#4]
-str fp,[sp,#0]
+ldr lr,[sp,#20]
+ldr lr,[lr,#4]
+str lr,[sp,#0]
 ldr a1,[sp,#0]
 add sp,sp,#32
 ldmfd sp!,{fp,pc}
@@ -118,8 +118,10 @@ ldmfd sp!,{fp,pc}
 add sp,sp,#32
 ldmfd sp!,{fp,pc}
 .data
+.align 2
 .LC0:
 .ascii "\047\000\000\000Square of d smaller than sum of squares"
+.align 2
 .LC1:
 .ascii "\046\000\000\000Square of d larger than sum of squares"
 .LZ0:
