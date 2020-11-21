@@ -13,6 +13,9 @@ public class EmitContext {
 	private final HashMap<String, String> cstrliteral_lookup; // maps c-strings to names (names are '.LZ#') where # is an integer
 	private final ArrayList<String> cstrliterals;
 	private final ArrayList<String> cstrliteral_names;
+	private final HashMap<String, String> var_lookup; // maps vars to names (names are '.LN#') where # is an integer
+	private final ArrayList<String> vars;
+	private final ArrayList<String> var_names;
 	private final HashMap<NamespaceIndexPair, String> label_lookup; // maps pairs to names (names are '.L#') where # is an integer
 	private final ArrayList<NamespaceIndexPair> labels;
 	private final ArrayList<String> label_names;
@@ -48,6 +51,9 @@ public class EmitContext {
 		this.cstrliteral_lookup = new HashMap<>();
 		this.cstrliterals = new ArrayList<>();
 		this.cstrliteral_names = new ArrayList<>();
+		this.var_lookup = new HashMap<>();
+		this.vars = new ArrayList<>();
+		this.var_names = new ArrayList<>();
 		this.label_lookup = new HashMap<>();
 		this.labels = new ArrayList<>();
 		this.label_names = new ArrayList<>();
@@ -74,6 +80,17 @@ public class EmitContext {
 			cstrliterals.add(value);
 			cstrliteral_names.add(name);
 			cstrliteral_lookup.put(value, name);
+		}
+		return name;
+	}
+
+	public String addExternWord(String varname) {
+		String name = var_lookup.get(varname);
+		if (name == null) {
+			name = ".LN" + String.valueOf(vars.size());
+			vars.add(varname);
+			var_names.add(name);
+			var_lookup.put(varname, name);
 		}
 		return name;
 	}
@@ -118,6 +135,12 @@ public class EmitContext {
 			w.print(".asciz \"");
 			w.print(cstrliterals.get(i));
 			w.println('\"');
+		}
+		for (int i=0; i!=vars.size(); ++i) {
+			w.print(var_names.get(i));
+			w.println(':');
+			w.print(".word ");
+			w.println(vars.get(i));
 		}
 	}
 

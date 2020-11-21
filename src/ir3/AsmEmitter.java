@@ -182,6 +182,14 @@ public class AsmEmitter {
 		w.print(',');
 		w.println(reg_names[src]);
 	}
+	public static void emitMovCondReg(PrintStream w, Cond cond, int dest, int src) {
+		w.print("mov");
+		w.print(cond.text);
+		w.print(' ');
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.println(reg_names[src]);
+	}
 	public static void emitMovFlagsReg(PrintStream w, int dest, int src) {
 		w.print("movs ");
 		w.print(reg_names[dest]);
@@ -256,6 +264,12 @@ public class AsmEmitter {
 		w.print(",#");
 		w.println(imm);
 	}
+	public static void emitCmnImm(PrintStream w, int src, int imm) {
+		w.print("cmn ");
+		w.print(reg_names[src]);
+		w.print(",#");
+		w.println(imm);
+	}
 	public static void emitStr(PrintStream w, int dest_reg, int offset, int source_reg) {
 		w.print("str ");
 		w.print(reg_names[source_reg]);
@@ -265,8 +279,30 @@ public class AsmEmitter {
 		w.print(offset);
 		w.println(']');
 	}
+	public static void emitStrCond(PrintStream w, Cond cond, int dest_reg, int offset, int source_reg) {
+		w.print("str");
+		w.print(cond.text);
+		w.print(' ');
+		w.print(reg_names[source_reg]);
+		w.print(",[");
+		w.print(reg_names[dest_reg]);
+		w.print(",#");
+		w.print(offset);
+		w.println(']');
+	}
 	public static void emitStrb(PrintStream w, int dest_reg, int offset, int source_reg) {
 		w.print("strb ");
+		w.print(reg_names[source_reg]);
+		w.print(",[");
+		w.print(reg_names[dest_reg]);
+		w.print(",#");
+		w.print(offset);
+		w.println(']');
+	}
+	public static void emitStrbCond(PrintStream w, Cond cond, int dest_reg, int offset, int source_reg) {
+		w.print("strb");
+		w.print(cond.text);
+		w.print(' ');
 		w.print(reg_names[source_reg]);
 		w.print(",[");
 		w.print(reg_names[dest_reg]);
@@ -308,8 +344,39 @@ public class AsmEmitter {
 		w.print("],#");
 		w.println(offset);
 	}
+	public static void emitStrbIdx(PrintStream w, int dest_reg, int idx_reg, int source_reg) {
+		w.print("strb ");
+		w.print(reg_names[source_reg]);
+		w.print(",[");
+		w.print(reg_names[dest_reg]);
+		w.print(",");
+		w.print(reg_names[idx_reg]);
+		w.println(']');
+	}
+	public static void emitStrbCondIdx(PrintStream w, Cond cond, int dest_reg, int idx_reg, int source_reg) {
+		w.print("strb");
+		w.print(cond.text);
+		w.print(' ');
+		w.print(reg_names[source_reg]);
+		w.print(",[");
+		w.print(reg_names[dest_reg]);
+		w.print(",");
+		w.print(reg_names[idx_reg]);
+		w.println(']');
+	}
 	public static void emitLdr(PrintStream w, int dest_reg, int source_reg, int offset) {
 		w.print("ldr ");
+		w.print(reg_names[dest_reg]);
+		w.print(",[");
+		w.print(reg_names[source_reg]);
+		w.print(",#");
+		w.print(offset);
+		w.println(']');
+	}
+	public static void emitLdrCond(PrintStream w, Cond cond, int dest_reg, int source_reg, int offset) {
+		w.print("ldr");
+		w.print(cond.text);
+		w.print(' ');
 		w.print(reg_names[dest_reg]);
 		w.print(",[");
 		w.print(reg_names[source_reg]);
@@ -359,6 +426,21 @@ public class AsmEmitter {
 		w.print(reg_names[source_reg]);
 		w.print("],#");
 		w.println(offset);
+	}
+	public static void emitLdrbIdx(PrintStream w, int dest_reg, int source_reg, int idx_reg) {
+		w.print("ldrb ");
+		w.print(reg_names[dest_reg]);
+		w.print(",[");
+		w.print(reg_names[source_reg]);
+		w.print(",");
+		w.print(reg_names[idx_reg]);
+		w.println(']');
+	}
+	public static void emitLdrLit(PrintStream w, int dest_reg, String name) {
+		w.print("ldr ");
+		w.print(reg_names[dest_reg]);
+		w.print(",");
+		w.println(name);
 	}
 	public static void emitLdrLitAddr(PrintStream w, int dest_reg, String name) {
 		w.print("ldr ");
@@ -426,6 +508,13 @@ public class AsmEmitter {
 		w.print(name);
 		w.println("(PLT)");
 	}
+	public static void emitBlCondPlt(PrintStream w, Cond cond, String name) {
+		w.print("bl");
+		w.print(cond.text);
+		w.print(' ');
+		w.print(name);
+		w.println("(PLT)");
+	}
 
 
 	
@@ -471,6 +560,23 @@ public class AsmEmitter {
 		else {
 			assert(type.size == 4);
 			emitLdr(w, dest_reg, source_reg, offset);
+		}
+	}
+	public static void emitPseudoStoreVariableCond(PrintStream w, Cond cond, EmitFunc.StorageLocation sl, int reg, TypeName type) {
+		if (sl.isRegister) {
+			if (sl.value != reg) emitMovCondReg(w, cond, sl.value, reg);
+		}
+		else {
+			emitPseudoStrCond(w, cond, EmitFunc.Registers.SP, sl.value, reg, type);
+		}
+	}
+	public static void emitPseudoStrCond(PrintStream w, Cond cond, int dest_reg, int offset, int source_reg, TypeName type) {
+		if (type.size == 1) {
+			emitStrbCond(w, cond, dest_reg, offset, source_reg);
+		}
+		else {
+			assert(type.size == 4);
+			emitStrCond(w, cond, dest_reg, offset, source_reg);
 		}
 	}
 

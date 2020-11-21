@@ -21,7 +21,8 @@ public class AllocExpr extends Expr {
 	public int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		final int sz = ctx.getEmitClass(type).size;
 		AsmEmitter.emitMovImm(w, EmitFunc.Registers.A1, sz);
-		AsmEmitter.emitBlPlt(w, "malloc");
+		AsmEmitter.emitMovImm(w, EmitFunc.Registers.A2, 1);
+		AsmEmitter.emitBlPlt(w, "calloc");
 		return EmitFunc.Registers.A1;
 	}
 	
