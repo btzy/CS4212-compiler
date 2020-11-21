@@ -34,13 +34,13 @@ public class Readln extends Instruction {
 		AsmEmitter.emitLdrLit(w, EmitFunc.Registers.A3, stdin_handle);
 		AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, EmitFunc.Registers.A3, 0);
 		AsmEmitter.emitBlPlt(w, "getline");
-		AsmEmitter.emitAddImm(w, EmitFunc.Registers.SP, EmitFunc.Registers.SP, 8);
 		int output_reg = sl.isRegister ? sl.value : EmitFunc.Registers.A1;
 		int scratch2_reg = output_reg == EmitFunc.Registers.A2 ? EmitFunc.Registers.A1 : EmitFunc.Registers.A2;
 		int scratch3_reg = output_reg == EmitFunc.Registers.A3 ? EmitFunc.Registers.A1 : EmitFunc.Registers.A3;
 		int scratch4_reg = output_reg == EmitFunc.Registers.A4 ? EmitFunc.Registers.A1 : EmitFunc.Registers.A4;
 
 		if (type == TypeName.INT) {
+			AsmEmitter.emitAddImm(w, EmitFunc.Registers.SP, EmitFunc.Registers.SP, 8);
 			AsmEmitter.emitCmnImm(w, EmitFunc.Registers.A1, 1);
 			AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, output_reg, 0);
 			AsmEmitter.emitPseudoStoreVariableCond(w, AsmEmitter.Cond.EQ, sl, output_reg, TypeName.INT);
@@ -52,6 +52,7 @@ public class Readln extends Instruction {
 			w.println(':');
 		}
 		else if (type == TypeName.BOOL) {
+			AsmEmitter.emitAddImm(w, EmitFunc.Registers.SP, EmitFunc.Registers.SP, 8);
 			AsmEmitter.emitCmnImm(w, EmitFunc.Registers.A1, 1);
 			AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, output_reg, 0);
 			AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, fail_label);
@@ -77,7 +78,7 @@ public class Readln extends Instruction {
 			final String jump_label = ctx.addLabel(label_namespace, 2);
 			AsmEmitter.emitSubFlagsImm(w, scratch3_reg, EmitFunc.Registers.FP, 1);
 			if (EmitFunc.Registers.A1 != output_reg) AsmEmitter.emitMovReg(w, output_reg, EmitFunc.Registers.A1);
-			AsmEmitter.emitLdr(w, scratch4_reg, EmitFunc.Registers.SP, -4);
+			AsmEmitter.emitLdr(w, scratch4_reg, EmitFunc.Registers.SP, 4);
 			AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.LT, scratch3_reg, 0);
 			AsmEmitter.emitBCond(w, AsmEmitter.Cond.LT, jump_label);
 			AsmEmitter.emitLdrbIdx(w, scratch2_reg, scratch4_reg, scratch3_reg);
@@ -90,6 +91,7 @@ public class Readln extends Instruction {
 			AsmEmitter.emitMemcpySequence(w, scratch2_reg, scratch4_reg, scratch3_reg, output_reg == EmitFunc.Registers.FP ? EmitFunc.Registers.A1 : EmitFunc.Registers.FP, ctx);
 			w.print(fail_label);
 			w.println(':');
+			AsmEmitter.emitAddImm(w, EmitFunc.Registers.SP, EmitFunc.Registers.SP, 8);
 			AsmEmitter.emitPseudoStoreVariable(w, sl, output_reg, TypeName.STRING);
 		}
 		else {
