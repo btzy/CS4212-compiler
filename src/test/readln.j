@@ -7,7 +7,7 @@ Void main(){
   readln(n);
   println(n + 123);
   readln(s);
-  println(s);
+  println(s + "a");
   readln(b);
   println(!b);
   readln(b);

@@ -64,7 +64,40 @@ bne .L3
 .L1:
 add sp,sp,#8
 str a1,[sp,#20]
-ldr a3,[sp,#20]
+ldr a1,[sp,#20]
+ldr a2,=.LC1
+ldr a1,[a1,#0]
+ldr a2,[a2,#0]
+add fp,a1,a2
+add a1,fp,#4
+bl malloc(PLT)
+str fp,[a1,#0]
+mov lr,a1
+add a1,a1,#4
+ldr fp,[sp,#20]
+add a2,fp,#4
+ldr a3,[fp,#0]
+cmp a3,#0
+beq .L6
+.L5:
+ldrb a4,[a2],#1
+strb a4,[a1],#1
+subs a3,a3,#1
+bne .L5
+.L6:
+ldr fp,=.LC1
+add a2,fp,#4
+ldr a3,[fp,#0]
+cmp a3,#0
+beq .L8
+.L7:
+ldrb a4,[a2],#1
+strb a4,[a1],#1
+subs a3,a3,#1
+bne .L7
+.L8:
+str lr,[sp,#8]
+ldr a3,[sp,#8]
 ldr a2,[a3],#4
 ldr a1,=.LZ1
 bl printf(PLT)
@@ -80,21 +113,21 @@ bl getline(PLT)
 add sp,sp,#8
 cmn a1,#1
 moveq a1,#0
-beq .L5
+beq .L9
 ldr a1,[sp,#-4]
 ldrb a1,[a1,#0]
 cmp a1,#116
 moveq a1,#1
-beq .L5
+beq .L9
 cmp a1,#49
 moveq a1,#1
 movne a1,#0
-.L5:
+.L9:
 strb a1,[sp,#16]
 ldrb lr,[sp,#16]
 eor lr,lr,#1
-strb lr,[sp,#8]
-ldrb a1,[sp,#8]
+strb lr,[sp,#4]
+ldrb a1,[sp,#4]
 cmp a1,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
@@ -111,21 +144,21 @@ bl getline(PLT)
 add sp,sp,#8
 cmn a1,#1
 moveq a1,#0
-beq .L6
+beq .L10
 ldr a1,[sp,#-4]
 ldrb a1,[a1,#0]
 cmp a1,#116
 moveq a1,#1
-beq .L6
+beq .L10
 cmp a1,#49
 moveq a1,#1
 movne a1,#0
-.L6:
+.L10:
 strb a1,[sp,#16]
 ldrb lr,[sp,#16]
 eor lr,lr,#1
-strb lr,[sp,#4]
-ldrb a1,[sp,#4]
+strb lr,[sp,#0]
+ldrb a1,[sp,#0]
 cmp a1,#0
 ldrne a1,=.LZ2
 ldreq a1,=.LZ3
@@ -141,6 +174,9 @@ ldmfd sp!,{fp,pc}
 .align 2
 .LC0:
 .ascii "\000\000\000\000"
+.align 2
+.LC1:
+.ascii "\001\000\000\000a"
 .LZ0:
 .asciz "%d\012\000"
 .LZ1:
