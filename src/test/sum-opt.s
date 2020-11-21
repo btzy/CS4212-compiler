@@ -24,15 +24,11 @@ mov a1,#1
 mov a2,#0
 .L1:
 cmp a1,a3
-movle fp,#1
-movgt fp,#0
-cmp fp,#0
-bne .L2
+ble .L2
 b .L3
 .L2:
 add a2,a2,a1
-mov lr,#1
-add a1,a1,lr
+add a1,a1,#1
 b .L1
 .L3:
 ldr a1,=.LZ0

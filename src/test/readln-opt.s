@@ -19,8 +19,7 @@ beq .L0
 ldr a1,[sp,#-4]
 bl atoi(PLT)
 .L0:
-mov lr,#123
-add a2,a1,lr
+add a2,a1,#123
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#0

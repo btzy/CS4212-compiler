@@ -23,10 +23,7 @@ mov a2,v2
 mov a1,v1
 bl $Compute$square$$$Compute$Int
 cmp a1,v3
-movgt fp,#1
-movle fp,#0
-cmp fp,#0
-bne .L0
+bgt .L0
 ldr a3,=.LC0
 ldr a2,[a3],#4
 ldr a1,=.LZ0

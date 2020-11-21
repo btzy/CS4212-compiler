@@ -85,37 +85,35 @@ add sp,sp,#8
 ldmfd sp!,{fp,pc}
 $List$size$$$List:
 stmfd sp!,{a1,fp,lr}
-sub sp,sp,#20
+sub sp,sp,#12
 mov lr,#0
-str lr,[sp,#16]
-ldr lr,[sp,#20]
-ldr lr,[lr,#0]
-str lr,[sp,#12]
-.L0:
+str lr,[sp,#8]
 ldr lr,[sp,#12]
+ldr lr,[lr,#0]
+str lr,[sp,#4]
+.L0:
+ldr lr,[sp,#4]
 ldrb lr,[lr,#8]
-strb lr,[sp,#8]
-ldrb lr,[sp,#8]
-eor lr,lr,#1
-strb lr,[sp,#4]
-ldrb fp,[sp,#4]
+strb lr,[sp,#0]
+ldrb fp,[sp,#0]
+eor fp,fp,#1
 cmp fp,#0
 bne .L1
 b .L2
 .L1:
-ldr fp,[sp,#16]
+ldr fp,[sp,#8]
 mov lr,#1
 add lr,fp,lr
-str lr,[sp,#16]
-ldr lr,[sp,#12]
+str lr,[sp,#8]
+ldr lr,[sp,#4]
 ldr lr,[lr,#0]
-str lr,[sp,#12]
+str lr,[sp,#4]
 b .L0
 .L2:
-ldr a1,[sp,#16]
-add sp,sp,#24
+ldr a1,[sp,#8]
+add sp,sp,#16
 ldmfd sp!,{fp,pc}
-add sp,sp,#24
+add sp,sp,#16
 ldmfd sp!,{fp,pc}
 $List$item$$$List$Int:
 stmfd sp!,{a1,a2,fp,lr}
@@ -171,38 +169,36 @@ add sp,sp,#16
 ldmfd sp!,{fp,pc}
 $List$print$$$List:
 stmfd sp!,{a1,fp,lr}
-sub sp,sp,#20
-ldr lr,[sp,#20]
+sub sp,sp,#12
+ldr lr,[sp,#12]
 ldr lr,[lr,#0]
-str lr,[sp,#16]
+str lr,[sp,#8]
 ldr a3,=.LC0
 ldr a2,[a3],#4
 ldr a1,=.LZ1
 bl printf(PLT)
 .L6:
-ldr lr,[sp,#16]
+ldr lr,[sp,#8]
 ldrb lr,[lr,#8]
-strb lr,[sp,#12]
-ldrb lr,[sp,#12]
-eor lr,lr,#1
-strb lr,[sp,#8]
-ldrb fp,[sp,#8]
+strb lr,[sp,#4]
+ldrb fp,[sp,#4]
+eor fp,fp,#1
 cmp fp,#0
 bne .L7
 b .L8
 .L7:
-ldr lr,[sp,#16]
+ldr lr,[sp,#8]
 ldr lr,[lr,#4]
-str lr,[sp,#4]
-ldr a2,[sp,#4]
+str lr,[sp,#0]
+ldr a2,[sp,#0]
 ldr a1,=.LZ0
 bl printf(PLT)
-ldr lr,[sp,#16]
+ldr lr,[sp,#8]
 ldr lr,[lr,#0]
-str lr,[sp,#16]
+str lr,[sp,#8]
 b .L6
 .L8:
-add sp,sp,#24
+add sp,sp,#16
 ldmfd sp!,{fp,pc}
 $Node$insert$$$Node$Int:
 stmfd sp!,{a1,a2,fp,lr}

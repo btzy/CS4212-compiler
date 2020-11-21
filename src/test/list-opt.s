@@ -25,8 +25,7 @@ mov a1,v2
 bl $List$print$$$List
 mov a1,v2
 bl $List$size$$$List
-mov lr,#10
-add a2,a1,lr
+add a2,a1,#10
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a2,#1
@@ -70,13 +69,11 @@ mov a2,#0
 ldr a3,[a1,#0]
 .L0:
 ldrb a1,[a3,#8]
-eor a1,a1,#1
 cmp a1,#0
-bne .L1
+beq .L1
 b .L2
 .L1:
-mov lr,#1
-add a2,a2,lr
+add a2,a2,#1
 ldr a3,[a3,#0]
 b .L0
 .L2:
@@ -90,17 +87,12 @@ stmfd sp!,{lr}
 sub sp,sp,#4
 ldr a1,[a1,#0]
 .L3:
-mov lr,#0
-cmp a2,lr
-movgt fp,#1
-movle fp,#0
-cmp fp,#0
-bne .L4
+cmp a2,#0
+bgt .L4
 b .L5
 .L4:
 ldr a1,[a1,#0]
-mov lr,#1
-sub a2,a2,lr
+sub a2,a2,#1
 b .L3
 .L5:
 add sp,sp,#4
@@ -132,9 +124,8 @@ ldr a1,=.LZ1
 bl printf(PLT)
 .L6:
 ldrb a1,[v1,#8]
-eor a1,a1,#1
 cmp a1,#0
-bne .L7
+beq .L7
 b .L8
 .L7:
 ldr a2,[v1,#4]

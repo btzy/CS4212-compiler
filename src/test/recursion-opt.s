@@ -44,14 +44,9 @@ $Test$f$$$Test$Int:
 stmfd sp!,{v1,v2,v3,lr}
 mov v2,a1
 mov v1,a2
-mov lr,#0
-cmp v1,lr
-moveq fp,#1
-movne fp,#0
-cmp fp,#0
-bne .L0
-mov lr,#1
-sub a2,v1,lr
+cmp v1,#0
+beq .L0
+sub a2,v1,#1
 mov a1,v2
 bl $Test$f$$$Test$Int
 mov v6,a1
@@ -128,14 +123,9 @@ ldmfd sp!,{v1,v2,v3,pc}
 $Test$g$$$Test$Int:
 stmfd sp!,{v1,lr}
 mov v1,a1
-mov lr,#0
-cmp a2,lr
-moveq fp,#1
-movne fp,#0
-cmp fp,#0
-bne .L10
-mov lr,#1
-sub a2,a2,lr
+cmp a2,#0
+beq .L10
+sub a2,a2,#1
 mov a1,v1
 bl $Test$g$$$Test$Int
 ldr a2,[v1,#0]
