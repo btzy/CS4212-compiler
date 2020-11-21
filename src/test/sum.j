@@ -1,10 +1,11 @@
 class Main {
 
+// Calculates the sum from 1 to n
+
 Void main(){
   Int n;
   Int i;Int sum;
-  n=10;
-  println(n);
+  readln(n);
   i=1;
   sum = 0;
   while (i <= n){

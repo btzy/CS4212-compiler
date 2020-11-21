@@ -1,3 +1,4 @@
+#!/bin/bash
 if [[ -z "${GEM5_DIR}" ]]; then
     GEM5_DIR="$HOME/Documents/gem5"
 else
