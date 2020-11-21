@@ -12,7 +12,8 @@ str lr,[sp,#24]
 mov lr,#4
 str lr,[sp,#20]
 mov a1,#8
-bl malloc(PLT)
+mov a2,#1
+bl calloc(PLT)
 str a1,[sp,#8]
 ldr a3,[sp,#28]
 ldr a2,[sp,#32]

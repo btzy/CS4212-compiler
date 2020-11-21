@@ -4,7 +4,8 @@ main:
 stmfd sp!,{a1,fp,lr}
 sub sp,sp,#36
 mov a1,#4
-bl malloc(PLT)
+mov a2,#1
+bl calloc(PLT)
 str a1,[sp,#32]
 ldr a1,[sp,#32]
 bl $List$init$$$List
@@ -70,7 +71,8 @@ $List$init$$$List:
 stmfd sp!,{a1,fp,lr}
 sub sp,sp,#4
 mov a1,#12
-bl malloc(PLT)
+mov a2,#1
+bl calloc(PLT)
 ldr fp,[sp,#4]
 str a1,[fp,#0]
 ldr lr,[sp,#4]
@@ -149,7 +151,8 @@ $List$insertFirst$$$List$Int:
 stmfd sp!,{a1,a2,fp,lr}
 sub sp,sp,#8
 mov a1,#12
-bl malloc(PLT)
+mov a2,#1
+bl calloc(PLT)
 str a1,[sp,#4]
 ldr fp,[sp,#8]
 ldr fp,[fp,#0]
@@ -205,7 +208,8 @@ $Node$insert$$$Node$Int:
 stmfd sp!,{a1,a2,fp,lr}
 sub sp,sp,#8
 mov a1,#12
-bl malloc(PLT)
+mov a2,#1
+bl calloc(PLT)
 str a1,[sp,#4]
 ldr fp,[sp,#8]
 ldr fp,[fp,#0]

@@ -4,7 +4,8 @@ main:
 stmfd sp!,{a1,fp,lr}
 sub sp,sp,#12
 mov a1,#0
-bl malloc(PLT)
+mov a2,#1
+bl calloc(PLT)
 str a1,[sp,#8]
 ldr a1,[sp,#8]
 bl $A$f$$$A

@@ -8,8 +8,8 @@ for f in test/*.j; do
     printf "Testing $name ... "
     java -cp cup/java-cup-11b-runtime.jar:. Compiler -i "$name.j" -O > runner_file.s
     arm-linux-gnueabi-gcc -march=armv7-a runner_file.s --static -o runner_file
-    if [ -f test/$1.in ]; then
-        $GEM5_DIR/build/ARM/gem5.opt -r --stdout-file /dev/null $GEM5_DIR/configs/example/se.py -c ./runner_file --input test/$1.in --output $PWD/runner_output.txt > /dev/null
+    if [ -f $name.in ]; then
+        $GEM5_DIR/build/ARM/gem5.opt -r --stdout-file /dev/null $GEM5_DIR/configs/example/se.py -c ./runner_file --input $PWD/$name.in --output $PWD/runner_output.txt > /dev/null
     else
         $GEM5_DIR/build/ARM/gem5.opt -r --stdout-file /dev/null $GEM5_DIR/configs/example/se.py -c ./runner_file --output $PWD/runner_output.txt > /dev/null
     fi
