@@ -46,9 +46,24 @@ public class BinaryExpr extends Expr {
 			return emitDivideInstruction(w, hint_output_reg, left, right, ef, ctx, optimize);
 		}
 		else {
-			final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
-			final int right_reg = right.emitAsm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
-			return emitOpInstruction(w, op, hint_output_reg, left_reg, right_reg);
+			if (optimize) {
+				if (op == BinOp.TIMES) {
+					final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+					final int right_reg = right.emitAsm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
+					AsmEmitter.emitMulReg(w, hint_output_reg, left_reg, right_reg);
+					return hint_output_reg;
+				}
+				else {
+					final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+					final RegOrImm right_regimm = right.emitAsmImm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
+					return emitOpInstructionOptimized(w, op, hint_output_reg, left_reg, right_regimm);
+				}
+			}
+			else {
+				final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+				final int right_reg = right.emitAsm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
+				return emitOpInstruction(w, op, hint_output_reg, left_reg, right_reg);
+			}
 		}
 	}
 
@@ -104,11 +119,107 @@ public class BinaryExpr extends Expr {
 		return -1;
 	}
 
+	private static int emitOpInstructionOptimized(PrintStream w, BinOp op, int output_reg, int left_reg, RegOrImm right_regimm) {
+		switch (op) {
+			case EQ:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, output_reg, 1);
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.NE, output_reg, 0);
+				return output_reg;
+			case NE:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.NE, output_reg, 1);
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, output_reg, 0);
+				return output_reg;
+			case LT:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.LT, output_reg, 1);
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.GE, output_reg, 0);
+				return output_reg;
+			case LE:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.LE, output_reg, 1);
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.GT, output_reg, 0);
+				return output_reg;
+			case GT:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.GT, output_reg, 1);
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.LE, output_reg, 0);
+				return output_reg;
+			case GE:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.GE, output_reg, 1);
+				AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.LT, output_reg, 0);
+				return output_reg;
+			case PLUS:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitAddReg(w, output_reg, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitAddImm(w, output_reg, left_reg, imm);
+				});
+				return output_reg;
+			case MINUS:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitSubReg(w, output_reg, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitSubImm(w, output_reg, left_reg, imm);
+				});
+				return output_reg;
+			case CONJUNCTION:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitAndReg(w, output_reg, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitAndImm(w, output_reg, left_reg, imm);
+				});
+				return output_reg;
+			case DISJUNCTION:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitOrrReg(w, output_reg, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitOrrImm(w, output_reg, left_reg, imm);
+				});
+				return output_reg;
+		}
+		assert(false);
+		return -1;
+	}
+
 	@Override
 	public AsmEmitter.Cond emitCondAsm(PrintStream w, int hint_scratch_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
-		final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
-		final int right_reg = right.emitAsm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
-		return emitCondOpInstruction(w, op, left_reg, right_reg);
+		if (optimize) {
+			final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+			final RegOrImm right_regimm = right.emitAsmImm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
+			return emitCondOpInstructionOptimized(w, op, left_reg, right_regimm);
+		}
+		else {
+			final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+			final int right_reg = right.emitAsm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
+			return emitCondOpInstruction(w, op, left_reg, right_reg);
+		}
 	}
 	
 	private static AsmEmitter.Cond emitCondOpInstruction(PrintStream w, BinOp op, int left_reg, int right_reg) {
@@ -136,6 +247,69 @@ public class BinaryExpr extends Expr {
 				return AsmEmitter.Cond.NE;
 			case DISJUNCTION:
 				AsmEmitter.emitCmnReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.NE;
+		}
+		assert(false);
+		return null;
+	}
+	
+	private static AsmEmitter.Cond emitCondOpInstructionOptimized(PrintStream w, BinOp op, int left_reg, RegOrImm right_regimm) {
+		switch (op) {
+			case EQ:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				return AsmEmitter.Cond.EQ;
+			case NE:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				return AsmEmitter.Cond.NE;
+			case LT:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				return AsmEmitter.Cond.LT;
+			case LE:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				return AsmEmitter.Cond.LE;
+			case GT:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				return AsmEmitter.Cond.GT;
+			case GE:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmpReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmpImm(w, left_reg, imm);
+				});
+				return AsmEmitter.Cond.GE;
+			case CONJUNCTION:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitTstReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitTstImm(w, left_reg, imm);
+				});
+				return AsmEmitter.Cond.NE;
+			case DISJUNCTION:
+				right_regimm.ifRegOrElse(reg -> {
+					AsmEmitter.emitCmnReg(w, left_reg, reg);
+				}, imm -> {
+					AsmEmitter.emitCmnImm(w, left_reg, imm);
+				});
 				return AsmEmitter.Cond.NE;
 		}
 		assert(false);

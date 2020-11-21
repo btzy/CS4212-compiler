@@ -292,6 +292,12 @@ public class AsmEmitter {
 		w.print(',');
 		w.println(reg_names[src2]);
 	}
+	public static void emitTstImm(PrintStream w, int src, int imm) {
+		w.print("tst ");
+		w.print(reg_names[src]);
+		w.print(",#");
+		w.println(imm);
+	}
 	public static void emitStr(PrintStream w, int dest_reg, int offset, int source_reg) {
 		w.print("str ");
 		w.print(reg_names[source_reg]);

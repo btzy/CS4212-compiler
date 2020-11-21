@@ -18,4 +18,9 @@ public class BooleanLiteral extends Literal {
 		AsmEmitter.emitMovImm(w, hint_output_reg, value ? 1 : 0);
 		return hint_output_reg;
 	}
+	
+	@Override
+	public RegOrImm emitAsmImm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		return RegOrImm.makeImm(value ? 1 : 0);
+	}
 }

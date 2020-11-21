@@ -49,6 +49,9 @@ public abstract class Expr {
 
 	public abstract void print(PrintStream w, PrintContext pc);
 	public abstract int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize);
+	public RegOrImm emitAsmImm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		return RegOrImm.makeReg(emitAsm(w, hint_output_reg, ef, ctx, optimize));
+	}
 	public AsmEmitter.Cond emitCondAsm(PrintStream w, int hint_scratch_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		assert(false);
 		return null;
