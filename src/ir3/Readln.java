@@ -30,7 +30,7 @@ public class Readln extends Instruction {
 		AsmEmitter.emitMovImm(w, EmitFunc.Registers.A2, 0);
 		AsmEmitter.emitStrPreOffset(w, EmitFunc.Registers.SP, -4, EmitFunc.Registers.A2);
 		AsmEmitter.emitMovReg(w, EmitFunc.Registers.A2, EmitFunc.Registers.SP);
-		AsmEmitter.emitLdrLitAddr(w, EmitFunc.Registers.A3, stdin_handle);
+		AsmEmitter.emitLdrLit(w, EmitFunc.Registers.A3, stdin_handle);
 		AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, EmitFunc.Registers.A3, 0);
 		AsmEmitter.emitBlPlt(w, "getline");
 		AsmEmitter.emitAddImm(w, EmitFunc.Registers.SP, EmitFunc.Registers.SP, 8);

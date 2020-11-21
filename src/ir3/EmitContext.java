@@ -113,6 +113,12 @@ public class EmitContext {
 	}
 
 	public void emitPostCode(PrintStream w) {
+		for (int i=0; i!=vars.size(); ++i) {
+			w.print(var_names.get(i));
+			w.println(':');
+			w.print(".word ");
+			w.println(vars.get(i));
+		}
 		w.println(".data");
 		for (int i=0; i!=literals.size(); ++i) {
 			w.println(".align 2");
@@ -135,12 +141,6 @@ public class EmitContext {
 			w.print(".asciz \"");
 			w.print(cstrliterals.get(i));
 			w.println('\"');
-		}
-		for (int i=0; i!=vars.size(); ++i) {
-			w.print(var_names.get(i));
-			w.println(':');
-			w.print(".word ");
-			w.println(vars.get(i));
 		}
 	}
 
