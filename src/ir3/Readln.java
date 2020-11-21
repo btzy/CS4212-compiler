@@ -76,8 +76,14 @@ public class Readln extends Instruction {
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, EmitFunc.Registers.A1, 4);
 			AsmEmitter.emitBlPlt(w, "malloc");
 			final String jump_label = ctx.addLabel(label_namespace, 2);
-			AsmEmitter.emitSubFlagsImm(w, scratch3_reg, EmitFunc.Registers.FP, 1);
-			if (EmitFunc.Registers.A1 != output_reg) AsmEmitter.emitMovReg(w, output_reg, EmitFunc.Registers.A1);
+			if (scratch3_reg != EmitFunc.Registers.A1) {
+				AsmEmitter.emitSubFlagsImm(w, scratch3_reg, EmitFunc.Registers.FP, 1);
+				if (EmitFunc.Registers.A1 != output_reg) AsmEmitter.emitMovReg(w, output_reg, EmitFunc.Registers.A1);
+			}
+			else {
+				if (EmitFunc.Registers.A1 != output_reg) AsmEmitter.emitMovReg(w, output_reg, EmitFunc.Registers.A1);
+				AsmEmitter.emitSubFlagsImm(w, scratch3_reg, EmitFunc.Registers.FP, 1);
+			}
 			AsmEmitter.emitLdr(w, scratch4_reg, EmitFunc.Registers.SP, 4);
 			AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.LT, scratch3_reg, 0);
 			AsmEmitter.emitBCond(w, AsmEmitter.Cond.LT, jump_label);
