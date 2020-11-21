@@ -15,4 +15,8 @@ public enum UnOp {
 	public void print(PrintStream w) {
 		w.print(text);
 	}
+
+	public boolean isRelOp() {
+		return result_type == TypeName.BOOL;
+	}
 }

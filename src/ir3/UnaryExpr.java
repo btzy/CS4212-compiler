@@ -1,5 +1,7 @@
 package ir3;
 
+import util.LocationRange;
+import java.util.function.Consumer;
 import java.io.PrintStream;
 import java.util.OptionalInt;
 import java.util.ArrayList;
@@ -16,6 +18,12 @@ public class UnaryExpr extends Expr {
 		super(type);
 		this.arg = arg;
 		this.op = op;
+	}
+
+	@Override
+	public Expr makeRelExp3ByMaybeEmitIR3(LocationRange virtual_range, Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException {
+		if (op.isRelOp()) return this;
+		return super.makeRelExp3ByMaybeEmitIR3(virtual_range, ctx, out);
 	}
 
 	@Override
@@ -41,6 +49,22 @@ public class UnaryExpr extends Expr {
 		}
 		assert(false);
 		return -1;
+	}
+
+	@Override
+	public AsmEmitter.Cond emitCondAsm(PrintStream w, int hint_scratch_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		final int arg_reg = arg.emitAsm(w, hint_scratch_reg, ef, ctx, optimize);
+		return emitCondOpInstruction(w, op, arg_reg);
+	}
+
+	private static AsmEmitter.Cond emitCondOpInstruction(PrintStream w, UnOp op, int arg_reg) {
+		switch (op) {
+			case NEGATION:
+				AsmEmitter.emitCmpImm(w, arg_reg, 0);
+				return AsmEmitter.Cond.EQ;
+		}
+		assert(false);
+		return null;
 	}
 
 	@Override

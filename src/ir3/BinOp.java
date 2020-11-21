@@ -19,6 +19,6 @@ public enum BinOp {
 	}
 
 	public boolean isRelOp() {
-		return this == EQ || this == NE || this == LT || this == LE || this == GT || this == GE;
+		return result_type == TypeName.BOOL;
 	}
 }

@@ -25,6 +25,14 @@ public class LocalVariable extends Terminal {
 		final EmitFunc.StorageLocation sl = ef.storage_locations.get(idx);
 		return AsmEmitter.emitPseudoLoadVariable(w, hint_output_reg, sl, ef.env.getType(idx));
 	}
+	
+	@Override
+	public AsmEmitter.Cond emitCondAsm(PrintStream w, int hint_scratch_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		final EmitFunc.StorageLocation sl = ef.storage_locations.get(idx);
+		final int reg = AsmEmitter.emitPseudoLoadVariable(w, hint_scratch_reg, sl, ef.env.getType(idx));
+		AsmEmitter.emitCmpImm(w, reg, 0);
+		return AsmEmitter.Cond.NE;
+	}
 
 	@Override
 	public ArrayList<Integer> getUses() {

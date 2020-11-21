@@ -40,7 +40,6 @@ public class InterferenceGraph {
 		return sb.toString();
 	}
 
-	// TODO: what about params that are only used in the first statement?
 	public static InterferenceGraph generate(LocalEnvironment env, int num_params, ArrayList<Instruction> insts) {
 		// Build control flow graph (backlinks only)
 		HashSet<Integer>[] backlinks = (HashSet<Integer>[]) new HashSet<?>[insts.size()+1];

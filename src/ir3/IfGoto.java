@@ -22,10 +22,15 @@ public class IfGoto extends Instruction {
 	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		final String name = ctx.addLabel(ef.env, target.index);
 
-		// TODO: This can be optimised to use the proper cmp/cmn instructions
-		final int reg = cond.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
-		AsmEmitter.emitCmpImm(w, reg, 0);
-		AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, name);
+		if (optimize) {
+			final AsmEmitter.Cond c = cond.emitCondAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+			AsmEmitter.emitBCond(w, c, name);
+		}
+		else {
+			final int reg = cond.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+			AsmEmitter.emitCmpImm(w, reg, 0);
+			AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, name);
+		}
 	}
 
 	@Override

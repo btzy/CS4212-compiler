@@ -104,6 +104,44 @@ public class BinaryExpr extends Expr {
 		return -1;
 	}
 
+	@Override
+	public AsmEmitter.Cond emitCondAsm(PrintStream w, int hint_scratch_reg, EmitFunc ef, EmitContext ctx, boolean optimize) {
+		final int left_reg = left.emitAsm(w, EmitFunc.Registers.FP, ef, ctx, optimize);
+		final int right_reg = right.emitAsm(w, EmitFunc.Registers.LR, ef, ctx, optimize);
+		return emitCondOpInstruction(w, op, left_reg, right_reg);
+	}
+	
+	private static AsmEmitter.Cond emitCondOpInstruction(PrintStream w, BinOp op, int left_reg, int right_reg) {
+		switch (op) {
+			case EQ:
+				AsmEmitter.emitCmpReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.EQ;
+			case NE:
+				AsmEmitter.emitCmpReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.NE;
+			case LT:
+				AsmEmitter.emitCmpReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.LT;
+			case LE:
+				AsmEmitter.emitCmpReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.LE;
+			case GT:
+				AsmEmitter.emitCmpReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.GT;
+			case GE:
+				AsmEmitter.emitCmpReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.GE;
+			case CONJUNCTION:
+				AsmEmitter.emitTstReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.NE;
+			case DISJUNCTION:
+				AsmEmitter.emitCmnReg(w, left_reg, right_reg);
+				return AsmEmitter.Cond.NE;
+		}
+		assert(false);
+		return null;
+	}
+
 	// this makes function calls to stdlib
 	private static int emitConcatInstruction(PrintStream w, int hint_output_reg, Terminal left, Terminal right, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		// This part contains "microcode" of sorts to allocate a new string and copy the original data to it
