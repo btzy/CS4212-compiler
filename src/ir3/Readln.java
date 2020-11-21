@@ -21,8 +21,9 @@ public class Readln extends Instruction {
 		final EmitFunc.StorageLocation sl = ef.storage_locations.get(idx);
 
 		final String stdin_handle = ctx.addExternWord("stdin");
-		final String empty_string_lit = ctx.addCStringLiteral("");
+		final String empty_string_lit = ctx.addStringLiteral("");
 		final Object label_namespace = new Object();
+		final String fail_label = ctx.addLabel(label_namespace, 1);
 
 		AsmEmitter.emitMovImm(w, EmitFunc.Registers.A1, 0);
 		AsmEmitter.emitStrPreOffset(w, EmitFunc.Registers.SP, -4, EmitFunc.Registers.A1);
@@ -43,12 +44,14 @@ public class Readln extends Instruction {
 			AsmEmitter.emitCmnImm(w, EmitFunc.Registers.A1, 1);
 			AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, output_reg, 0);
 			AsmEmitter.emitPseudoStoreVariableCond(w, AsmEmitter.Cond.EQ, sl, output_reg, TypeName.INT);
-			AsmEmitter.emitLdrCond(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A1, EmitFunc.Registers.SP, -4);
-			AsmEmitter.emitBlCondPlt(w, AsmEmitter.Cond.NE, "atoi");
-			AsmEmitter.emitPseudoStoreVariableCond(w, AsmEmitter.Cond.NE, sl, EmitFunc.Registers.A1, TypeName.INT);
+			AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, fail_label);
+			AsmEmitter.emitLdr(w, EmitFunc.Registers.A1, EmitFunc.Registers.SP, -4);
+			AsmEmitter.emitBlPlt(w, "atoi");
+			AsmEmitter.emitPseudoStoreVariable(w, sl, EmitFunc.Registers.A1, TypeName.INT);
+			w.print(fail_label);
+			w.println(':');
 		}
 		else if (type == TypeName.BOOL) {
-			final String fail_label = ctx.addLabel(label_namespace, 1);
 			AsmEmitter.emitCmnImm(w, EmitFunc.Registers.A1, 1);
 			AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, output_reg, 0);
 			AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, fail_label);
@@ -65,17 +68,26 @@ public class Readln extends Instruction {
 			AsmEmitter.emitPseudoStoreVariable(w, sl, output_reg, TypeName.BOOL);
 		}
 		else if (type == TypeName.STRING) {
-			final String fail_label = ctx.addLabel(label_namespace, 1);
 			AsmEmitter.emitCmnImm(w, EmitFunc.Registers.A1, 1);
 			AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.EQ, output_reg, empty_string_lit);
 			AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, fail_label);
-			AsmEmitter.emitSubFlagsImm(w, scratch3_reg, EmitFunc.Registers.A1, 1);
-			AsmEmitter.emitLdr(w, output_reg, EmitFunc.Registers.SP, -4);
-			AsmEmitter.emitBCond(w, AsmEmitter.Cond.LT, fail_label);
-			AsmEmitter.emitLdrbIdx(w, scratch2_reg, output_reg, scratch3_reg);
+			AsmEmitter.emitMovReg(w, EmitFunc.Registers.FP, EmitFunc.Registers.A1);
+			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A1, EmitFunc.Registers.A1, 4);
+			AsmEmitter.emitBlPlt(w, "malloc");
+			final String jump_label = ctx.addLabel(label_namespace, 2);
+			AsmEmitter.emitSubFlagsImm(w, scratch3_reg, EmitFunc.Registers.FP, 1);
+			if (EmitFunc.Registers.A1 != output_reg) AsmEmitter.emitMovReg(w, output_reg, EmitFunc.Registers.A1);
+			AsmEmitter.emitLdr(w, scratch4_reg, EmitFunc.Registers.SP, -4);
+			AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.LT, scratch3_reg, 0);
+			AsmEmitter.emitBCond(w, AsmEmitter.Cond.LT, jump_label);
+			AsmEmitter.emitLdrbIdx(w, scratch2_reg, scratch4_reg, scratch3_reg);
 			AsmEmitter.emitCmpImm(w, scratch2_reg, (int)'\n');
-			AsmEmitter.emitMovCondImm(w, AsmEmitter.Cond.EQ, scratch2_reg, 0);
-			AsmEmitter.emitStrbCondIdx(w, AsmEmitter.Cond.EQ, output_reg, scratch3_reg, scratch2_reg);
+			AsmEmitter.emitAddCondImm(w, AsmEmitter.Cond.NE, scratch3_reg, scratch3_reg, 1);
+			w.print(jump_label);
+			w.println(':');
+			AsmEmitter.emitStr(w, output_reg, 0, scratch3_reg);
+			AsmEmitter.emitAddImm(w, scratch2_reg, output_reg, 4);
+			AsmEmitter.emitMemcpySequence(w, scratch2_reg, scratch4_reg, scratch3_reg, output_reg == EmitFunc.Registers.FP ? EmitFunc.Registers.A1 : EmitFunc.Registers.FP, ctx);
 			w.print(fail_label);
 			w.println(':');
 			AsmEmitter.emitPseudoStoreVariable(w, sl, output_reg, TypeName.STRING);
@@ -100,6 +112,7 @@ public class Readln extends Instruction {
 		ret.add(EmitFunc.Registers.A2);
 		ret.add(EmitFunc.Registers.A3);
 		ret.add(EmitFunc.Registers.A4);
+		ret.add(EmitFunc.Registers.FP);
 		ret.add(EmitFunc.Registers.LR);
 		return ret;
 	}

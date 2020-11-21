@@ -24,6 +24,16 @@ public class AsmEmitter {
 		w.print(',');
 		w.println(reg_names[src2]);
 	}
+	public static void emitAddCondImm(PrintStream w, Cond cond, int dest, int src, int imm) {
+		w.print("add");
+		w.print(cond.text);
+		w.print(' ');
+		w.print(reg_names[dest]);
+		w.print(',');
+		w.print(reg_names[src]);
+		w.print(",#");
+		w.println(imm);
+	}
 	public static void emitAddCondReg(PrintStream w, Cond cond, int dest, int src1, int src2) {
 		w.print("add");
 		w.print(cond.text);
@@ -300,9 +310,9 @@ public class AsmEmitter {
 		w.println(']');
 	}
 	public static void emitStrbCond(PrintStream w, Cond cond, int dest_reg, int offset, int source_reg) {
-		w.print("strb");
+		w.print("str");
 		w.print(cond.text);
-		w.print(' ');
+		w.print("b ");
 		w.print(reg_names[source_reg]);
 		w.print(",[");
 		w.print(reg_names[dest_reg]);
@@ -354,9 +364,9 @@ public class AsmEmitter {
 		w.println(']');
 	}
 	public static void emitStrbCondIdx(PrintStream w, Cond cond, int dest_reg, int idx_reg, int source_reg) {
-		w.print("strb");
+		w.print("str");
 		w.print(cond.text);
-		w.print(' ');
+		w.print("b ");
 		w.print(reg_names[source_reg]);
 		w.print(",[");
 		w.print(reg_names[dest_reg]);
@@ -616,6 +626,29 @@ public class AsmEmitter {
 		"sp",
 		"lr",
 		"pc"};
+
+	/**
+	 * Emits something like memcpy, but modifies the given regs.  `clobber_reg` is clobbered.
+	 * Upon returning, the regs will contain these values:
+	 * dest_reg <- dest_reg + count_reg;
+	 * src_reg <- src_reg + count_reg;
+	 * count_reg <- 0;
+	 */
+	public static void emitMemcpySequence(PrintStream w, int dest_reg, int src_reg, int count_reg, int clobber_reg, EmitContext ctx) {
+		final Object label_namespace = new Object();
+		final String label_start = ctx.addLabel(label_namespace, 1);
+		final String label_end = ctx.addLabel(label_namespace, 2);
+		AsmEmitter.emitCmpImm(w, count_reg, 0);
+		AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, label_end);
+		w.print(label_start);
+		w.println(':');
+		AsmEmitter.emitLdrbPostOffset(w, clobber_reg, src_reg, 1);
+		AsmEmitter.emitStrbPostOffset(w, dest_reg, 1, clobber_reg);
+		AsmEmitter.emitSubFlagsImm(w, count_reg, count_reg, 1);
+		AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, label_start);
+		w.print(label_end);
+		w.println(':');
+	}
 
 	public static void emitPrologue(PrintStream w, EmitFunc ef) {
 		ArrayList<Integer> combined_regs = new ArrayList<>(ef.saved_params);

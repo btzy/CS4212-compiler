@@ -175,38 +175,15 @@ public class BinaryExpr extends Expr {
 			final int left_reg = override_left_reg == -1 ? left.emitAsm(w, scratch_reg, ef, ctx, optimize) : override_left_reg;
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A2, left_reg, 4);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, left_reg, 0);
-			emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
+			AsmEmitter.emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
 			final int right_reg = override_right_reg == -1 ? right.emitAsm(w, scratch_reg, ef, ctx, optimize) : override_right_reg;
 			AsmEmitter.emitAddImm(w, EmitFunc.Registers.A2, right_reg, 4);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A3, right_reg, 0);
-			emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
+			AsmEmitter.emitMemcpySequence(w, EmitFunc.Registers.A1, EmitFunc.Registers.A2, EmitFunc.Registers.A3, EmitFunc.Registers.A4, ctx);
 		}
 		// now the string data has been copied, and tmp_output_reg still contains the pointer to the new string
 
 		return tmp_output_reg;
-	}
-
-	/**
-	 * Emits something like memcpy, but modifies the given regs.  `clobber_reg` is clobbered.
-	 * Upon returning, the regs will contain these values:
-	 * dest_reg <- dest_reg + count_reg;
-	 * src_reg <- src_reg + count_reg;
-	 * count_reg <- 0;
-	 */
-	private static void emitMemcpySequence(PrintStream w, int dest_reg, int src_reg, int count_reg, int clobber_reg, EmitContext ctx) {
-		final Object label_namespace = new Object();
-		final String label_start = ctx.addLabel(label_namespace, 1);
-		final String label_end = ctx.addLabel(label_namespace, 2);
-		AsmEmitter.emitCmpImm(w, count_reg, 0);
-		AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, label_end);
-		w.print(label_start);
-		w.println(':');
-		AsmEmitter.emitLdrbPostOffset(w, clobber_reg, src_reg, 1);
-		AsmEmitter.emitStrbPostOffset(w, dest_reg, 1, clobber_reg);
-		AsmEmitter.emitSubFlagsImm(w, count_reg, count_reg, 1);
-		AsmEmitter.emitBCond(w, AsmEmitter.Cond.NE, label_start);
-		w.print(label_end);
-		w.println(':');
 	}
 
 	private static int emitDivideInstruction(PrintStream w, int hint_output_reg, Terminal left, Terminal right, EmitFunc ef, EmitContext ctx, boolean optimize) {
