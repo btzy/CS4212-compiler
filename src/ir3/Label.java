@@ -34,4 +34,9 @@ public class Label extends Instruction {
 	public ArrayList<Integer> getClobberedRegs() {
 		return new ArrayList<>();
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		return new ArrayList<>();
+	}
 }

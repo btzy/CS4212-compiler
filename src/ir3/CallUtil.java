@@ -97,6 +97,7 @@ public class CallUtil {
 		if (term instanceof LocalVariable) {
 			EmitFunc.StorageLocation sl = ef.storage_locations.get(((LocalVariable)term).idx);
 			if (sl.isRegister && sl.value < 4) visited[sl.value] = true;
+			if (i < 4 && i == sl.value) return 0;
 		}
 		if (i < 4 && visited[i]) { // cycle
 			AsmEmitter.emitMovReg(w, scratch_reg, i);

@@ -33,4 +33,9 @@ public class Readln extends Instruction {
 	public ArrayList<Integer> getClobberedRegs() {
 		return new ArrayList<>();  // TODO
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		return new ArrayList<>(); // TODO
+	}
 }

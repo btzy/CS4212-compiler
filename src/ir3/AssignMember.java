@@ -48,4 +48,13 @@ public class AssignMember extends Instruction {
 		return ret;
 	}
 
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		final ArrayList<VarRegPair> ret = val.getRegPreferences();
+		val.getOutputRegPreference().ifPresent(reg -> {
+			ret.add(new VarRegPair(idx, reg));
+		});
+		return ret;
+	}
+
 }

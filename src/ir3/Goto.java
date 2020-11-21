@@ -33,4 +33,9 @@ public class Goto extends Instruction {
 	public ArrayList<Integer> getClobberedRegs() {
 		return new ArrayList<>();
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		return new ArrayList<>();
+	}
 }

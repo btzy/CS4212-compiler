@@ -10,4 +10,5 @@ public abstract class Instruction {
 	public abstract OptionalInt getDef();
 	public abstract ArrayList<Integer> getUses();
 	public abstract ArrayList<Integer> getClobberedRegs();
+	public abstract ArrayList<VarRegPair> getRegPreferences();
 }

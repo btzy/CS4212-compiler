@@ -13,11 +13,13 @@ import java.util.Queue;
 public class InterferenceGraph {
 	private final boolean[][] adj_matrix;
 	private final boolean[][] clobbers;
+	private final boolean[][] preferences;
 	private static final int NUM_REGS = 13; // 13 useable registers... 12 means LR here
 
 	public InterferenceGraph(int sz) {
 		adj_matrix = new boolean[sz][sz];
 		clobbers = new boolean[sz][NUM_REGS];
+		preferences = new boolean[sz][NUM_REGS];
 	}
 
 	@Override
@@ -138,7 +140,16 @@ public class InterferenceGraph {
 					}
 				}
 			}
-			
+		}
+		for (int i=0;i!=insts.size();++i){
+			final Instruction inst = insts.get(i);
+			final ArrayList<VarRegPair> preferred_regs = insts.get(i).getRegPreferences();
+			for (VarRegPair pr : preferred_regs) {
+				graph.preferences[pr.variable][pr.register == EmitFunc.Registers.LR ? 12 : pr.register] = true;
+			}
+		}
+		for (int i=0;i!=Math.min(4, num_params); ++i) {
+			graph.preferences[i][i] = true;
 		}
 		return graph;
 	}
@@ -146,8 +157,6 @@ public class InterferenceGraph {
 	public EmitFunc.StorageLocation[] colour() {
 		// when doing colouring, try to select the vertex with largest degree that is less than k
 		// if not possible, then select the vertex with largest degree.
-
-		// TODO: currently have a bug... cannot move the arguments around
 
 		// the answer
 		final EmitFunc.StorageLocation[] colours = new EmitFunc.StorageLocation[adj_matrix.length];
@@ -169,6 +178,12 @@ public class InterferenceGraph {
 						if (adj_row[j]) --curr_choices;
 					}
 					if (curr_choices > 0) {
+						boolean has_preferences = false;
+						final boolean[] preference = preferences[i];
+						for (int j=0; j!=NUM_REGS; ++j){
+							if (preference[j]) has_preferences = true;
+						}
+						if (has_preferences) curr_choices += NUM_REGS;
 						if (curr_choices < best_choices) {
 							best_vertex = i;
 							best_choices = curr_choices;
@@ -188,6 +203,12 @@ public class InterferenceGraph {
 						for (int j=0; j!=adj_row.length; ++j){
 							if (adj_row[j] && !removed[j]) --curr_choices;
 						}
+						boolean has_preferences = false;
+						final boolean[] preference = preferences[i];
+						for (int j=0; j!=NUM_REGS; ++j){
+							if (preference[j]) has_preferences = true;
+						}
+						if (has_preferences) curr_choices += NUM_REGS;
 						if (curr_choices < best_choices) {
 							best_vertex = i;
 							best_choices = curr_choices;
@@ -204,6 +225,7 @@ public class InterferenceGraph {
 			final int vertex = stack.remove(stack.size() - 1);
 			removed[vertex] = false;
 			final boolean[] clobber = clobbers[vertex];
+			final boolean[] preference = preferences[vertex];
 			final boolean[] avail_colours = new boolean[NUM_REGS];
 			for (int i=0; i!=NUM_REGS; ++i) {
 				if (!clobber[i]) avail_colours[i] = true;
@@ -214,9 +236,17 @@ public class InterferenceGraph {
 			}
 			int chosen_colour = -1;
 			for (int i=0; i!=avail_colours.length; ++i) {
-				if (avail_colours[i]) {
+				if (avail_colours[i] && preference[i]) {
 					chosen_colour = i;
 					break;
+				}
+			}
+			if (chosen_colour == -1) {
+				for (int i=0; i!=avail_colours.length; ++i) {
+					if (avail_colours[i]) {
+						chosen_colour = i;
+						break;
+					}
 				}
 			}
 			if (chosen_colour != -1) { // save in register

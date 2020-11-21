@@ -349,4 +349,14 @@ public class BinaryExpr extends Expr {
 		}
 		return ret;
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public OptionalInt getOutputRegPreference() {
+		return OptionalInt.empty();
+	}
 }

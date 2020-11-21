@@ -52,4 +52,14 @@ public class UnaryExpr extends Expr {
 	public ArrayList<Integer> getClobberedRegs() {
 		return arg.getClobberedRegs();
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public OptionalInt getOutputRegPreference() {
+		return OptionalInt.empty();
+	}
 }

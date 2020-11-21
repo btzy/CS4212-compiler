@@ -49,4 +49,15 @@ public class Return extends Instruction {
 		if (val.isPresent()) return val.get().getClobberedRegs();
 		else return new ArrayList<>();
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		if (!val.isEmpty() && val.get() instanceof LocalVariable) {
+			final LocalVariable lv = (LocalVariable)val.get();
+			final ArrayList<VarRegPair> ret = new ArrayList<>();
+			ret.add(new VarRegPair(lv.idx, EmitFunc.Registers.A1));
+			return ret;
+		}
+		return new ArrayList<>();
+	}
 }

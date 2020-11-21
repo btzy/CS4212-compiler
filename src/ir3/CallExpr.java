@@ -71,4 +71,20 @@ public class CallExpr extends Expr {
 		ret.add(EmitFunc.Registers.LR);
 		return ret;
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		ArrayList<VarRegPair> ret = new ArrayList<>();
+		for (int i=0; i!=Math.min(4, args.size()); ++i) {
+			if (args.get(i) instanceof LocalVariable) {
+				ret.add(new VarRegPair(((LocalVariable)args.get(i)).idx, i));
+			}
+		}
+		return ret;
+	}
+
+	@Override
+	public OptionalInt getOutputRegPreference() {
+		return OptionalInt.of(EmitFunc.Registers.A1);
+	}
 }

@@ -71,4 +71,28 @@ public class Println extends Instruction {
 		ret.add(EmitFunc.Registers.LR);
 		return ret;
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		if (term instanceof LocalVariable) {
+			final LocalVariable lv = (LocalVariable)term;
+			if (term.type == TypeName.INT) {
+				final ArrayList<VarRegPair> ret = new ArrayList<>();
+				ret.add(new VarRegPair(lv.idx, EmitFunc.Registers.A2));
+				return ret;
+			}
+			else if (term.type == TypeName.BOOL) {
+				return new ArrayList<>();
+			}
+			else if (term.type == TypeName.STRING) {
+				final ArrayList<VarRegPair> ret = new ArrayList<>();
+				ret.add(new VarRegPair(lv.idx, EmitFunc.Registers.A3));
+				return ret;
+			}
+			else {
+				assert(false);
+			}
+		}
+		return new ArrayList<>();
+	}
 }

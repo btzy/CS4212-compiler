@@ -39,4 +39,13 @@ public class Assign extends Instruction {
 		ret.add(EmitFunc.Registers.LR);
 		return ret;
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		final ArrayList<VarRegPair> ret = val.getRegPreferences();
+		val.getOutputRegPreference().ifPresent(reg -> {
+			ret.add(new VarRegPair(idx, reg));
+		});
+		return ret;
+	}
 }

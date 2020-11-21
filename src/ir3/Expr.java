@@ -51,4 +51,6 @@ public abstract class Expr {
 	public abstract int emitAsm(PrintStream w, int hint_output_reg, EmitFunc ef, EmitContext ctx, boolean optimize);
 	public abstract ArrayList<Integer> getUses();
 	public abstract ArrayList<Integer> getClobberedRegs();
+	public abstract ArrayList<VarRegPair> getRegPreferences();
+	public abstract OptionalInt getOutputRegPreference();
 }

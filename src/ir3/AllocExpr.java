@@ -40,4 +40,14 @@ public class AllocExpr extends Expr {
 		ret.add(EmitFunc.Registers.LR);
 		return ret;
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public OptionalInt getOutputRegPreference() {
+		return OptionalInt.of(EmitFunc.Registers.A1);
+	}
 }

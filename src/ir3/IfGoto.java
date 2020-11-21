@@ -42,4 +42,9 @@ public class IfGoto extends Instruction {
 		ret.add(EmitFunc.Registers.FP);
 		return ret;
 	}
+
+	@Override
+	public ArrayList<VarRegPair> getRegPreferences() {
+		return cond.getRegPreferences();
+	}
 }
