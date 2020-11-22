@@ -1,3 +1,4 @@
+
 CS4212 Programming Assignment 3
 Bernard Teo Zhi Yi
 
@@ -180,37 +181,33 @@ The unoptimised assembly code is:
 ```
 $List$size$$$List:
 stmfd sp!,{a1,fp,lr}
-sub sp,sp,#20
+sub sp,sp,#12
 mov lr,#0
-str lr,[sp,#16]
-ldr lr,[sp,#20]
-ldr lr,[lr,#0]
-str lr,[sp,#12]
-.L0:
+str lr,[sp,#8]
 ldr lr,[sp,#12]
+ldr lr,[lr,#0]
+str lr,[sp,#4]
+.L0:
+ldr lr,[sp,#4]
 ldrb lr,[lr,#8]
-strb lr,[sp,#8]
-ldrb lr,[sp,#8]
-eor lr,lr,#1
-strb lr,[sp,#4]
-ldrb fp,[sp,#4]
+strb lr,[sp,#0]
+ldrb fp,[sp,#0]
+eor fp,fp,#1
 cmp fp,#0
 bne .L1
 b .L2
 .L1:
-ldr fp,[sp,#16]
+ldr fp,[sp,#8]
 mov lr,#1
 add lr,fp,lr
-str lr,[sp,#16]
-ldr lr,[sp,#12]
+str lr,[sp,#8]
+ldr lr,[sp,#4]
 ldr lr,[lr,#0]
-str lr,[sp,#12]
+str lr,[sp,#4]
 b .L0
 .L2:
-ldr a1,[sp,#16]
-add sp,sp,#24
-ldmfd sp!,{fp,pc}
-add sp,sp,#24
+ldr a1,[sp,#8]
+add sp,sp,#16
 ldmfd sp!,{fp,pc}
 ```
 
@@ -223,19 +220,15 @@ mov a2,#0
 ldr a3,[a1,#0]
 .L0:
 ldrb a1,[a3,#8]
-eor a1,a1,#1
 cmp a1,#0
-bne .L1
+beq .L1
 b .L2
 .L1:
-mov lr,#1
-add a2,a2,lr
+add a2,a2,#1
 ldr a3,[a3,#0]
 b .L0
 .L2:
 mov a1,a2
-add sp,sp,#4
-ldmfd sp!,{pc}
 add sp,sp,#4
 ldmfd sp!,{pc}
 ```
