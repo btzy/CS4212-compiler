@@ -161,9 +161,9 @@ ldmfd sp!,{pc}
 .LC1:
 .ascii "\001\000\000\000a"
 .LZ0:
-.asciz "%d\012\000"
+.asciz "%d\012"
 .LZ1:
-.asciz "%.*s\012\000"
+.asciz "%.*s\012"
 .LZ2:
 .asciz "true"
 .LZ3:

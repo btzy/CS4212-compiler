@@ -118,4 +118,4 @@ ldmfd sp!,{fp,pc}
 .LC1:
 .ascii "\046\000\000\000Square of d larger than sum of squares"
 .LZ0:
-.asciz "%.*s\012\000"
+.asciz "%.*s\012"

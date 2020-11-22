@@ -1087,4 +1087,4 @@ add sp,sp,#248
 ldmfd sp!,{fp,pc}
 .data
 .LZ0:
-.asciz "%d\012\000"
+.asciz "%d\012"

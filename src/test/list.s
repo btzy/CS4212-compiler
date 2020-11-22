@@ -223,6 +223,6 @@ ldmfd sp!,{fp,pc}
 .LC0:
 .ascii "\024\000\000\000Linked list content:"
 .LZ0:
-.asciz "%d\012\000"
+.asciz "%d\012"
 .LZ1:
-.asciz "%.*s\012\000"
+.asciz "%.*s\012"

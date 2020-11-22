@@ -712,9 +712,9 @@ ldmfd sp!,{v1,v2,pc}
 .LC14:
 .ascii "\002\000\000\000ab"
 .LZ0:
-.asciz "%.*s\012\000"
+.asciz "%.*s\012"
 .LZ1:
-.asciz "%d\012\000"
+.asciz "%d\012"
 .LZ2:
 .asciz "true"
 .LZ3:

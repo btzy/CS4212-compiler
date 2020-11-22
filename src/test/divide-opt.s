@@ -992,4 +992,4 @@ add sp,sp,#4
 ldmfd sp!,{pc}
 .data
 .LZ0:
-.asciz "%d\012\000"
+.asciz "%d\012"

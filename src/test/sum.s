@@ -60,4 +60,4 @@ ldmfd sp!,{fp,pc}
 .LC0:
 .ascii "\000\000\000\000"
 .LZ0:
-.asciz "%d\012\000"
+.asciz "%d\012"

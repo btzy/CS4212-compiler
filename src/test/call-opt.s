@@ -137,4 +137,4 @@ mov a1,#0
 ldmfd sp!,{v1,v2,v3,v4,v5,v6,v7,pc}
 .data
 .LZ0:
-.asciz "%d\012\000"
+.asciz "%d\012"

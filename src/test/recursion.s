@@ -224,4 +224,4 @@ ldmfd sp!,{fp,pc}
 .LC4:
 .ascii "\000\000\000\000"
 .LZ0:
-.asciz "%.*s\012\000"
+.asciz "%.*s\012"
