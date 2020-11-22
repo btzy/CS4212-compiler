@@ -397,10 +397,10 @@ add a3,v2,v2,ASR#31
 eor a1,a3,v2,ASR#31
 mov a3,#1
 .L52:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L52
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L52
 mov lr,a4
 .L53:
 cmp a1,a2
@@ -424,10 +424,10 @@ add a3,v1,v1,ASR#31
 eor a1,a3,v1,ASR#31
 mov a3,#1
 .L55:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L55
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L55
 mov lr,a4
 .L56:
 cmp a1,a2

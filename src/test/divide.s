@@ -2,7 +2,7 @@
 .global main
 main:
 stmfd sp!,{a1,fp,lr}
-sub sp,sp,#100
+sub sp,sp,#244
 mov a1,#1
 mov a2,#1
 mov a4,a2,ASR#31
@@ -15,10 +15,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L0:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L0
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L0
 mov lr,a4
 .L1:
 cmp a1,a2
@@ -29,8 +29,8 @@ movne a2,a2,LSR#1
 bne .L1
 eor lr,lr,a4
 .L2:
-str lr,[sp,#96]
-ldr a2,[sp,#96]
+str lr,[sp,#240]
+ldr a2,[sp,#240]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#5
@@ -45,10 +45,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L3:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L3
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L3
 mov lr,a4
 .L4:
 cmp a1,a2
@@ -59,8 +59,8 @@ movne a2,a2,LSR#1
 bne .L4
 eor lr,lr,a4
 .L5:
-str lr,[sp,#92]
-ldr a2,[sp,#92]
+str lr,[sp,#236]
+ldr a2,[sp,#236]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#7
@@ -75,10 +75,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L6:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L6
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L6
 mov lr,a4
 .L7:
 cmp a1,a2
@@ -89,8 +89,8 @@ movne a2,a2,LSR#1
 bne .L7
 eor lr,lr,a4
 .L8:
-str lr,[sp,#88]
-ldr a2,[sp,#88]
+str lr,[sp,#232]
+ldr a2,[sp,#232]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#8
@@ -105,10 +105,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L9:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L9
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L9
 mov lr,a4
 .L10:
 cmp a1,a2
@@ -119,8 +119,8 @@ movne a2,a2,LSR#1
 bne .L10
 eor lr,lr,a4
 .L11:
-str lr,[sp,#84]
-ldr a2,[sp,#84]
+str lr,[sp,#228]
+ldr a2,[sp,#228]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#9
@@ -135,10 +135,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L12:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L12
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L12
 mov lr,a4
 .L13:
 cmp a1,a2
@@ -149,8 +149,8 @@ movne a2,a2,LSR#1
 bne .L13
 eor lr,lr,a4
 .L14:
-str lr,[sp,#80]
-ldr a2,[sp,#80]
+str lr,[sp,#224]
+ldr a2,[sp,#224]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#1
@@ -165,10 +165,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L15:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L15
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L15
 mov lr,a4
 .L16:
 cmp a1,a2
@@ -179,8 +179,8 @@ movne a2,a2,LSR#1
 bne .L16
 eor lr,lr,a4
 .L17:
-str lr,[sp,#76]
-ldr a2,[sp,#76]
+str lr,[sp,#220]
+ldr a2,[sp,#220]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#5
@@ -195,10 +195,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L18:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L18
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L18
 mov lr,a4
 .L19:
 cmp a1,a2
@@ -209,8 +209,8 @@ movne a2,a2,LSR#1
 bne .L19
 eor lr,lr,a4
 .L20:
-str lr,[sp,#72]
-ldr a2,[sp,#72]
+str lr,[sp,#216]
+ldr a2,[sp,#216]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#7
@@ -225,10 +225,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L21:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L21
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L21
 mov lr,a4
 .L22:
 cmp a1,a2
@@ -239,8 +239,8 @@ movne a2,a2,LSR#1
 bne .L22
 eor lr,lr,a4
 .L23:
-str lr,[sp,#68]
-ldr a2,[sp,#68]
+str lr,[sp,#212]
+ldr a2,[sp,#212]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#8
@@ -255,10 +255,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L24:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L24
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L24
 mov lr,a4
 .L25:
 cmp a1,a2
@@ -269,8 +269,8 @@ movne a2,a2,LSR#1
 bne .L25
 eor lr,lr,a4
 .L26:
-str lr,[sp,#64]
-ldr a2,[sp,#64]
+str lr,[sp,#208]
+ldr a2,[sp,#208]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#9
@@ -285,10 +285,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L27:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L27
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L27
 mov lr,a4
 .L28:
 cmp a1,a2
@@ -299,14 +299,14 @@ movne a2,a2,LSR#1
 bne .L28
 eor lr,lr,a4
 .L29:
-str lr,[sp,#60]
-ldr a2,[sp,#60]
+str lr,[sp,#204]
+ldr a2,[sp,#204]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov lr,#5
 rsb lr,lr,#0
-str lr,[sp,#56]
-ldr a1,[sp,#56]
+str lr,[sp,#200]
+ldr a1,[sp,#200]
 mov a2,#2
 mov a4,a2,ASR#31
 add a3,a2,a2,ASR#31
@@ -318,10 +318,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L30:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L30
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L30
 mov lr,a4
 .L31:
 cmp a1,a2
@@ -332,15 +332,15 @@ movne a2,a2,LSR#1
 bne .L31
 eor lr,lr,a4
 .L32:
-str lr,[sp,#52]
-ldr a2,[sp,#52]
+str lr,[sp,#196]
+ldr a2,[sp,#196]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov lr,#2
 rsb lr,lr,#0
-str lr,[sp,#48]
+str lr,[sp,#192]
 mov a1,#5
-ldr a2,[sp,#48]
+ldr a2,[sp,#192]
 mov a4,a2,ASR#31
 add a3,a2,a2,ASR#31
 eors a2,a3,a2,ASR#31
@@ -351,10 +351,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L33:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L33
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L33
 mov lr,a4
 .L34:
 cmp a1,a2
@@ -365,18 +365,18 @@ movne a2,a2,LSR#1
 bne .L34
 eor lr,lr,a4
 .L35:
-str lr,[sp,#44]
-ldr a2,[sp,#44]
+str lr,[sp,#188]
+ldr a2,[sp,#188]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov lr,#5
 rsb lr,lr,#0
-str lr,[sp,#40]
+str lr,[sp,#184]
 mov lr,#2
 rsb lr,lr,#0
-str lr,[sp,#36]
-ldr a1,[sp,#40]
-ldr a2,[sp,#36]
+str lr,[sp,#180]
+ldr a1,[sp,#184]
+ldr a2,[sp,#180]
 mov a4,a2,ASR#31
 add a3,a2,a2,ASR#31
 eors a2,a3,a2,ASR#31
@@ -387,10 +387,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L36:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L36
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L36
 mov lr,a4
 .L37:
 cmp a1,a2
@@ -401,8 +401,8 @@ movne a2,a2,LSR#1
 bne .L37
 eor lr,lr,a4
 .L38:
-str lr,[sp,#32]
-ldr a2,[sp,#32]
+str lr,[sp,#176]
+ldr a2,[sp,#176]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#1
@@ -417,10 +417,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L39:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L39
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L39
 mov lr,a4
 .L40:
 cmp a1,a2
@@ -431,8 +431,8 @@ movne a2,a2,LSR#1
 bne .L40
 eor lr,lr,a4
 .L41:
-str lr,[sp,#28]
-ldr a2,[sp,#28]
+str lr,[sp,#172]
+ldr a2,[sp,#172]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#10
@@ -447,10 +447,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L42:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L42
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L42
 mov lr,a4
 .L43:
 cmp a1,a2
@@ -461,14 +461,14 @@ movne a2,a2,LSR#1
 bne .L43
 eor lr,lr,a4
 .L44:
-str lr,[sp,#24]
-ldr a2,[sp,#24]
+str lr,[sp,#168]
+ldr a2,[sp,#168]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov lr,#1
 rsb lr,lr,#0
-str lr,[sp,#20]
-ldr a1,[sp,#20]
+str lr,[sp,#164]
+ldr a1,[sp,#164]
 mov a2,#0
 mov a4,a2,ASR#31
 add a3,a2,a2,ASR#31
@@ -480,10 +480,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L45:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L45
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L45
 mov lr,a4
 .L46:
 cmp a1,a2
@@ -494,14 +494,14 @@ movne a2,a2,LSR#1
 bne .L46
 eor lr,lr,a4
 .L47:
-str lr,[sp,#16]
-ldr a2,[sp,#16]
+str lr,[sp,#160]
+ldr a2,[sp,#160]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov lr,#10
 rsb lr,lr,#0
-str lr,[sp,#12]
-ldr a1,[sp,#12]
+str lr,[sp,#156]
+ldr a1,[sp,#156]
 mov a2,#0
 mov a4,a2,ASR#31
 add a3,a2,a2,ASR#31
@@ -513,10 +513,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L48:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L48
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L48
 mov lr,a4
 .L49:
 cmp a1,a2
@@ -527,8 +527,8 @@ movne a2,a2,LSR#1
 bne .L49
 eor lr,lr,a4
 .L50:
-str lr,[sp,#8]
-ldr a2,[sp,#8]
+str lr,[sp,#152]
+ldr a2,[sp,#152]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#0
@@ -543,10 +543,10 @@ add a3,a1,a1,ASR#31
 eor a1,a3,a1,ASR#31
 mov a3,#1
 .L51:
-cmp a1,a2,LSL#1
-movcs a2,a2,LSL#1
-movcs a3,a3,LSL#1
-bcs .L51
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L51
 mov lr,a4
 .L52:
 cmp a1,a2
@@ -557,14 +557,535 @@ movne a2,a2,LSR#1
 bne .L52
 eor lr,lr,a4
 .L53:
+str lr,[sp,#148]
+ldr a2,[sp,#148]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov a1,#2147483647
+mov a2,#1
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L56
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L54:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L54
+mov lr,a4
+.L55:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L55
+eor lr,lr,a4
+.L56:
+str lr,[sp,#144]
+ldr a2,[sp,#144]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov a1,#2147483647
+mov a2,#65535
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L59
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L57:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L57
+mov lr,a4
+.L58:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L58
+eor lr,lr,a4
+.L59:
+str lr,[sp,#140]
+ldr a2,[sp,#140]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov a1,#2147483647
+mov a2,#65536
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L62
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L60:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L60
+mov lr,a4
+.L61:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L61
+eor lr,lr,a4
+.L62:
+str lr,[sp,#136]
+ldr a2,[sp,#136]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov a1,#2147483647
+mov a2,#2147483647
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L65
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L63:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L63
+mov lr,a4
+.L64:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L64
+eor lr,lr,a4
+.L65:
+str lr,[sp,#132]
+ldr a2,[sp,#132]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#128]
+ldr fp,[sp,#128]
+mov lr,#1
+sub lr,fp,lr
+str lr,[sp,#124]
+mov a1,#2147483647
+ldr a2,[sp,#124]
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L68
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L66:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L66
+mov lr,a4
+.L67:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L67
+eor lr,lr,a4
+.L68:
+str lr,[sp,#120]
+ldr a2,[sp,#120]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#116]
+ldr a1,[sp,#116]
+mov a2,#1
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L71
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L69:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L69
+mov lr,a4
+.L70:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L70
+eor lr,lr,a4
+.L71:
+str lr,[sp,#112]
+ldr a2,[sp,#112]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#108]
+ldr a1,[sp,#108]
+mov a2,#65535
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L74
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L72:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L72
+mov lr,a4
+.L73:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L73
+eor lr,lr,a4
+.L74:
+str lr,[sp,#104]
+ldr a2,[sp,#104]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#100]
+ldr a1,[sp,#100]
+mov a2,#65536
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L77
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L75:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L75
+mov lr,a4
+.L76:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L76
+eor lr,lr,a4
+.L77:
+str lr,[sp,#96]
+ldr a2,[sp,#96]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#92]
+ldr a1,[sp,#92]
+mov a2,#2147483647
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L80
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L78:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L78
+mov lr,a4
+.L79:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L79
+eor lr,lr,a4
+.L80:
+str lr,[sp,#88]
+ldr a2,[sp,#88]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#84]
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#80]
+ldr fp,[sp,#84]
+mov lr,#1
+sub lr,fp,lr
+str lr,[sp,#76]
+ldr a1,[sp,#80]
+ldr a2,[sp,#76]
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L83
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L81:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L81
+mov lr,a4
+.L82:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L82
+eor lr,lr,a4
+.L83:
+str lr,[sp,#72]
+ldr a2,[sp,#72]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#68]
+ldr fp,[sp,#68]
+mov lr,#1
+sub lr,fp,lr
+str lr,[sp,#64]
+ldr a1,[sp,#64]
+mov a2,#1
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L86
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L84:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L84
+mov lr,a4
+.L85:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L85
+eor lr,lr,a4
+.L86:
+str lr,[sp,#60]
+ldr a2,[sp,#60]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#56]
+ldr fp,[sp,#56]
+mov lr,#1
+sub lr,fp,lr
+str lr,[sp,#52]
+ldr a1,[sp,#52]
+mov a2,#65535
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L89
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L87:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L87
+mov lr,a4
+.L88:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L88
+eor lr,lr,a4
+.L89:
+str lr,[sp,#48]
+ldr a2,[sp,#48]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#44]
+ldr fp,[sp,#44]
+mov lr,#1
+sub lr,fp,lr
+str lr,[sp,#40]
+ldr a1,[sp,#40]
+mov a2,#65536
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L92
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L90:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L90
+mov lr,a4
+.L91:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L91
+eor lr,lr,a4
+.L92:
+str lr,[sp,#36]
+ldr a2,[sp,#36]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#32]
+ldr fp,[sp,#32]
+mov lr,#1
+sub lr,fp,lr
+str lr,[sp,#28]
+ldr a1,[sp,#28]
+mov a2,#2147483647
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L95
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L93:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L93
+mov lr,a4
+.L94:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L94
+eor lr,lr,a4
+.L95:
+str lr,[sp,#24]
+ldr a2,[sp,#24]
+ldr a1,=.LZ0
+bl printf(PLT)
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#20]
+mov lr,#2147483647
+rsb lr,lr,#0
+str lr,[sp,#16]
+ldr fp,[sp,#20]
+mov lr,#1
+sub lr,fp,lr
+str lr,[sp,#12]
+ldr fp,[sp,#16]
+mov lr,#1
+sub lr,fp,lr
+str lr,[sp,#8]
+ldr a1,[sp,#12]
+ldr a2,[sp,#8]
+mov a4,a2,ASR#31
+add a3,a2,a2,ASR#31
+eors a2,a3,a2,ASR#31
+moveq lr,#0
+beq .L98
+eor a4,a4,a1,ASR#31
+add a3,a1,a1,ASR#31
+eor a1,a3,a1,ASR#31
+mov a3,#1
+.L96:
+cmp a2,a1,LSR#1
+movls a2,a2,LSL#1
+movls a3,a3,LSL#1
+bls .L96
+mov lr,a4
+.L97:
+cmp a1,a2
+subcs a1,a1,a2
+addcs lr,lr,a3
+movs a3,a3,LSR#1
+movne a2,a2,LSR#1
+bne .L97
+eor lr,lr,a4
+.L98:
 str lr,[sp,#4]
 ldr a2,[sp,#4]
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#0
-add sp,sp,#104
+add sp,sp,#248
 ldmfd sp!,{fp,pc}
-add sp,sp,#104
+add sp,sp,#248
 ldmfd sp!,{fp,pc}
 .data
 .LZ0:
