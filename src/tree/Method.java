@@ -91,8 +91,15 @@ public class Method extends Node implements ClassItem {
 			});
 		}
 		SemanticException.bound(() -> {
-			if (ctx.getReturnType() != ir3.TypeName.VOID && (stmts.isEmpty() || !(stmts.get(stmts.size() - 1) instanceof ReturnValueStmt))) {
-				throw new ir3.MissingReturnValueException(declaration_range, ctx.getReturnType(), type_range);
+			if (ctx.getReturnType() != ir3.TypeName.VOID) {
+				boolean hasReturn = false;
+				for (Stmt s : stmts) {
+					if (s instanceof ReturnValueStmt) {
+						hasReturn = true;
+						break;
+					}
+				}
+				if (!hasReturn) throw new ir3.MissingReturnValueException(declaration_range, ctx.getReturnType(), type_range);
 			}
 		});
 		return new ir3.FuncBody(ctx.getLocalEnvironment(), signature.size() + 1, insts);
