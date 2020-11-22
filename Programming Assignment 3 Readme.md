@@ -1,6 +1,3 @@
-
-
-
 CS4212 Programming Assignment 3
 Bernard Teo Zhi Yi
 

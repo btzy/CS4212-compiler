@@ -21,8 +21,18 @@ public class Assign extends Instruction {
 	@Override
 	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		final EmitFunc.StorageLocation sl = ef.storage_locations.get(idx);
-		final int output_reg = val.emitAsm(w, sl.isRegister ? sl.value : EmitFunc.Registers.LR, ef, ctx, optimize);
-		AsmEmitter.emitPseudoStoreVariable(w, sl, output_reg, ef.env.getType(idx));
+		if (optimize && sl.isRegister) {
+			final RegOrImm output_regimm = val.emitAsmImm(w, sl.value, ef, ctx, optimize);
+			output_regimm.ifRegOrElse(reg -> {
+				if (reg != sl.value) AsmEmitter.emitMovReg(w, sl.value, reg);
+			}, imm -> {
+				AsmEmitter.emitMovImm(w, sl.value, imm);
+			});
+		}
+		else {
+			final int output_reg = val.emitAsm(w, sl.isRegister ? sl.value : EmitFunc.Registers.LR, ef, ctx, optimize);
+			AsmEmitter.emitPseudoStoreVariable(w, sl, output_reg, ef.env.getType(idx));
+		}
 	}
 
 	@Override

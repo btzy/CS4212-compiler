@@ -18,19 +18,50 @@ public class Println extends Instruction {
 	@Override
 	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		if (term.type == TypeName.INT) {
-			final String format = ctx.addCStringLiteral("%d\\012\\000"); // TODO: is %d 32-bits on ARM?
-			final int arg_reg = term.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
-			if (arg_reg != EmitFunc.Registers.A2) AsmEmitter.emitMovReg(w, EmitFunc.Registers.A2, arg_reg);
+			final String format = ctx.addCStringLiteral("%d\\012\\000");
+			if (optimize) {
+				final RegOrImm arg_regimm = term.emitAsmImm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
+				arg_regimm.ifRegOrElse(reg -> {
+					if (reg != EmitFunc.Registers.A2) AsmEmitter.emitMovReg(w, EmitFunc.Registers.A2, reg);
+				}, imm -> {
+					AsmEmitter.emitMovImm(w, EmitFunc.Registers.A2, imm);
+				});
+				}
+			else {
+				final int arg_reg = term.emitAsm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
+				if (arg_reg != EmitFunc.Registers.A2) AsmEmitter.emitMovReg(w, EmitFunc.Registers.A2, arg_reg);
+			}
 			AsmEmitter.emitLdrLitAddr(w, EmitFunc.Registers.A1, format);
 			AsmEmitter.emitBlPlt(w, "printf");
 		}
 		else if (term.type == TypeName.BOOL) {
-			final String true_lit = ctx.addCStringLiteral("true");
-			final String false_lit = ctx.addCStringLiteral("false");
-			final int arg_reg = term.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
-			AsmEmitter.emitCmpImm(w, arg_reg, 0);
-			AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A1, true_lit);
-			AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.EQ, EmitFunc.Registers.A1, false_lit);
+			if (optimize) {
+				final RegOrImm arg_regimm = term.emitAsmImm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
+				arg_regimm.ifRegOrElse(reg -> {
+					final String true_lit = ctx.addCStringLiteral("true");
+					final String false_lit = ctx.addCStringLiteral("false");
+					AsmEmitter.emitCmpImm(w, reg, 0);
+					AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A1, true_lit);
+					AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.EQ, EmitFunc.Registers.A1, false_lit);
+				}, imm -> {
+					if (imm != 0) {
+						final String true_lit = ctx.addCStringLiteral("true");
+						AsmEmitter.emitLdrLitAddr(w, EmitFunc.Registers.A1, true_lit);
+					}
+					else {
+						final String false_lit = ctx.addCStringLiteral("false");
+						AsmEmitter.emitLdrLitAddr(w, EmitFunc.Registers.A1, false_lit);
+					}
+				});
+			}
+			else {
+				final String true_lit = ctx.addCStringLiteral("true");
+				final String false_lit = ctx.addCStringLiteral("false");
+				final int arg_reg = term.emitAsm(w, EmitFunc.Registers.A1, ef, ctx, optimize);
+				AsmEmitter.emitCmpImm(w, arg_reg, 0);
+				AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.NE, EmitFunc.Registers.A1, true_lit);
+				AsmEmitter.emitLdrCondLitAddr(w, AsmEmitter.Cond.EQ, EmitFunc.Registers.A1, false_lit);
+			}
 			AsmEmitter.emitBlPlt(w, "puts");
 		}
 		else if (term.type == TypeName.STRING) {

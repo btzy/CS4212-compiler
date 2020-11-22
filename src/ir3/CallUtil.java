@@ -119,8 +119,18 @@ public class CallUtil {
 			}
 		}
 		if (i < 4) {
-			final int reg = term.emitAsm(w, i, ef, ctx, optimize);
-			if (reg != i) AsmEmitter.emitMovReg(w, i, reg);
+			if (optimize) {
+				final RegOrImm regimm = term.emitAsmImm(w, i, ef, ctx, optimize);
+				regimm.ifRegOrElse(reg -> {
+					if (reg != i) AsmEmitter.emitMovReg(w, i, reg);
+				}, imm -> {
+					AsmEmitter.emitMovImm(w, i, imm);
+				});
+			}
+			else {
+				final int reg = term.emitAsm(w, i, ef, ctx, optimize);
+				if (reg != i) AsmEmitter.emitMovReg(w, i, reg);
+			}
 		}
 		else {
 			final int reg = term.emitAsm(w, scratch_reg, ef, ctx, optimize);
@@ -135,8 +145,18 @@ public class CallUtil {
 			prepLast(w, stuff_in_arg_reg[i], visited, prepped, stuff_in_arg_reg, args, scratch_reg, ef, ctx, optimize);
 		}
 		assert (i < 4);
-		final int reg = term.emitAsm(w, i, ef, ctx, optimize);
-		if (reg != i) AsmEmitter.emitMovReg(w, i, reg);
+		if (optimize) {
+			final RegOrImm regimm = term.emitAsmImm(w, i, ef, ctx, optimize);
+			regimm.ifRegOrElse(reg -> {
+				if (reg != i) AsmEmitter.emitMovReg(w, i, reg);
+			}, imm -> {
+				AsmEmitter.emitMovImm(w, i, imm);
+			});
+		}
+		else {
+			final int reg = term.emitAsm(w, i, ef, ctx, optimize);
+			if (reg != i) AsmEmitter.emitMovReg(w, i, reg);
+		}
 	}
 
 	public static int roundUpToMultipleOf8(int val) {
