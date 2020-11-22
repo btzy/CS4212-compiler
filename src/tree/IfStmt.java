@@ -59,4 +59,15 @@ public class IfStmt extends Stmt {
 		for (Stmt s : true_stmts) SemanticException.bound(() -> { s.typeCheckAndEmitIR3(ctx, out); });
 		out.accept(end_label);
 	}
+	
+	@Override
+	public boolean hasReturn() {
+		for (Stmt s : true_stmts) {
+			if (s.hasReturn()) return true;
+		}
+		for (Stmt s : false_stmts) {
+			if (s.hasReturn()) return true;
+		}
+		return false;
+	}
 }

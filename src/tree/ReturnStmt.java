@@ -21,4 +21,9 @@ public class ReturnStmt extends Stmt {
 
 		out.accept(new ir3.Return());
 	}
+	
+	@Override
+	public boolean hasReturn() {
+		return true;
+	}
 }

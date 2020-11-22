@@ -54,4 +54,9 @@ public class WhileStmt extends Stmt {
 		out.accept(new ir3.Goto(start_label));
 		out.accept(end_label);
 	}
+	
+	@Override
+	public boolean hasReturn() {
+		return true;
+	}
 }

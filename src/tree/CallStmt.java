@@ -58,4 +58,7 @@ public class CallStmt extends Stmt {
 
 		out.accept(new ir3.Call(funcidx, args_terminals));
 	}
+
+	@Override
+	public boolean hasReturn() { return true; }
 }

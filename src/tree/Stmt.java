@@ -9,4 +9,5 @@ public abstract class Stmt extends Node {
 	public Stmt(LocationRange range) { super(range); }
 
 	public abstract void typeCheckAndEmitIR3(Context ctx, Consumer<? super ir3.Instruction> out) throws SemanticException;
+	public boolean hasReturn() { return false; }
 }

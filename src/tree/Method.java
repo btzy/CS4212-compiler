@@ -94,7 +94,7 @@ public class Method extends Node implements ClassItem {
 			if (ctx.getReturnType() != ir3.TypeName.VOID) {
 				boolean hasReturn = false;
 				for (Stmt s : stmts) {
-					if (s instanceof ReturnValueStmt) {
+					if (s.hasReturn()) {
 						hasReturn = true;
 						break;
 					}
