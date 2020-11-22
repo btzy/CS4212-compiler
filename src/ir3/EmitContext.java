@@ -128,23 +128,39 @@ public class EmitContext {
 			final String text = literals.get(i);
 			int len = text.length();
 			for (int j=0; j!=4; ++j) {
-				w.print('\\');
 				octalPrint(w, len % 256);
 				len /= 256;
 			}
-			w.print(text);
+			for (byte b : text.getBytes()) {
+				final int ch = Byte.toUnsignedInt(b);
+				if (needsEscape(ch)) {
+					octalPrint(w, ch);
+				}
+				else {
+					w.print((char)ch);
+				}
+			}
 			w.println('\"');
 		}
 		for (int i=0; i!=cstrliterals.size(); ++i) {
 			w.print(cstrliteral_names.get(i));
 			w.println(':');
 			w.print(".asciz \"");
-			w.print(cstrliterals.get(i));
+			for (byte b : cstrliterals.get(i).getBytes()) {
+				final int ch = Byte.toUnsignedInt(b);
+				if (needsEscape(ch)) {
+					octalPrint(w, ch);
+				}
+				else {
+					w.print((char)ch);
+				}
+			}
 			w.println('\"');
 		}
 	}
 
 	private static void octalPrint(PrintStream w, int val) {
+		w.print('\\');
 		final int l1 = val % 8;
 		val /= 8;
 		final int l2 = val % 8;
@@ -152,5 +168,9 @@ public class EmitContext {
 		w.print(val);
 		w.print(l2);
 		w.print(l1);
+	}
+
+	private static boolean needsEscape(int val) {
+		return val < 32 || val == 34 || val == 35 || val == 39 || val == 92 || val == 127;
 	}
 }

@@ -18,7 +18,7 @@ public class Println extends Instruction {
 	@Override
 	public void emitAsm(PrintStream w, EmitFunc ef, EmitContext ctx, boolean optimize) {
 		if (term.type == TypeName.INT) {
-			final String format = ctx.addCStringLiteral("%d\\012\\000");
+			final String format = ctx.addCStringLiteral("%d\n");
 			if (optimize) {
 				final RegOrImm arg_regimm = term.emitAsmImm(w, EmitFunc.Registers.A2, ef, ctx, optimize);
 				arg_regimm.ifRegOrElse(reg -> {
@@ -65,7 +65,7 @@ public class Println extends Instruction {
 			AsmEmitter.emitBlPlt(w, "puts");
 		}
 		else if (term.type == TypeName.STRING) {
-			final String format = ctx.addCStringLiteral("%.*s\\012\\000");
+			final String format = ctx.addCStringLiteral("%.*s\n");
 			final int arg_reg = term.emitAsm(w, EmitFunc.Registers.A3, ef, ctx, optimize);
 			if (arg_reg != EmitFunc.Registers.A3) {
 				AsmEmitter.emitAddImm(w, EmitFunc.Registers.A3, arg_reg, 4);
