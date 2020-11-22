@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programming Assignment 3 Readme</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><p>CS4212 Programming Assignment 3<br>
+Bernard Teo Zhi Yi</p>
+<p>[Note: I have submitted both the markdown (.md) file and the equivalent HTML and PDF file containing the same information.  You can use either one, but the HTML version has the best formatting.]</p>
+<h1 id="introduction">Introduction</h1>
+<p>This submission builds on the parser from assignment 2, and is a fully-featured compiler from Jlite to ARM assembly.  The assembly code can then be assembled using GCC’s assembler, and then run using gem5.  There are no known bugs — all Jlite programs are compiled correctly.</p>
+<p>When optimisations are enabled, my compiler does liveness analysis on the control flow graph of each function, and builds an interference graph, on which a graph colouring algorithm is used to determine register allocation.  The graph colouring algorithm has been modified to give “preferences” for certain register assignments that minimises moves, such as preferring that function parameters are placed in registers a1-a4, and a variable being returned is placed in register a1.  This ultimately makes the assembly code more optimised.</p>
+<p>The generated code is carefully prepared so that the register allocator can make use of as many registers as possible.  In particular, the registers a1-a4, v1-v7, fp, and lr, may be assigned to variables (the allocator ensures that a1-a4 and lr are not used to store variables across a function call).  Note that the fp register is treated as a general-purpose register in my compiler — all local variables on the stack have offsets calculated from sp, which is not affected by fp.  This still conforms to the ARM calling convention, so we can still call functions from the C standard library (like <code>malloc</code>).</p>
+<p>I also implemented the full Jlite spec, <strong>including readln</strong>, so programs can read from standard input.  There are some test cases that use this feature.</p>
+<p>Division is implemented with a long division routine, and works for all inputs (both positive, negative, or zero).  String concatenation is also implemented with a routine that calls <code>malloc</code> and then copies the string content into the new heap memory that is allocated.</p>
+<p>Overloaded methods were implemented in assignment 2, and they work fully in assignment 3 as well.</p>
+<h1 id="content-of-the-submission">Content of the submission</h1>
+<p>The <code>src</code> directory contains all the files of my submission, including appropriate versions of the jflex and cup binaries.</p>
+<p>Subdirectories:</p>
+<ul>
+<li><code>src</code>: code that drives the compiler</li>
+<li><code>src/tree</code>: classes to represent the syntax tree of the program</li>
+<li><code>src/ir3</code>: classes to represent the IR3 code, code generation, register allocation, and type-checking functions</li>
+<li><code>src/util</code>: some utility classes for error reporting</li>
+<li><code>src/test</code>: contains tests</li>
+<li><code>src/test/errors</code>: contains tests that are semantic errors</li>
+<li><code>src/test/asg1</code>: contains tests from assignment 1 (you can ignore this)</li>
+<li><code>src/test/asg2</code>: contains tests from assignment 2 (you can ignore this)</li>
+<li><code>src/testcases</code>: symlink to <code>src/test</code>, to satisfy assignment 3 submission requirements</li>
+<li><code>src/jflex</code>: contains jflex spec and jflex binaries</li>
+<li><code>src/cup</code>: contains cup spec and cup binaries</li>
+</ul>
+<p><strong>Important!: Before continuing any further, you must go into the directory first:</strong></p>
+<pre><code>cd src
+</code></pre>
+<h2 id="compile">Compile</h2>
+<p>Firstly, we need to chmod the java archives for jflex and cup, and the scripts:</p>
+<pre><code>chmod u+x cup/*.jar
+chmod u+x jflex/jflex-1.8.2/lib/*.jar
+chmod u+x *.sh
+</code></pre>
+<p>Then type <code>make</code>, like this command:</p>
+<pre><code>make
+</code></pre>
+<p>Then will take a while to compile.  Be patient, and it should be done after a while.</p>
+<h2 id="compile-jlite-code">Compile Jlite code</h2>
+<p>If you just want to see the ARM assembly output of my compiler, you can read this section that describes how to compile code with my compiler.  If you also want to run the code, go to the next section instead.</p>
+<p>You can use the <code>compile.sh</code> and <code>compile-opt.sh</code> scripts, which will use the specified Jlite source file from the test folder.  It will compile the Jlite file, then invoke the assembler, then use gem5 to run the binary, and display the output.</p>
+<p>For example to run the <code>test/default.j</code> file, you can do the following.</p>
+<p>For the <strong>unoptimised</strong> version:</p>
+<pre><code>./compile.sh default
+</code></pre>
+<p>For the <strong>optimised</strong> version:</p>
+<pre><code>./compile-opt.sh default
+</code></pre>
+<h2 id="prerequisites-for-running-code">Prerequisites for running code</h2>
+<p>To run the tests, you need to have these installed:</p>
+<ul>
+<li>the GCC ARM cross-compiler (<code>gcc-arm-linux-gnueabi</code>, the current version from the Ubuntu package manager is gcc 9, but others should also work), from the default package manager (used for the assembler only)</li>
+<li>gem5, installed somewhere on your machine</li>
+</ul>
+<p>The GCC cross-compiler should be invokable using the <code>arm-linux-gnueabi-gcc</code> command (see the <code>run.sh</code> script for details).</p>
+<p>You must also define the <code>GEM5_DIR</code> environment variable to the location of your gem5 installation (without trailing “/”).  If not specified, the default location used is <code>$HOME/Documents/gem5</code> (see the <code>run.sh</code> script for details).</p>
+<p>You need both prerequisites in the following sections.</p>
+<h2 id="run">Run</h2>
+<p>You can use the <code>run.sh</code> and <code>run-opt.sh</code> scripts, which will use the specified Jlite source file from the test folder.  It will compile the Jlite file, then invoke the assembler, then use gem5 to run the binary, and display the output.</p>
+<p>For example to run the <code>test/default.j</code> file, you can do the following.</p>
+<p>For the <strong>unoptimised</strong> version:</p>
+<pre><code>./run.sh default
+</code></pre>
+<p>For the <strong>optimised</strong> version:</p>
+<pre><code>./run-opt.sh default
+</code></pre>
+<p><strong>Note that the unoptimised version simply places all the local variables on the stack.  To use the better register allocation (with liveness analysis and interference graph), you have to invoke the optimised version.</strong></p>
+<p>Remember that you do not add the file extension of the Jlite file to the command.</p>
+<p>Alternatively, you may type in the command manually (see the content of <code>run.sh</code> for the exact syntax).</p>
+<p>The difference between the unoptimised and optimised version is the <code>-O</code> flag for the compiler.  The default mode is unoptimised, and you have to pass the <code>-O</code> flag to use the optimised version.  The scripts will set the flag for you, so you don’t need to worry about it when using <code>run.sh</code>/<code>run-opt.sh</code>.</p>
+<h1 id="tests">Tests</h1>
+<p>All the tests are in <code>src/test</code>.</p>
+<p>There are 7 tests (apart from the default).</p>
+<p>Each test is made up of the following files, where <code>xxx</code> is the name of the test:</p>
+<ul>
+<li><code>xxx.j</code> — Jlite source code</li>
+<li><code>xxx.s</code> — expected assembly output when compiled with the <strong>unoptimised</strong> version</li>
+<li><code>xxx-opt.s</code> — expected assembly output when compiled with the <strong>optimised</strong> version</li>
+<li><code>xxx.out</code> — expected standard output of the compiled program (both the unoptimised and optimised versions should agree)</li>
+<li><code>xxx.in</code> (optional) — standard input for the compiled program (only present for tests involving <code>readln()</code>)</li>
+</ul>
+<p>To run all the tests using the <strong>unoptimised</strong> version, do:</p>
+<pre><code>./test.sh
+</code></pre>
+<p>To run all the tests using the <strong>optimised</strong> version, do:</p>
+<pre><code>./test-opt.sh
+</code></pre>
+<p>In either case, you should get an output like this:</p>
+<pre><code>Testing test/call ... Assembly matches ... Program output matches
+Testing test/default ... Assembly matches ... Program output matches
+Testing test/divide ... Assembly matches ... Program output matches
+Testing test/list ... Assembly matches ... Program output matches
+Testing test/operator ... Assembly matches ... Program output matches
+Testing test/readln ... Assembly matches ... Program output matches
+Testing test/recursion ... Assembly matches ... Program output matches
+Testing test/sum ... Assembly matches ... Program output matches
+</code></pre>
+<p>The <code>default</code> test is the one that came with the assignment.</p>
+<h2 id="brief-explanation-of-each-test">Brief explanation of each test</h2>
+<ul>
+<li><code>call</code> — tests function calls and calling convention, including spillage of excess parameters onto the stack</li>
+<li><code>default</code> — the test that came with the assignment</li>
+<li><code>divide</code> — tests for integer division, which uses a hand-coded long division routine</li>
+<li><code>list</code> — a simple linked list library to test objects and allocation, as well as while-loops</li>
+<li><code>operator</code> — exhaustively tests all unary and binary operators</li>
+<li><code>readln</code> — tests the readln operation</li>
+<li><code>recursion</code> — tests recursion, as well as if-statements</li>
+<li><code>sum</code> — reads the input for a single integer n, and outputs the sum 1+2+…+n; it tests loops and optimisations</li>
+</ul>
+<h1 id="brief-overview-of-the-compiler">Brief overview of the compiler</h1>
+<p>The following is a brief overview of how the compiler works.</p>
+<p>We start with IR3 code (that was produced from assignment 2).</p>
+<p>The main complication in assignment 3 is register allocation, which is described in the next section.</p>
+<p>After register allocation is done, the appropriate assembly code for each IR3 statement is emitted, which produces the ARM assembly file.</p>
+<p>We also transform the main function because Jlite returns <code>Void</code> from the main function, but we need it to <code>return 0</code> in assembly.  We do a simple transformation at IR3-level by replacing each <code>return</code> statement with <code>return 0</code> and adding <code>return 0</code> to the end of the main function.</p>
+<h2 id="register-allocation--optimisation">Register allocation (+ optimisation)</h2>
+<p>Each function is compiled separately, and some global bookkeeping is used to store the string literals and labels.  For each function, liveness analysis is carried out, like in the lectures.  We do liveness analysis directly at the statement level (instead of basic blocks) so that we can very precisely determine if two variables interfere (i.e. have overlapping live ranges).  From the liveness analysis, the interference graph is built.  The interference graph is “exact” in the sense that two variables that are detected to interfere must definitely actually interfere.</p>
+<p>The interference graph is somewhat augmented to specify that variables that live across particular operations (such as function calls) cannot use certain registers.  Specifically, any variable that lives across a function call cannot be placed in a1-a4 or lr.</p>
+<p>The interference graph also records “<strong>preferences</strong>” of certain variables for certain registers.  For example, the first four arguments of a function will prefer to be in a1-a4 (so that we can elide a <code>mov</code> instruction where possible), and return values will prefer to be in a1.  Such preferences also apply in call-expressions/statements (arguments prefer to be in a1-a4), <code>new Object()</code> statements (the variable that stores the new object prefers to be in a1), and a number of other situations. My register allocation algorithm tries to select the preferred registers whenever possible, so as to minimise <code>mov</code> instructions.</p>
+<p>Specifically, in the graph colouring algorithm, we try to remove variables with no preference from the graph <strong>first</strong>, so that when in the colouring stage, those with preferences get to pick their colours before those without preferences.  This ensures that we adhere to the register preferences of variables whenever possible.</p>
+<p>(Remember that you need to compile/run the <strong>optimised</strong> version of the compiler to use this register allocation algorithm.)</p>
+<p>If there are too many variables, then excess variables are spilled onto the stack.  To comply with the ARM calling convention, the stack pointer is always maintained at an 8-byte alignment.</p>
+<p>You may look at the optimised assembly samples in the test folder (<code>xxx-opt.s</code> where <code>xxx</code> is the test name) to see that redundant <code>mov</code> instructions are indeed minimised.</p>
+<p>As an example, we have the following source code:</p>
+<pre><code>Int size() {
+  Int x;
+  Node curr;
+  x = 0;
+  curr = head;
+  while (!curr.last) {
+    x = x + 1;
+    curr = curr.next;
+  }
+  return x;
+}
+</code></pre>
+<p>The <strong>unoptimised</strong> assembly code is:</p>
+<pre><code>$List$size$$$List:
+stmfd sp!,{a1,fp,lr}
+sub sp,sp,#12
+mov lr,#0
+str lr,[sp,#8]
+ldr lr,[sp,#12]
+ldr lr,[lr,#0]
+str lr,[sp,#4]
+.L0:
+ldr lr,[sp,#4]
+ldrb lr,[lr,#8]
+strb lr,[sp,#0]
+ldrb fp,[sp,#0]
+eor fp,fp,#1
+cmp fp,#0
+bne .L1
+b .L2
+.L1:
+ldr fp,[sp,#8]
+mov lr,#1
+add lr,fp,lr
+str lr,[sp,#8]
+ldr lr,[sp,#4]
+ldr lr,[lr,#0]
+str lr,[sp,#4]
+b .L0
+.L2:
+ldr a1,[sp,#8]
+add sp,sp,#16
+ldmfd sp!,{fp,pc}
+</code></pre>
+<p>The <strong>optimised</strong> assembly code is:</p>
+<pre><code>$List$size$$$List:
+stmfd sp!,{lr}
+sub sp,sp,#4
+mov a2,#0
+ldr a3,[a1,#0]
+.L0:
+ldrb a1,[a3,#8]
+cmp a1,#0
+beq .L1
+b .L2
+.L1:
+add a2,a2,#1
+ldr a3,[a3,#0]
+b .L0
+.L2:
+mov a1,a2
+add sp,sp,#4
+ldmfd sp!,{pc}
+</code></pre>
+<p>As can be seen, in the unoptimised version, all the local variables are placed on the stack.  However, in the optimised version, they are all placed in registers, and the registers are chosen to eliminate as many <code>mov</code> instructions as possible.</p>
+<h1 id="features">Features</h1>
+<p>Some of the more interesting features of my compiler are highlighted here, in the hope of gaining me more marks :)</p>
+<p>Of course, my compiler does produce correct ARM assembly for all valid Jlite programs, but that should be expected from all compilers.  This section is for the more interesting features.</p>
+<h2 id="strings">Strings</h2>
+<p>Strings are encoded in a somewhat unique way in my compiler.  A string of length <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathdefault">n</span></span></span></span></span> is stored in an array of <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>4</mn><mo>+</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">4+n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.72777em; vertical-align: -0.08333em;"></span><span class="mord">4</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathdefault">n</span></span></span></span></span> bytes, where the first 4 bytes encodes the string length.  The string is <strong>not</strong> null-terminated.</p>
+<p>For example, the string “abcdefg” is stored as a 11-byte array “\007\000\000\000abcdefg”, which is not null-terminated.</p>
+<p>Strings are stored this way so that we can determine the size of the string in constant time, which is more efficient when doing string operations.  For example, we can do string concatenation in a single pass with this encoding, but not with the C-style null-terminated strings.</p>
+<h3 id="string-concatenation">String concatenation</h3>
+<p>While string concatenation is a single IR3 instruction, it expands out to a moderately long sequence of instructions in ARM assembly, since we need to call <code>malloc</code> to allocate heap memory for the new string, then copy the data from the two existing strings into the new string.  Such “routines” have to be written carefully and the registers that are clobbered are made known to the register allocator, so that variables that live past a string concatenation operation do not use certain registers.</p>
+<h3 id="string-pooling">String pooling</h3>
+<p>If there are multiple identical string literals in the data section of the executable program, they will be merged, so as to reduce the size of the executable and hopefully make it more cache-friendly.</p>
+<h2 id="integer-division">Integer Division</h2>
+<p>Since we cannot use a division operation in ARM, I manually written a long division algorithm in assembly that is used whenever there is an IR3 division operation.  It is similar to string concatenation, in the sense that the registers clobbered by the long division algorithm are made known to the register allocator.</p>
+<p>This is the ARM assembly used for long division:</p>
+<pre><code>mov __A2,right                 %dividend
+mov __A1,left                  %divisor
+mov A4,__A2,ASR #31            % -1 if negative, 0 otherwise
+add A3,__A2,__A2,ASR #31       % magic to take absolute value
+eors A2,A3,__A2,ASR #31        % magic to take absolute value
+moveq output_reg,#0            % if divisor is zero, set output to 0, and skip to end
+beq L3
+eor A4,A4,__A1,ASR #31         % -1 if sign different, 0 if same
+add A3,__A1,__A1,ASR #31       % magic to take absolute value
+eor A1,A3,__A1,ASR #31         % magic to take absolute value
+% now A1 contains nonnegative dividend, A2 contains nonnegative divisor
+mov A3,#1
+L1:
+cmp A2,A1,LSR #1               % shift A2 and A3 to the biggest digit
+movls A2,A2,LSL #1
+movls A3,A3,LSL #1
+bls L1
+mov output_reg,A4              % set output to -1 if we need to flip the sign later, otherwise 0.
+L2:
+cmp A1,A2                      % actual long division happens here
+subcs A1,A1,A2
+addcs output_reg,output_reg,A3
+movs A3,A3,LSR #1
+movne A2,A2,LSR #1
+bne L2
+eor output_reg,output_reg,A4   % set the sign of the answer
+L3:
+</code></pre>
+<p>The code has been carefully written to ensure that division by zero or division where the dividend or divisor is <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mn>31</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{31}-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.897438em; vertical-align: -0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.814108em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 0.64444em; vertical-align: 0em;"></span><span class="mord">1</span></span></span></span></span> or <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>−</mo><msup><mn>2</mn><mn>31</mn></msup></mrow><annotation encoding="application/x-tex">-2^{31}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.897438em; vertical-align: -0.08333em;"></span><span class="mord">−</span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.814108em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span></span> does not lead to an infinite loop.</p>
+<h2 id="println">Println</h2>
+<p>Println is implemented via <code>printf</code> for strings and integers, and via <code>puts</code> for booleans.<br>
+Since our strings are not C-style strings, we use printf with the length specifier, i.e. <code>printf(%.*s\n, length, ptr)</code>.</p>
+<p>Booleans are printed as <code>true</code> or <code>false</code>, as they are more natural than <code>0</code> or <code>1</code>, and it helps to distinguish them from integers.</p>
+<h2 id="readln-extension">Readln (extension)</h2>
+<p>My compiler also implements the readln operation for strings, integers, and booleans.  In all cases, it uses the POSIX <code>getline</code> function to read an entire line, and then handles IO errors appropriately as if it is the empty string.</p>
+<p>After that, the processing depends on the type:</p>
+<ul>
+<li>For strings: we convert the C-style string into our string representation</li>
+<li>For integers: we use the <code>strtol</code> function to convert the C-style string to an integer</li>
+<li>For booleans: we check the first character, and if it is <code>t</code> or <code>1</code> then it returns <code>true</code>, otherwise it returns <code>false</code></li>
+</ul>
+<p>By using <code>getline</code>, which allocates a buffer automatically, we avoid the need to manually grow the buffer using functions like <code>realloc</code>.</p>
+<h2 id="class-layout-optimisation">Class layout (optimisation)</h2>
+<p><code>Int</code>, <code>String</code>, and objects (pointers) take up 4 bytes when stored in a class, but <code>Bool</code> only takes up one byte.  My compiler respects alignment of the non-<code>Bool</code> types, but may reorder <code>Bool</code> fields to pack the more efficiently.</p>
+<p>To minimise the size of instances of a class, we reorder the <code>Bool</code>s to store them in adjacent memory locations, to minimise the amount of padding in the class.</p>
+<p>Objects are allocated with <code>calloc</code> instead of <code>malloc</code>, so that all their fields are zeroed out.</p>
+<h2 id="if-goto-optimisation">If-Goto (optimisation)</h2>
+<p>If-Goto instructions are optimised to emit the proper <code>cmp ...</code> followed by <code>b&lt;c&gt; ...</code> sequence.</p>
+<p>In non-optimised code, the IR3 instruction <code>if (a &gt; b) goto L1;</code> is compiled into something roughly equivalent to <code>t1 = a &gt; b; if (t1) goto L1;</code>:</p>
+<pre><code>cmp a,b
+movgt r0,#1
+movle r0,#0
+cmp r0,#0
+bne .L1
+</code></pre>
+<p>However, in with optimisation enabled, the entire IR3 instruction is converted as a whole in order to use just a single <code>cmp</code> instruction:</p>
+<pre><code>cmp a,b
+bgt .L1
+</code></pre>
+<p>Where the second argument of the RelExp is a constant, the constant will be an immediate, e.g.:</p>
+<pre><code>cmp a,#123
+bgt .L1
+</code></pre>
+<p>This generates more efficient ARM assembly code.</p>
+<h3 id="modification-of-ir3">Modification of IR3</h3>
+<p>The optimisation described above works for some other operators that are not RelExps.  In particular, they also work for <code>&amp;&amp;</code> (conjunction), <code>||</code> (disjunction), <code>!</code> (negation), and <code>-</code> (unary minus) too.  I modified the IR3 specification to allow these binary and unary operators in an If-Goto IR3 instruction, so that we can emit better ARM assembly code.</p>
+</div>
+</body>
+
+</html>

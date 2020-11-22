@@ -33,6 +33,7 @@ Subdirectories:
 - `src/test`: contains tests
 - `src/test/errors`: contains tests that are semantic errors
 - `src/test/asg1`: contains tests from assignment 1 (you can ignore this)
+- `src/test/asg2`: contains tests from assignment 2 (you can ignore this)
 - `src/testcases`: symlink to `src/test`, to satisfy assignment 3 submission requirements
 - `src/jflex`: contains jflex spec and jflex binaries
 - `src/cup`: contains cup spec and cup binaries
@@ -254,6 +255,8 @@ add sp,sp,#4
 ldmfd sp!,{pc}
 ```
 
+As can be seen, in the unoptimised version, all the local variables are placed on the stack.  However, in the optimised version, they are all placed in registers, and the registers are chosen to eliminate as many `mov` instructions as possible.
+
 # Features
 Some of the more interesting features of my compiler are highlighted here, in the hope of gaining me more marks :)
 
@@ -362,4 +365,4 @@ This generates more efficient ARM assembly code.
 
 ### Modification of IR3
 
-The optimisation described above works for some other operators that are not RelExps.  In particular, they also work for `&&` (conjunction), `||` (disjunction), `!` (negation), and `-` (unary minus) too.  These binary and unary operators are also allowed to be in an If-Goto IR3 instruction, so that we can emit better ARM assembly code.
+The optimisation described above works for some other operators that are not RelExps.  In particular, they also work for `&&` (conjunction), `||` (disjunction), `!` (negation), and `-` (unary minus) too.  I modified the IR3 specification to allow these binary and unary operators in an If-Goto IR3 instruction, so that we can emit better ARM assembly code.
