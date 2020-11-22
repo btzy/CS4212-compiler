@@ -12,7 +12,7 @@ This submission builds on the parser from assignment 2, and is a fully-featured 
 
 When optimisations are enabled, my compiler does liveness analysis on the control flow graph of each function, and builds an interference graph, on which a graph colouring algorithm is used to determine register allocation.  The graph colouring algorithm has been modified to give "preferences" for certain register assignments that minimises moves, such as preferring that function parameters are placed in registers a1-a4, and a variable being returned is placed in register a1.  This ultimately makes the assembly code more optimised.
 
-The generated code is carefully prepared so that the register allocator can make use of as many registers as possible.  In particular, the registers a1-a4, v1-v7, fp, and lr, may be assigned to variables (the allocator ensures that a1-a4 and lr are not used to store variables across a function call).  Note that the fp register is treated as a general register in my compiler --- all local variables on the stack have offsets calculated from sp, which is not affected by fp.  This still conforms to the ARM calling convention, so we can still call functions from the C standard library (like `malloc`).
+The generated code is carefully prepared so that the register allocator can make use of as many registers as possible.  In particular, the registers a1-a4, v1-v7, fp, and lr, may be assigned to variables (the allocator ensures that a1-a4 and lr are not used to store variables across a function call).  Note that the fp register is treated as a general-purpose register in my compiler --- all local variables on the stack have offsets calculated from sp, which is not affected by fp.  This still conforms to the ARM calling convention, so we can still call functions from the C standard library (like `malloc`).
 
 I also implemented the full Jlite spec, **including readln**, so programs can read from standard input.  There are some test cases that use this feature.
 
@@ -57,6 +57,25 @@ make
 
 Then will take a while to compile.  Be patient, and it should be done after a while.
 
+## Compile Jlite code
+
+If you just want to see the ARM assembly output of my compiler, you can read this section that describes how to compile code with my compiler.  If you also want to run the code, go to the next section instead.
+
+You can use the `compile.sh` and `compile-opt.sh` scripts, which will use the specified Jlite source file from the test folder.  It will compile the Jlite file, then invoke the assembler, then use gem5 to run the binary, and display the output.
+
+For example to run the `test/default.j` file, you can do the following.
+
+For the **unoptimised** version:
+```
+./compile.sh default
+```
+
+For the **optimised** version:
+```
+./compile-opt.sh default
+```
+
+
 ## Prerequisites for running code
 To run the tests, you need to have these installed:
 - the GCC ARM cross-compiler (`gcc-arm-linux-gnueabi`, the current version from the Ubuntu package manager is gcc 9, but others should also work), from the default package manager (used for the assembler only)
@@ -64,7 +83,7 @@ To run the tests, you need to have these installed:
 
 The GCC cross-compiler should be invokable using the `arm-linux-gnueabi-gcc` command (see the `run.sh` script for details).
 
-You should also define the `GEM5_DIR` environment variable to the location of your gem5 installation (without trailing "/").  If not specified, the default location used is `$HOME/Documents/gem5` (see the `run.sh` script for details).
+You must also define the `GEM5_DIR` environment variable to the location of your gem5 installation (without trailing "/").  If not specified, the default location used is `$HOME/Documents/gem5` (see the `run.sh` script for details).
 
 You need both prerequisites in the following sections.
 
@@ -83,7 +102,7 @@ For the **optimised** version:
 ./run-opt.sh default
 ```
 
-**Note that the unoptimised version simply places all the local variables on the stack.  To use the better register allocation (with liveness analysis and interference graph), you have to use the optimised version.**
+**Note that the unoptimised version simply places all the local variables on the stack.  To use the better register allocation (with liveness analysis and interference graph), you have to invoke the optimised version.**
 
 Remember that you do not add the file extension of the Jlite file to the command.
 
@@ -157,9 +176,11 @@ The interference graph is somewhat augmented to specify that variables that live
 
 The interference graph also records "**preferences**" of certain variables for certain registers.  For example, the first four arguments of a function will prefer to be in a1-a4 (so that we can elide a `mov` instruction where possible), and return values will prefer to be in a1.  Such preferences also apply in call-expressions/statements (arguments prefer to be in a1-a4), `new Object()` statements (the variable that stores the new object prefers to be in a1), and a number of other situations. My register allocation algorithm tries to select the preferred registers whenever possible, so as to minimise `mov` instructions.
 
+Specifically, in the graph colouring algorithm, we try to remove variables with no preference from the graph **first**, so that when in the colouring stage, those with preferences get to pick their colours before those without preferences.  This ensures that we adhere to the register preferences of variables whenever possible.
+
 (Remember that you need to compile/run the **optimised** version of the compiler to use this register allocation algorithm.)
 
-If there are too many variables, then excess variables are spilled onto the stack.  To comply with ARM calling convention, the stack pointer is always maintained at an 8-byte alignment.
+If there are too many variables, then excess variables are spilled onto the stack.  To comply with the ARM calling convention, the stack pointer is always maintained at an 8-byte alignment.
 
 You may look at the optimised assembly samples in the test folder (`xxx-opt.s` where `xxx` is the test name) to see that redundant `mov` instructions are indeed minimised.
 
@@ -177,7 +198,7 @@ Int size() {
   return x;
 }
 ```
-The unoptimised assembly code is:
+The **unoptimised** assembly code is:
 ```
 $List$size$$$List:
 stmfd sp!,{a1,fp,lr}
@@ -211,7 +232,7 @@ add sp,sp,#16
 ldmfd sp!,{fp,pc}
 ```
 
-The optimised assembly code is:
+The **optimised** assembly code is:
 ```
 $List$size$$$List:
 stmfd sp!,{lr}
@@ -243,7 +264,7 @@ Strings are encoded in a somewhat unique way in my compiler.  A string of length
 
 For example, the string "abcdefg" is stored as a 11-byte array "\007\000\000\000abcdefg", which is not null-terminated.
 
-Strings are stored this way so that we can determine the size of the string in constant time, which is helpful when doing string operations.  For example, we can do string concatenation in a single pass with this encoding, but not with the C-style null-terminated strings.
+Strings are stored this way so that we can determine the size of the string in constant time, which is more efficient when doing string operations.  For example, we can do string concatenation in a single pass with this encoding, but not with the C-style null-terminated strings.
 
 ### String concatenation
 While string concatenation is a single IR3 instruction, it expands out to a moderately long sequence of instructions in ARM assembly, since we need to call `malloc` to allocate heap memory for the new string, then copy the data from the two existing strings into the new string.  Such "routines" have to be written carefully and the registers that are clobbered are made known to the register allocator, so that variables that live past a string concatenation operation do not use certain registers.
@@ -254,6 +275,39 @@ If there are multiple identical string literals in the data section of the execu
 ## Integer Division
 Since we cannot use a division operation in ARM, I manually written a long division algorithm in assembly that is used whenever there is an IR3 division operation.  It is similar to string concatenation, in the sense that the registers clobbered by the long division algorithm are made known to the register allocator.
 
+This is the ARM assembly used for long division:
+```
+mov __A2,right                 %dividend
+mov __A1,left                  %divisor
+mov A4,__A2,ASR #31            % -1 if negative, 0 otherwise
+add A3,__A2,__A2,ASR #31       % magic to take absolute value
+eors A2,A3,__A2,ASR #31        % magic to take absolute value
+moveq output_reg,#0            % if divisor is zero, set output to 0, and skip to end
+beq L3
+eor A4,A4,__A1,ASR #31         % -1 if sign different, 0 if same
+add A3,__A1,__A1,ASR #31       % magic to take absolute value
+eor A1,A3,__A1,ASR #31         % magic to take absolute value
+% now A1 contains nonnegative dividend, A2 contains nonnegative divisor
+mov A3,#1
+L1:
+cmp A2,A1,LSR #1               % shift A2 and A3 to the biggest digit
+movls A2,A2,LSL #1
+movls A3,A3,LSL #1
+bls L1
+mov output_reg,A4              % set output to -1 if we need to flip the sign later, otherwise 0.
+L2:
+cmp A1,A2                      % actual long division happens here
+subcs A1,A1,A2
+addcs output_reg,output_reg,A3
+movs A3,A3,LSR #1
+movne A2,A2,LSR #1
+bne L2
+eor output_reg,output_reg,A4   % set the sign of the answer
+L3:
+```
+
+The code has been carefully written to ensure that division by zero or division where the dividend or divisor is $2^{31}-1$ or $-2^{31}$ does not lead to an infinite loop.
+
 ## Println
 Println is implemented via `printf` for strings and integers, and via `puts` for booleans.
 Since our strings are not C-style strings, we use printf with the length specifier, i.e. `printf(%.*s\n, length, ptr)`.
@@ -261,16 +315,51 @@ Since our strings are not C-style strings, we use printf with the length specifi
 Booleans are printed as `true` or `false`, as they are more natural than `0` or `1`, and it helps to distinguish them from integers.
 
 ## Readln (extension)
-My compiler also implements the readln operation for strings, integers, and booleans.  In all cases, it uses the POSIX `getline` function to read an entire line, and then handles errors appropriately as if it is the empty string.
+My compiler also implements the readln operation for strings, integers, and booleans.  In all cases, it uses the POSIX `getline` function to read an entire line, and then handles IO errors appropriately as if it is the empty string.
 
 After that, the processing depends on the type:
 - For strings: we convert the C-style string into our string representation
-- For integers: we use the `atoi` function to convert the C-style string to an integer
+- For integers: we use the `strtol` function to convert the C-style string to an integer
 - For booleans: we check the first character, and if it is `t` or `1` then it returns `true`, otherwise it returns `false`
 
-By using `getline`, which allocates a buffer automatically, we avoid the need to manually grow the buffer using things like `realloc`.
+By using `getline`, which allocates a buffer automatically, we avoid the need to manually grow the buffer using functions like `realloc`.
 
 ## Class layout (optimisation)
 `Int`, `String`, and objects (pointers) take up 4 bytes when stored in a class, but `Bool` only takes up one byte.  My compiler respects alignment of the non-`Bool` types, but may reorder `Bool` fields to pack the more efficiently.
 
 To minimise the size of instances of a class, we reorder the `Bool`s to store them in adjacent memory locations, to minimise the amount of padding in the class.
+
+Objects are allocated with `calloc` instead of `malloc`, so that all their fields are zeroed out.
+
+## If-Goto (optimisation)
+If-Goto instructions are optimised to emit the proper `cmp ...` followed by `b<c> ...` sequence.
+
+In non-optimised code, the IR3 instruction `if (a > b) goto L1;` is compiled into something roughly equivalent to `t1 = a > b; if (t1) goto L1;`:
+
+```
+cmp a,b
+movgt r0,#1
+movle r0,#0
+cmp r0,#0
+bne .L1
+```
+
+However, in with optimisation enabled, the entire IR3 instruction is converted as a whole in order to use just a single `cmp` instruction:
+
+```
+cmp a,b
+bgt .L1
+```
+
+Where the second argument of the RelExp is a constant, the constant will be an immediate, e.g.:
+
+```
+cmp a,#123
+bgt .L1
+```
+
+This generates more efficient ARM assembly code.
+
+### Modification of IR3
+
+The optimisation described above works for some other operators that are not RelExps.  In particular, they also work for `&&` (conjunction), `||` (disjunction), `!` (negation), and `-` (unary minus) too.  These binary and unary operators are also allowed to be in an If-Goto IR3 instruction, so that we can emit better ARM assembly code.
