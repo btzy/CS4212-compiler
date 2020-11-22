@@ -18,7 +18,9 @@ moveq a1,#0
 streq a1,[sp,#24]
 beq .L0
 ldr a1,[sp,#-4]
-bl atoi(PLT)
+mov a2,#0
+mov a3,#10
+bl strtol(PLT)
 str a1,[sp,#24]
 .L0:
 ldr fp,[sp,#24]

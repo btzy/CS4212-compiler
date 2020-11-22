@@ -17,7 +17,9 @@ cmn a1,#1
 moveq a3,#0
 beq .L0
 ldr a1,[sp,#-4]
-bl atoi(PLT)
+mov a2,#0
+mov a3,#10
+bl strtol(PLT)
 mov a3,a1
 .L0:
 mov a1,#1
