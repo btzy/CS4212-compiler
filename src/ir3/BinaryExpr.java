@@ -413,10 +413,10 @@ public class BinaryExpr extends Expr {
 		// % now A1 contains nonnegative dividend, A2 contains nonnegative divisor
 		// mov A3,#1
 		// L1:
-		// cmp A1,A2,LSL #1               % shift A2 and A3 to the biggest digit
-		// movcs A2,A2,LSL #1
-		// movcs A3,A3,LSL #1
-		// bcs L1
+		// cmp A2,A1,LSR #1               % shift A2 and A3 to the biggest digit
+		// movls A2,A2,LSL #1
+		// movls A3,A3,LSL #1
+		// bls L1
 		// mov hint_output_reg,A4         % set output to -1 if we need to flip the sign later, otherwise 0.
 		// L2:
 		// cmp A1,A2
@@ -478,10 +478,10 @@ public class BinaryExpr extends Expr {
 		AsmEmitter.emitMovImm(w, eA3, 1);
 		w.print(label1);
 		w.println(':');
-		AsmEmitter.emitCmpRegShift(w, eA1, eA2, AsmEmitter.Shift.LSL, 1);
-		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, eA2, eA2, AsmEmitter.Shift.LSL, 1);
-		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.CS, eA3, eA3, AsmEmitter.Shift.LSL, 1);
-		AsmEmitter.emitBCond(w, AsmEmitter.Cond.CS, label1);
+		AsmEmitter.emitCmpRegShift(w, eA2, eA1, AsmEmitter.Shift.LSR, 1);
+		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.LS, eA2, eA2, AsmEmitter.Shift.LSL, 1);
+		AsmEmitter.emitMovCondRegShift(w, AsmEmitter.Cond.LS, eA3, eA3, AsmEmitter.Shift.LSL, 1);
+		AsmEmitter.emitBCond(w, AsmEmitter.Cond.LS, label1);
 		AsmEmitter.emitMovReg(w, hint_output_reg, eA4);
 		w.print(label2);
 		w.println(':');
