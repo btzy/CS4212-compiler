@@ -38,13 +38,13 @@ public class Program {
 	 */
 	public void transformMainFunc() {
 		for (int i=0; i!=func_specs.size(); ++i) {
-			FuncSpec spec = func_specs.get(i);
+			final FuncSpec spec = func_specs.get(i);
+			final FuncBody body = func_bodies.get(i);
+			body.transformReturn(spec.result_type);
 			if (spec.getMangledName() == "main") {
-				final FuncBody body = func_bodies.get(i);
 				assert(spec.result_type == TypeName.VOID);
-				spec = new FuncSpec(TypeName.INT, spec.param_types, spec.getMangledName());
+				func_specs.set(i, new FuncSpec(TypeName.INT, spec.param_types, spec.getMangledName()));
 				body.transformMainFunc();
-				func_specs.set(i, spec);
 			}
 		}
 	}

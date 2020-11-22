@@ -126,8 +126,8 @@ public class FuncBody {
 			inst.emitAsm(w, ef, ctx, optimize);
 		}
 
-		// emit function epilogue
-		AsmEmitter.emitEpilogue(w, ef);
+		// no need to emit function epilogue, since returns are explicit now
+		// AsmEmitter.emitEpilogue(w, ef);
 	}
 
 	/**
@@ -141,8 +141,15 @@ public class FuncBody {
 				insts.set(i, new Return(new IntegerLiteral(0)));
 			}
 		}
-		insts.add(new Return(new IntegerLiteral(0)));
 	}
 
-	// TODO: transform general funcs to add return to last statement if not present.
+	public void transformReturn(TypeName result_type) {
+		if (result_type == TypeName.VOID && !insts.isEmpty()) {
+			final Instruction inst = insts.get(insts.size() - 1);
+			if (!(inst instanceof Return)) {
+				insts.add(new Return());
+			}
+		}
+	}
+
 }
