@@ -53,8 +53,6 @@ bl printf(PLT)
 mov a1,#0
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
-add sp,sp,#16
-ldmfd sp!,{fp,pc}
 .LN0:
 .word stdin
 .data

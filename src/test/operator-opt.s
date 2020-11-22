@@ -665,8 +665,6 @@ bl printf(PLT)
 mov a1,#0
 add sp,sp,#4
 ldmfd sp!,{v1,v2,pc}
-add sp,sp,#4
-ldmfd sp!,{v1,v2,pc}
 .data
 .align 2
 .LC0:

@@ -39,7 +39,6 @@ ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#0
 ldmfd sp!,{v1,pc}
-ldmfd sp!,{v1,pc}
 $Test$f$$$Test$Int:
 stmfd sp!,{v1,v2,v3,lr}
 mov v2,a1
@@ -119,7 +118,6 @@ b .L9
 ldr a1,=.LC4
 ldmfd sp!,{v1,v2,v3,pc}
 .L9:
-ldmfd sp!,{v1,v2,v3,pc}
 $Test$g$$$Test$Int:
 stmfd sp!,{v1,lr}
 mov v1,a1
@@ -166,7 +164,6 @@ b .L15
 ldr a1,=.LC4
 ldmfd sp!,{v1,pc}
 .L15:
-ldmfd sp!,{v1,pc}
 .data
 .align 2
 .LC0:

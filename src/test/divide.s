@@ -1085,8 +1085,6 @@ bl printf(PLT)
 mov a1,#0
 add sp,sp,#248
 ldmfd sp!,{fp,pc}
-add sp,sp,#248
-ldmfd sp!,{fp,pc}
 .data
 .LZ0:
 .asciz "%d\012\000"

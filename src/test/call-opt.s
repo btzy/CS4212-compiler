@@ -13,15 +13,11 @@ bl printf(PLT)
 mov a1,#0
 add sp,sp,#4
 ldmfd sp!,{pc}
-add sp,sp,#4
-ldmfd sp!,{pc}
 $A$f$$$A:
 stmfd sp!,{lr}
 sub sp,sp,#4
 mov a2,#1
 bl $A$f$$$A$Int
-add sp,sp,#4
-ldmfd sp!,{pc}
 add sp,sp,#4
 ldmfd sp!,{pc}
 $A$f$$$A$Int:
@@ -31,15 +27,11 @@ mov a3,#2
 bl $A$f$$$A$Int$Int
 add sp,sp,#4
 ldmfd sp!,{pc}
-add sp,sp,#4
-ldmfd sp!,{pc}
 $A$f$$$A$Int$Int:
 stmfd sp!,{lr}
 sub sp,sp,#4
 mov a4,#3
 bl $A$f$$$A$Int$Int$Int
-add sp,sp,#4
-ldmfd sp!,{pc}
 add sp,sp,#4
 ldmfd sp!,{pc}
 $A$f$$$A$Int$Int$Int:
@@ -52,8 +44,6 @@ bl $A$f$$$A$Int$Int$Int$Int
 add sp,sp,#8
 add sp,sp,#4
 ldmfd sp!,{pc}
-add sp,sp,#4
-ldmfd sp!,{pc}
 $A$f$$$A$Int$Int$Int$Int:
 stmfd sp!,{v1,lr}
 ldr v1,[sp,#8]
@@ -63,7 +53,6 @@ mov lr,#5
 str lr,[sp,#4]
 bl $A$f$$$A$Int$Int$Int$Int$Int
 add sp,sp,#8
-ldmfd sp!,{v1,pc}
 ldmfd sp!,{v1,pc}
 $A$f$$$A$Int$Int$Int$Int$Int:
 stmfd sp!,{v1,v2,lr}
@@ -79,8 +68,6 @@ bl $A$f$$$A$Int$Int$Int$Int$Int$Int
 add sp,sp,#16
 add sp,sp,#4
 ldmfd sp!,{v1,v2,pc}
-add sp,sp,#4
-ldmfd sp!,{v1,v2,pc}
 $A$f$$$A$Int$Int$Int$Int$Int$Int:
 stmfd sp!,{v1,v2,v3,lr}
 ldr v3,[sp,#16]
@@ -94,7 +81,6 @@ mov lr,#7
 str lr,[sp,#12]
 bl $A$f$$$A$Int$Int$Int$Int$Int$Int$Int
 add sp,sp,#16
-ldmfd sp!,{v1,v2,v3,pc}
 ldmfd sp!,{v1,v2,v3,pc}
 $A$f$$$A$Int$Int$Int$Int$Int$Int$Int:
 stmfd sp!,{v1,v2,v3,v4,lr}
@@ -112,8 +98,6 @@ mov lr,#8
 str lr,[sp,#16]
 bl $A$f$$$A$Int$Int$Int$Int$Int$Int$Int$Int
 add sp,sp,#24
-add sp,sp,#4
-ldmfd sp!,{v1,v2,v3,v4,pc}
 add sp,sp,#4
 ldmfd sp!,{v1,v2,v3,v4,pc}
 $A$f$$$A$Int$Int$Int$Int$Int$Int$Int$Int:
@@ -150,7 +134,6 @@ mov a2,v7
 ldr a1,=.LZ0
 bl printf(PLT)
 mov a1,#0
-ldmfd sp!,{v1,v2,v3,v4,v5,v6,v7,pc}
 ldmfd sp!,{v1,v2,v3,v4,v5,v6,v7,pc}
 .data
 .LZ0:

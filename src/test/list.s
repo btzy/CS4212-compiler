@@ -65,8 +65,6 @@ bl printf(PLT)
 mov a1,#0
 add sp,sp,#40
 ldmfd sp!,{fp,pc}
-add sp,sp,#40
-ldmfd sp!,{fp,pc}
 $List$init$$$List:
 stmfd sp!,{a1,fp,lr}
 sub sp,sp,#4
@@ -113,8 +111,6 @@ b .L0
 ldr a1,[sp,#8]
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
-add sp,sp,#16
-ldmfd sp!,{fp,pc}
 $List$item$$$List$Int:
 stmfd sp!,{a1,a2,fp,lr}
 sub sp,sp,#8
@@ -143,8 +139,6 @@ b .L3
 ldr a1,[sp,#4]
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
-add sp,sp,#16
-ldmfd sp!,{fp,pc}
 $List$insertFirst$$$List$Int:
 stmfd sp!,{a1,a2,fp,lr}
 sub sp,sp,#8
@@ -165,6 +159,7 @@ strb fp,[lr,#8]
 ldr fp,[sp,#4]
 ldr lr,[sp,#8]
 str fp,[lr,#0]
+ldr a1,[sp,#4]
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
 $List$print$$$List:
@@ -220,6 +215,7 @@ strb fp,[lr,#8]
 ldr fp,[sp,#4]
 ldr lr,[sp,#8]
 str fp,[lr,#0]
+ldr a1,[sp,#4]
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
 .data

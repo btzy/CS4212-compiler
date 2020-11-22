@@ -47,8 +47,6 @@ bl printf(PLT)
 mov a1,#0
 add sp,sp,#24
 ldmfd sp!,{fp,pc}
-add sp,sp,#24
-ldmfd sp!,{fp,pc}
 $Test$f$$$Test$Int:
 stmfd sp!,{a1,a2,fp,lr}
 sub sp,sp,#24
@@ -146,8 +144,6 @@ ldr a1,=.LC4
 add sp,sp,#32
 ldmfd sp!,{fp,pc}
 .L9:
-add sp,sp,#32
-ldmfd sp!,{fp,pc}
 $Test$g$$$Test$Int:
 stmfd sp!,{a1,a2,fp,lr}
 sub sp,sp,#16
@@ -211,8 +207,6 @@ ldr a1,=.LC4
 add sp,sp,#24
 ldmfd sp!,{fp,pc}
 .L15:
-add sp,sp,#24
-ldmfd sp!,{fp,pc}
 .data
 .align 2
 .LC0:

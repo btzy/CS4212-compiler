@@ -49,8 +49,6 @@ bl printf(PLT)
 mov a1,#0
 add sp,sp,#4
 ldmfd sp!,{v1,v2,pc}
-add sp,sp,#4
-ldmfd sp!,{v1,v2,pc}
 $List$init$$$List:
 stmfd sp!,{v1,lr}
 mov v1,a1
@@ -80,8 +78,6 @@ b .L0
 mov a1,a2
 add sp,sp,#4
 ldmfd sp!,{pc}
-add sp,sp,#4
-ldmfd sp!,{pc}
 $List$item$$$List$Int:
 stmfd sp!,{lr}
 sub sp,sp,#4
@@ -95,8 +91,6 @@ ldr a1,[a1,#0]
 sub a2,a2,#1
 b .L3
 .L5:
-add sp,sp,#4
-ldmfd sp!,{pc}
 add sp,sp,#4
 ldmfd sp!,{pc}
 $List$insertFirst$$$List$Int:

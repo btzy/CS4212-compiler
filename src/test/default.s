@@ -53,8 +53,6 @@ bl printf(PLT)
 mov a1,#0
 add sp,sp,#40
 ldmfd sp!,{fp,pc}
-add sp,sp,#40
-ldmfd sp!,{fp,pc}
 $Compute$square$$$Compute$Int:
 stmfd sp!,{a1,a2,fp,lr}
 sub sp,sp,#8
@@ -65,8 +63,6 @@ str lr,[sp,#4]
 ldr a1,[sp,#4]
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
-add sp,sp,#16
-ldmfd sp!,{fp,pc}
 $Compute$add$$$Compute$Int$Int:
 stmfd sp!,{a1,a2,a3,fp,lr}
 sub sp,sp,#4
@@ -75,8 +71,6 @@ ldr lr,[sp,#12]
 add lr,fp,lr
 str lr,[sp,#0]
 ldr a1,[sp,#0]
-add sp,sp,#16
-ldmfd sp!,{fp,pc}
 add sp,sp,#16
 ldmfd sp!,{fp,pc}
 $Compute$addSquares$$$Compute$Int$Int:
@@ -116,8 +110,6 @@ ldr a1,[sp,#0]
 add sp,sp,#32
 ldmfd sp!,{fp,pc}
 .L3:
-add sp,sp,#32
-ldmfd sp!,{fp,pc}
 .data
 .align 2
 .LC0:

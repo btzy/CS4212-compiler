@@ -55,6 +55,7 @@ class List {
     tmp.val = val;
     tmp.last = false;
     head = tmp;
+    return tmp;
   }
   
   Void print() {
@@ -80,5 +81,6 @@ class Node {
     tmp.val = val;
     tmp.last = false;
     next = tmp;
+    return tmp;
   }
 }

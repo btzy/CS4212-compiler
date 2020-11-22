@@ -151,8 +151,6 @@ bl puts(PLT)
 mov a1,#0
 add sp,sp,#4
 ldmfd sp!,{pc}
-add sp,sp,#4
-ldmfd sp!,{pc}
 .LN0:
 .word stdin
 .data
