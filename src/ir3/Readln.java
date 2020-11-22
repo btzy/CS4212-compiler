@@ -46,7 +46,9 @@ public class Readln extends Instruction {
 			AsmEmitter.emitPseudoStoreVariableCond(w, AsmEmitter.Cond.EQ, sl, output_reg, TypeName.INT);
 			AsmEmitter.emitBCond(w, AsmEmitter.Cond.EQ, fail_label);
 			AsmEmitter.emitLdr(w, EmitFunc.Registers.A1, EmitFunc.Registers.SP, -4);
-			AsmEmitter.emitBlPlt(w, "atoi");
+			AsmEmitter.emitMovImm(w, EmitFunc.Registers.A2, 0);
+			AsmEmitter.emitMovImm(w, EmitFunc.Registers.A3, 10);
+			AsmEmitter.emitBlPlt(w, "strtol");
 			AsmEmitter.emitPseudoStoreVariable(w, sl, EmitFunc.Registers.A1, TypeName.INT);
 			w.print(fail_label);
 			w.println(':');
