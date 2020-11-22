@@ -17,7 +17,7 @@ Step 2: Compile the program:
 make
 ```
 
-Step 3: Run all test cases:
+Step 3: Run all test cases (**unoptimised**):
 ```
 ./test.sh
 ```
@@ -39,7 +39,7 @@ To run a single test (e.g. test/default.j):
 ./run.sh default
 ```
 
-Step 4: Run all test cases (optimised):
+Step 4: Run all test cases (**optimised**):
 ```
 ./test-opt.sh
 ```
