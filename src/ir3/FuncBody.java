@@ -144,9 +144,14 @@ public class FuncBody {
 	}
 
 	public void transformReturn(TypeName result_type) {
-		if (result_type == TypeName.VOID && !insts.isEmpty()) {
-			final Instruction inst = insts.get(insts.size() - 1);
-			if (!(inst instanceof Return)) {
+		if (result_type == TypeName.VOID) {
+			if (!insts.isEmpty()) {
+				final Instruction inst = insts.get(insts.size() - 1);
+				if (!(inst instanceof Return)) {
+					insts.add(new Return());
+				}
+			}
+			else {
 				insts.add(new Return());
 			}
 		}

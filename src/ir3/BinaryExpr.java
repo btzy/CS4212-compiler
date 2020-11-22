@@ -419,13 +419,13 @@ public class BinaryExpr extends Expr {
 		// bls L1
 		// mov hint_output_reg,A4         % set output to -1 if we need to flip the sign later, otherwise 0.
 		// L2:
-		// cmp A1,A2
+		// cmp A1,A2                      % actual long division happens here
 		// subcs A1,A1,A2
 		// addcs hint_output_reg,hint_output_reg,A3
 		// movs A3,A3,LSR #1
 		// movne A2,A2,LSR #1
 		// bne L2
-		// eor hint_output_reg,hint_output_reg,A4  % set the sign
+		// eor hint_output_reg,hint_output_reg,A4  % set the sign of the answer
 		// L3:
 
 		final Object label_namespace = new Object();
